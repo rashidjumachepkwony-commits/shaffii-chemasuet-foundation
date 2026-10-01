@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+worker/dist/
+
+# Environment
+.env
+.env.local
+.env.development
+.env.production
+.env*.local
+
+# Supabase
+supabase/.cache/
+.supabase/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
