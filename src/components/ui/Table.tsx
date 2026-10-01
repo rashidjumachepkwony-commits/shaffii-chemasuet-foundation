@@ -140,7 +140,7 @@ export function Table<T extends Record<string, unknown>>({
   );
 }
 
-function TableSkeleton({ columns }: { columns: Column<Record<string, unknown>>[] }) {
+function TableSkeleton({ columns }: { columns: Column<Record<string, unknown>>[] | Column<any>[] }) {
   return (
     <div className="space-y-2">
       <div className="flex gap-4">

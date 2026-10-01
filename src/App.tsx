@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary, NotFound, Unauthorized } from "@/components/ui/ErrorBoundary";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useAuth } from "@/contexts/AuthContext";
+import { Permission } from "@/types";
 import { useEffect } from "react";
 
 const LazyHome = React.lazy(() => import("@/pages/public/Home"));
@@ -83,7 +84,7 @@ function RequireAuthOutlet({
   permissions,
 }: {
   roles?: string[];
-  permissions?: string[];
+  permissions?: Permission[];
 }) {
   const { user, role: userRole, permissions: userPermissions, initialized } = useAuth();
   const navigate = useNavigate();
