@@ -17,10 +17,8 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "jsx": "react-jsx",
-    "paths": {
-      "@/*": ["../src/*"]
-    }
+    "skipLibCheck": true
   },
-  "include": ["src", "../src/types"],
+  "include": ["src", "../src/types", "../src/lib"],
   "exclude": ["node_modules", "dist"]
 }
