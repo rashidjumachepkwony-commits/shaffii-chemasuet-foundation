@@ -54,7 +54,7 @@ export default function EventsPage() {
       ]);
 
       setEvents(eventsRes.data || []);
-      setCategories(categoriesRes.data || categoriesRes || []);
+      setCategories(categoriesRes || []);
       setTotalPages(eventsRes.meta?.totalPages || 1);
       setTotalItems(eventsRes.meta?.total || 0);
     } catch (err: any) {

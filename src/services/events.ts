@@ -20,7 +20,7 @@ export interface EventsListParams {
 
 export const eventsService = {
   async list(params: EventsListParams = {}): Promise<PaginatedResponse<Event>> {
-    const query: Record<string, string | number | undefined> = {
+    const query: Record<string, string | number | boolean | undefined> = {
       page: params.page,
       limit: params.limit,
       status: params.status,

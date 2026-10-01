@@ -192,6 +192,7 @@ export interface EventRegistration {
   status: RegistrationStatus;
   created_at: string;
   updated_at: string;
+  event?: Event;
 }
 
 export interface Profile {
@@ -339,6 +340,7 @@ export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
+  message?: string;
   meta?: Record<string, unknown>;
 }
 
@@ -347,6 +349,7 @@ export interface PaginationMeta {
   limit: number;
   total: number;
   totalPages: number;
+  [key: string]: unknown;
 }
 
 export interface PaginatedResponse<T> extends ApiResponse<T[]> {

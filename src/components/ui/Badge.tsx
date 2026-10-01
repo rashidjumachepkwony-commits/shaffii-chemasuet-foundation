@@ -8,7 +8,7 @@ export interface BadgeProps
   size?: "sm" | "md" | "lg";
 }
 
-const badgeColorClasses = {
+const badgeColorClasses: Record<string, Record<string, string>> = {
   neutral: {
     soft: "bg-neutral-100 text-neutral-800",
     solid: "bg-neutral-600 text-white",
@@ -54,7 +54,7 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
       md: "px-3 py-1 text-sm",
       lg: "px-4 py-1.5 text-base",
     };
-    const colorClass = badgeColorClasses[color][variant];
+    const colorClass = badgeColorClasses[color][variant === "default" ? "soft" : variant];
     const borderClass = variant === "outline" ? `border` : "";
 
     return (

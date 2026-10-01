@@ -1,4 +1,4 @@
-import Link from "react-router-dom/Link";
+import { Link } from "react-router-dom";
 import { useForm } from "@/hooks/useForm";
 import { forgotPasswordSchema } from "@/lib/validations";
 import { FormField } from "@/components/ui/Form";
