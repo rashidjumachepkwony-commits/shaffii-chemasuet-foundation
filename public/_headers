@@ -1,0 +1,13 @@
+# SPA routing - redirect all routes to index.html
+/* /index.html 200
+
+# JavaScript MIME types
+/*.js
+  Content-Type: application/javascript; charset=utf-8
+
+/*.mjs
+  Content-Type: application/javascript; charset=utf-8
+
+# CSS MIME types
+/*.css
+  Content-Type: text/css; charset=utf-8
