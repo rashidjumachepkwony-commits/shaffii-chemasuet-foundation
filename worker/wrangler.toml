@@ -1,5 +1,5 @@
 name = "shaffii-chemasuet-foundation-worker"
-main = "worker/src/index.ts"
+main = "src/index.ts"
 compatibility_date = "2024-09-25"
 account_id = "YOUR_ACCOUNT_ID"
 
