@@ -23,7 +23,7 @@ export default function Home() {
       try {
         const [eventsRes, projectsRes] = await Promise.all([
           eventsService.list({ limit: 4, status: "PUBLISHED" }),
-          projectsService.list({ limit: 3, status: "COMPLETED" }),
+          projectsService.list({ limit: 3, status: "IN_PROGRESS" }),
         ]);
         setUpcomingEvents(eventsRes.data?.slice(0, 4) ?? []);
         setFeaturedProjects(projectsRes.data?.slice(0, 3) ?? []);
