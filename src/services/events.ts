@@ -41,7 +41,8 @@ export const eventsService = {
   },
 
   async getCategories(): Promise<EventCategory[]> {
-    return extractData(await apiGet<ApiResponse<EventCategory[]>>("/events/categories"));
+    const result = extractData(await apiGet<ApiResponse<EventCategory[]>>("/events/categories"));
+    return Array.isArray(result) ? result : [];
   },
 
   async register(eventId: string, payload: {
