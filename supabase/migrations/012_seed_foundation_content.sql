@@ -156,7 +156,7 @@ The mobile unit provides routine health check-ups, vaccinations, basic medicatio
 
 The library was officially opened on March 15, 2026, with a ceremony attended by school administrators, students, and Foundation representatives. Since opening, the library has served over 400 students daily, contributing to improved academic performance.
 
-"This library is a dream come true for our students," said the School Principal. "We are grateful for the Foundation''s generous support."'
+"This library is a dream come true for our students," said the School Principal. "We are grateful for the Foundation''s generous support."',
    '/images/shaffillll.jpg',
    'Education',
    'Foundation Team',
