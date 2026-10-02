@@ -7,16 +7,23 @@ import { SectionWrapper } from "@/components/ui/ErrorBoundary";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { eventsService } from "@/services/events";
 import type { Event } from "@/types";
-import { Calendar, MapPin, Clock, Users, CalendarPlus } from "lucide-react";
+import { Calendar, MapPin, Clock, Users, CalendarPlus, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { RegistrationDialog } from "@/components/features/RegistrationDialog";
+
+const statusColors = {
+  PUBLISHED: "green",
+  CANCELLED: "red",
+  COMPLETED: "blue",
+  DRAFT: "neutral",
+} as const;
 
 export default function EventDetail() {
   const { slug } = useParams<{ slug: string }>();
   const [event, setEvent] = useState<Event | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [showRegisterDialog, setShowRegisterDialog] = useState(false);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const [showRegisterDialog, setShowRegisterDialog] = React.useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -89,8 +96,9 @@ export default function EventDetail() {
         <div className="text-center py-12">
           <h1 className="text-2xl font-bold text-neutral-900">Event Not Found</h1>
           <p className="mt-2 text-neutral-600">{error || "The event you are looking for does not exist."}</p>
-          <Link to="/events" className="mt-4 inline-block text-foundation-700 font-semibold">
-            ← Back to all events
+          <Link to="/events" className="mt-4 inline-flex items-center gap-1 text-gold-600 font-semibold hover:underline">
+            <ArrowLeft className="h-4 w-4" />
+            Back to all events
           </Link>
         </div>
       </SectionWrapper>
@@ -103,14 +111,15 @@ export default function EventDetail() {
         <div className="mx-auto max-w-5xl">
           <Link
             to="/events"
-            className="mb-6 inline-flex items-center text-sm text-neutral-500 hover:text-foundation-700"
+            className="mb-6 inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-gold-600"
           >
-            ← Back to Events
+            <ArrowLeft className="h-4 w-4" />
+            Back to Events
           </Link>
 
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <h1 className="font-display text-4xl font-bold text-neutral-900">
+              <h1 className="font-display text-4xl font-bold text-neutral-900 sm:text-5xl">
                 {event.title}
               </h1>
 
@@ -163,7 +172,7 @@ export default function EventDetail() {
                 </h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex items-start gap-3">
-                    <Calendar className="h-5 w-5 text-foundation-700 mt-0.5" />
+                    <Calendar className="h-5 w-5 text-gold-500 mt-0.5" />
                     <div>
                       <span className="font-medium text-neutral-700">Date</span>
                       <p>{new Date(event.event_date).toLocaleDateString(undefined, {
@@ -175,7 +184,7 @@ export default function EventDetail() {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Clock className="h-5 w-5 text-foundation-700 mt-0.5" />
+                    <Clock className="h-5 w-5 text-gold-500 mt-0.5" />
                     <div>
                       <span className="font-medium text-neutral-700">Time</span>
                       <p>{event.start_time} - {event.end_time}</p>
@@ -183,7 +192,7 @@ export default function EventDetail() {
                   </div>
                   {event.venue && (
                     <div className="flex items-start gap-3">
-                      <MapPin className="h-5 w-5 text-foundation-700 mt-0.5" />
+                      <MapPin className="h-5 w-5 text-gold-500 mt-0.5" />
                       <div>
                         <span className="font-medium text-neutral-700">Venue</span>
                         <p>{event.venue}</p>
@@ -193,7 +202,7 @@ export default function EventDetail() {
                   )}
                   {event.organizer && (
                     <div className="flex items-start gap-3">
-                      <Users className="h-5 w-5 text-foundation-700 mt-0.5" />
+                      <Users className="h-5 w-5 text-gold-500 mt-0.5" />
                       <div>
                         <span className="font-medium text-neutral-700">Organizer</span>
                         <p>{event.organizer}</p>
@@ -202,7 +211,7 @@ export default function EventDetail() {
                   )}
                   {event.capacity && (
                     <div className="flex items-start gap-3">
-                      <CalendarPlus className="h-5 w-5 text-foundation-700 mt-0.5" />
+                      <CalendarPlus className="h-5 w-5 text-gold-500 mt-0.5" />
                       <div>
                         <span className="font-medium text-neutral-700">Capacity</span>
                         <p>{event.capacity} attendees</p>
@@ -211,7 +220,7 @@ export default function EventDetail() {
                   )}
                   {event.registration_deadline && (
                     <div className="flex items-start gap-3">
-                      <Clock className="h-5 w-5 text-foundation-700 mt-0.5" />
+                      <Clock className="h-5 w-5 text-gold-500 mt-0.5" />
                       <div>
                         <span className="font-medium text-neutral-700">Registration Deadline</span>
                         <p>{new Date(event.registration_deadline).toLocaleDateString()}</p>

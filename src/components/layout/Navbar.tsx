@@ -3,13 +3,14 @@ import { cn } from "@/lib/utils";
 import { Menu, X, LogIn, User, LogOut } from "lucide-react";
 import * as React from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSettings } from "@/contexts/SettingsContext";
 
 const navigation = [
   { name: "Home", href: "/" },
   { name: "About", href: "/about" },
-  { name: "Events", href: "/events" },
   { name: "Projects", href: "/projects" },
   { name: "News", href: "/news" },
+  { name: "Events", href: "/events" },
   { name: "Gallery", href: "/gallery" },
   { name: "Volunteer", href: "/volunteer" },
   { name: "Donate", href: "/donate" },
@@ -19,7 +20,11 @@ const navigation = [
 export function Navbar() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const { user, signOut, loading } = useAuth();
+  const { getSetting } = useSettings();
   const navigate = useNavigate();
+
+  const foundationName = getSetting("foundation_name", "Shaffii Chemasuet Foundation");
+  const foundationTagline = getSetting("foundation_tagline", "Empowering People. Strengthening Communities. Creating Opportunities.");
 
   const handleLogout = async () => {
     await signOut();
@@ -38,71 +43,78 @@ export function Navbar() {
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-neutral-200">
+    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-neutral-200 shadow-sm">
       <nav
-        className="container mx-auto flex items-center justify-between py-4 px-4 md:px-6"
+        className="container mx-auto flex items-center justify-between py-3 px-4 md:px-6"
         aria-label="Main navigation"
       >
-        <Link to="/" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-foundation-700 text-white font-bold">
-            SC
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-gold-400 to-foundation-700 text-white transition-transform group-hover:scale-105">
+            <span className="font-display text-lg font-bold">SC</span>
           </div>
           <div>
             <span className="font-display text-xl font-bold text-neutral-900">
-              Shaffii Chemasuet Foundation
+              {foundationName}
             </span>
-            <p className="text-xs text-neutral-500">
-              [Foundation Tagline]
+            <p className="text-xs text-gold-600 leading-tight">
+              {foundationTagline}
             </p>
           </div>
         </Link>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center justify-center gap-1.5 lg:flex">
           {navigation.map((item) => (
             <NavLink
               key={item.name}
               to={item.href}
               className={({ isActive }) =>
                 cn(
-                  "rounded-xl px-3 py-2 text-sm font-medium text-neutral-700 transition-colors",
-                  "hover:bg-neutral-100 hover:text-foundation-700",
-                  isActive && "bg-foundation-50 text-foundation-700"
+                  "px-4 py-2.5 text-sm font-medium text-neutral-700 rounded-xl transition-all duration-200",
+                  "hover:bg-neutral-50 hover:text-foundation-700",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gold-400",
+                  isActive &&
+                    "bg-gold-50 text-foundation-700 shadow-sm"
                 )
               }
             >
               {item.name}
             </NavLink>
           ))}
+        </div>
 
+        <div className="hidden items-center gap-2 lg:flex">
           {user ? (
-            <div className="ml-2 flex items-center gap-2">
-              <Link to="/dashboard" className="rounded-xl px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100">
+            <>
+              <Link
+                to="/dashboard"
+                className="px-4 py-2.5 text-sm font-medium text-neutral-700 rounded-xl hover:bg-neutral-50 transition-colors"
+              >
                 <User className="h-4 w-4 inline mr-1" />
                 Dashboard
               </Link>
               <button
                 onClick={handleLogout}
                 disabled={loading}
-                className="rounded-xl px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+                className="p-2.5 rounded-xl text-neutral-700 hover:bg-neutral-50 hover:text-foundation-700 transition-colors"
                 aria-label="Logout"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-5 w-5" />
               </button>
-            </div>
+            </>
           ) : (
             <Link
               to="/login"
-              className="rounded-xl bg-foundation-700 px-4 py-2 text-sm font-semibold text-white hover:bg-foundation-800"
+              className="inline-flex items-center rounded-full bg-gold-500 px-5 py-2.5 text-sm font-semibold text-neutral-900 transition-all duration-200 hover:bg-gold-400 hover:shadow-md"
             >
-              <LogIn className="h-4 w-4 inline mr-1" />
-              Login
+              <LogIn className="h-4 w-4 mr-1.5" />
+              Sign In
             </Link>
           )}
         </div>
 
         <button
           type="button"
-          className="rounded-lg p-2 text-neutral-700 md:hidden"
+          className="rounded-xl p-2.5 text-neutral-700 lg:hidden hover:bg-neutral-100 transition-colors"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
@@ -115,7 +127,7 @@ export function Navbar() {
       <div
         id="mobile-menu"
         className={cn(
-          "md:hidden border-t border-neutral-200 bg-white transition-all duration-200",
+          "lg:hidden overflow-hidden border-t border-neutral-200 bg-white transition-all duration-300",
           menuOpen ? "max-h-screen" : "hidden"
         )}
       >
@@ -129,8 +141,8 @@ export function Navbar() {
                 cn(
                   "rounded-xl px-4 py-3 text-sm font-medium",
                   isActive
-                    ? "bg-foundation-50 text-foundation-700"
-                    : "text-neutral-700 hover:bg-neutral-100"
+                    ? "bg-gold-50 text-foundation-700"
+                    : "text-neutral-700 hover:bg-neutral-50 hover:text-foundation-700"
                 )
               }
             >
@@ -139,9 +151,12 @@ export function Navbar() {
           ))}
           {user ? (
             <button
-              onClick={handleLogout}
+              onClick={() => {
+                handleLogout();
+                setMenuOpen(false);
+              }}
               disabled={loading}
-              className="rounded-xl px-4 py-3 text-left text-sm font-medium text-neutral-700 hover:bg-neutral-100"
+              className="rounded-xl px-4 py-3 text-left text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-foundation-700"
             >
               <LogOut className="h-4 w-4 inline mr-2" />
               Logout
@@ -150,10 +165,10 @@ export function Navbar() {
             <Link
               to="/login"
               onClick={() => setMenuOpen(false)}
-              className="rounded-xl bg-foundation-700 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-foundation-800"
+              className="rounded-xl bg-gold-500 px-4 py-3 text-center text-sm font-semibold text-neutral-900 hover:bg-gold-400"
             >
               <LogIn className="h-4 w-4 inline mr-2" />
-              Login
+              Sign In
             </Link>
           )}
         </div>

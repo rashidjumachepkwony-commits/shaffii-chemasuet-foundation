@@ -8,15 +8,17 @@ import type { GalleryItem } from "@/types";
 
 export default function Gallery() {
   const [items, setItems] = useState<GalleryItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
-  const [lightboxAlt, setLightboxAlt] = useState<string>("");
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const [lightboxOpen, setLightboxOpen] = React.useState(false);
+  const [lightboxSrc, setLightboxSrc] = React.useState<string | null>(null);
+  const [lightboxAlt, setLightboxAlt] = React.useState<string>("");
+  const [lightboxCaption, setLightboxCaption] = React.useState<string>("");
 
-  const openLightbox = (src: string, alt: string) => {
+  const openLightbox = (src: string, alt: string, caption: string) => {
     setLightboxSrc(src);
     setLightboxAlt(alt);
+    setLightboxCaption(caption);
     setLightboxOpen(true);
   };
 
@@ -57,7 +59,7 @@ export default function Gallery() {
 
   return (
     <SectionWrapper spacing="lg">
-      <div className="mb-8 text-center">
+      <div className="mb-12 text-center">
         <h1 className="font-display text-4xl font-bold text-neutral-900 sm:text-5xl">
           Photo Gallery
         </h1>
@@ -74,51 +76,66 @@ export default function Gallery() {
         </div>
       ) : items.length === 0 ? (
         <div className="text-center py-12">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100">
+            <span className="text-2xl">📷</span>
+          </div>
           <p className="text-neutral-500">No gallery images available yet.</p>
         </div>
       ) : (
-        <div className="columns-1 gap-4 space-y-4 sm:columns-2 lg:columns-3 xl:columns-4">
-          {items.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => openLightbox(item.image_url, item.alt_text || item.caption || "")}
-              className="group relative block w-full"
-            >
-              <img
-                src={item.image_url}
-                alt={item.alt_text || item.caption || ""}
-                className="h-auto w-full rounded-xl object-cover transition-transform group-hover:scale-105"
-                loading="lazy"
-              />
-              {item.caption && (
-                <div className="absolute inset-0 flex items-end rounded-xl bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100">
-                  <span className="p-4 text-sm text-white">{item.caption}</span>
-                </div>
-              )}
-            </button>
-          ))}
-        </div>
+        <>
+          <div className="columns-1 gap-4 space-y-4 sm:columns-2 lg:columns-3 xl:columns-4">
+            {items.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => openLightbox(item.image_url, item.alt_text || item.caption || "", item.caption || "")}
+                className="group relative block w-full"
+              >
+                <img
+                  src={item.image_url}
+                  alt={item.alt_text || item.caption || ""}
+                  className="h-auto w-full rounded-xl object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+                {item.caption && (
+                  <div className="absolute inset-0 flex items-end rounded-xl bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100">
+                    <span className="p-4 text-sm text-white">{item.caption}</span>
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+        </>
       )}
 
       {lightboxOpen && lightboxSrc && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95"
           onClick={closeLightbox}
           role="dialog"
           aria-modal="true"
+          aria-label="Image gallery"
         >
-          <img
-            src={lightboxSrc}
-            alt={lightboxAlt}
-            className="max-w-[90vw] max-h-[90vh] object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
+          <div className="relative max-w-[90vw] max-h-[90vh]">
+            <img
+              src={lightboxSrc}
+              alt={lightboxAlt}
+              className="max-w-full max-h-[80vh] object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+            {lightboxCaption && (
+              <div className="mt-4 text-center text-white text-sm max-w-2xl mx-auto">
+                {lightboxCaption}
+              </div>
+            )}
+          </div>
           <button
             onClick={closeLightbox}
-            className="absolute top-4 right-4 text-white hover:text-neutral-300"
+            className="absolute top-6 right-6 text-white hover:text-gold-400 transition-colors p-2"
             aria-label="Close"
           >
-            ×
+            <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
       )}
