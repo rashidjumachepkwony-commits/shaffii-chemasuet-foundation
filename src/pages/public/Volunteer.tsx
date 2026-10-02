@@ -88,41 +88,44 @@ export default function Volunteer() {
 
   return (
     <SectionWrapper spacing="lg">
-      <div className="mb-12 text-center">
-        <h1 className="font-display text-4xl font-bold text-neutral-900 sm:text-5xl">
-          Volunteer With Us
-        </h1>
-        <p className="mt-4 text-lg text-neutral-600">
-          Join our community of dedicated volunteers making a real difference.
-        </p>
-      </div>
+      <section className="relative overflow-hidden rounded-[2rem] bg-neutral-900 px-5 py-12 text-white shadow-[0_30px_80px_rgba(23,33,27,0.12)] md:px-8 md:py-16">
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-60" style={{ backgroundImage: "url('/images/shaffi888.jpg')" }} aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-900/80 to-foundation-900/55" />
+        <div className="relative z-10 mx-auto max-w-3xl text-center">
+          <span className="section-label border-gold-300/30 bg-white/5 text-gold-200">Volunteer With Us</span>
+          <h1 className="mt-6 font-display text-4xl font-bold sm:text-5xl md:text-6xl">
+            Join our community of change-makers
+          </h1>
+          <p className="mt-4 text-lg text-neutral-200 md:text-xl">
+            Share your time, skills, and compassion to help more families and young people thrive.
+          </p>
+        </div>
+      </section>
 
-      <div className="mx-auto max-w-4xl">
-        {/* How You Can Help */}
-        <Card variant="elevated" padding="lg" className="mb-8">
-          <h2 className="font-display text-2xl font-bold text-neutral-900 mb-6 flex items-center gap-3">
+      <div className="mx-auto mt-10 max-w-4xl">
+        <Card variant="elevated" padding="lg" className="mb-8 bg-gradient-to-br from-white to-foundation-50/70">
+          <h2 className="mb-6 flex items-center gap-3 font-display text-2xl font-bold text-neutral-900">
             <Users className="h-7 w-7 text-gold-500" />
             How You Can Help
           </h2>
-          <p className="text-neutral-600 mb-6">
+          <p className="mb-6 text-neutral-600">
             Volunteers can contribute their time and skills across many areas. Choose what inspires you:
           </p>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {volunteerAreas.map((area) => (
               <div
                 key={area.value}
-                className="p-4 rounded-xl border border-neutral-200 hover:border-gold-300 hover:bg-gold-50 transition-colors"
+                className="rounded-2xl border border-neutral-200 bg-white p-4 transition-all duration-200 hover:border-gold-300 hover:bg-gold-50"
               >
                 <h4 className="font-medium text-neutral-900">{area.label}</h4>
-                <p className="text-sm text-neutral-600 mt-1">{area.description}</p>
+                <p className="mt-1 text-sm leading-relaxed text-neutral-600">{area.description}</p>
               </div>
             ))}
           </div>
         </Card>
 
-        {/* Application Form */}
-        <Card variant="elevated" padding="lg">
-          <h2 className="font-display text-2xl font-bold text-neutral-900 mb-6 flex items-center gap-3">
+        <Card variant="elevated" padding="lg" className="bg-white">
+          <h2 className="mb-6 flex items-center gap-3 font-display text-2xl font-bold text-neutral-900">
             <User className="h-7 w-7 text-gold-500" />
             Volunteer Application
           </h2>
@@ -266,7 +269,7 @@ export default function Volunteer() {
               type="submit"
               disabled={form.isSubmitting}
               loading={form.isSubmitting}
-              className="w-full"
+              className="w-full bg-foundation-500 text-neutral-900 hover:bg-foundation-400"
               size="lg"
               rounded="full"
             >
