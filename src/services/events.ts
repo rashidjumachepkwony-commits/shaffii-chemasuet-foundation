@@ -50,6 +50,11 @@ export const eventsService = {
     email: string;
     phone: string;
     organization?: string;
+    age_group: string;
+    activity_interest: string;
+    activity_other?: string;
+    county: string;
+    locality?: string;
     attendee_count?: number;
     notes?: string;
   }): Promise<{ registration_reference: string; id: string }> {

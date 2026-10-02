@@ -187,6 +187,11 @@ export interface EventRegistration {
   email: string;
   phone: string | null;
   organization: string | null;
+  age_group: string | null;
+  activity_interest: string | null;
+  activity_other: string | null;
+  county: string | null;
+  locality: string | null;
   attendee_count: number;
   notes: string | null;
   status: RegistrationStatus;

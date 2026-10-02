@@ -9,6 +9,10 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useToast } from "@/components/ui/Toast";
 import { apiGet, apiPatch, apiPost } from "@/services/api";
+import {
+  eventActivityLabels,
+  eventAgeGroupLabels,
+} from "@/lib/eventRegistrationOptions";
 import type { EventRegistration, PaginatedResponse } from "@/types";
 import { Search, Download, CheckCircle, XCircle, RefreshCw, Users } from "lucide-react";
 
@@ -92,6 +96,12 @@ export default function AdminEventRegistrations() {
       "Phone",
       "Organization",
       "Attendees",
+      "Age Group",
+      "Activity Interest",
+      "County",
+      "Locality",
+      "Other Activity",
+      "Support Needs",
       "Status",
       "Created",
     ];
@@ -102,13 +112,25 @@ export default function AdminEventRegistrations() {
       r.phone || "",
       r.organization || "",
       r.attendee_count,
+      r.age_group
+        ? eventAgeGroupLabels[r.age_group as keyof typeof eventAgeGroupLabels] || r.age_group
+        : "",
+      r.activity_interest
+        ? eventActivityLabels[r.activity_interest as keyof typeof eventActivityLabels] || r.activity_interest
+        : "",
+      r.county || "",
+      r.locality || "",
+      r.activity_other || "",
+      r.notes || "",
       r.status,
       new Date(r.created_at).toISOString(),
     ]);
 
     const csvContent =
       [headers, ...rows]
-        .map((row) => row.map((v) => `"${v}"`).join(","))
+        .map((row) =>
+          row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(",")
+        )
         .join("\n") + "\n";
 
     const blob = new Blob([csvContent], { type: "text/csv" });
@@ -187,6 +209,7 @@ export default function AdminEventRegistrations() {
                   <th className="px-4 py-3 text-left font-semibold">Email</th>
                   <th className="px-4 py-3 text-left font-semibold">Phone</th>
                   <th className="px-4 py-3 text-left font-semibold">Attendees</th>
+                  <th className="px-4 py-3 text-left font-semibold">Participant Details</th>
                   <th className="px-4 py-3 text-left font-semibold">Status</th>
                   <th className="px-4 py-3 text-left font-semibold">Created</th>
                   <th className="px-4 py-3 text-right font-semibold">Actions</th>
@@ -202,6 +225,22 @@ export default function AdminEventRegistrations() {
                     <td className="px-4 py-3">{reg.email}</td>
                     <td className="px-4 py-3">{reg.phone || "-"}</td>
                     <td className="px-4 py-3">{reg.attendee_count}</td>
+                    <td className="px-4 py-3">
+                      <div>
+                        {reg.age_group
+                          ? eventAgeGroupLabels[reg.age_group as keyof typeof eventAgeGroupLabels] || reg.age_group
+                          : "Age group not provided"}
+                      </div>
+                      <div className="text-neutral-500">
+                        {reg.activity_interest
+                          ? eventActivityLabels[reg.activity_interest as keyof typeof eventActivityLabels] || reg.activity_interest
+                          : "Activity not provided"}
+                        {reg.activity_other ? `: ${reg.activity_other}` : ""}
+                      </div>
+                      <div className="text-neutral-500">
+                        {[reg.locality, reg.county].filter(Boolean).join(", ") || "Location not provided"}
+                      </div>
+                    </td>
                     <td className="px-4 py-3">
                       <Select
                         value={reg.status}

@@ -139,59 +139,59 @@ export function App() {
           <SettingsProvider>
             <ScrollToTop />
             <Routes>
-            <Route element={<PublicLayout />}>
-              <Route path="/" element={<LazyHome />} />
-              <Route path="/about" element={<LazyAbout />} />
-              <Route path="/events" element={<LazyEvents />} />
-              <Route path="/events/:slug" element={<LazyEventDetail />} />
-              <Route path="/projects" element={<LazyProjects />} />
-              <Route path="/projects/:slug" element={<LazyProjectDetail />} />
-              <Route path="/news" element={<LazyNews />} />
-              <Route path="/news/:slug" element={<LazyNewsDetail />} />
-              <Route path="/gallery" element={<LazyGallery />} />
-              <Route path="/volunteer" element={<LazyVolunteer />} />
-              <Route path="/donate" element={<LazyDonate />} />
-              <Route path="/contact" element={<LazyContact />} />
-            </Route>
-
-            <Route element={<AuthLayout />}>
-              <Route path="/login" element={<LazyLogin />} />
-              <Route path="/register" element={<LazyRegister />} />
-              <Route path="/forgot-password" element={<LazyForgotPassword />} />
-              <Route path="/reset-password" element={<LazyResetPassword />} />
-              <Route path="/unauthorized" element={<Unauthorized />} />
-            </Route>
-
-            <Route element={<RequireAuthOutlet />}>
-              <Route element={<LazyDashboardLayout />}>
-                <Route path="/dashboard" element={<LazyDashboard />} />
-                <Route path="/dashboard/events" element={<LazyDashboardEvents />} />
-                <Route path="/dashboard/profile" element={<LazyDashboardProfile />} />
+              <Route element={<PublicLayout />}>
+                <Route path="/" element={<LazyHome />} />
+                <Route path="/about" element={<LazyAbout />} />
+                <Route path="/events" element={<LazyEvents />} />
+                <Route path="/events/:slug" element={<LazyEventDetail />} />
+                <Route path="/projects" element={<LazyProjects />} />
+                <Route path="/projects/:slug" element={<LazyProjectDetail />} />
+                <Route path="/news" element={<LazyNews />} />
+                <Route path="/news/:slug" element={<LazyNewsDetail />} />
+                <Route path="/gallery" element={<LazyGallery />} />
+                <Route path="/volunteer" element={<LazyVolunteer />} />
+                <Route path="/donate" element={<LazyDonate />} />
+                <Route path="/contact" element={<LazyContact />} />
               </Route>
-            </Route>
 
-            <Route path="/admin/login" element={<LazyAdminLogin />} />
-            <Route element={<RequireAuthOutlet roles={["SUPER_ADMIN", "ADMIN", "EVENT_MANAGER", "CONTENT_MANAGER"]} />}>
-              <Route element={<LazyAdminLayout />}>
-                <Route path="/admin" element={<LazyAdminDashboard />} />
-                <Route path="/admin/events" element={<LazyAdminEvents />} />
-                <Route path="/admin/events/new" element={<LazyAdminEventForm />} />
-                <Route path="/admin/events/:id/edit" element={<LazyAdminEventForm />} />
-                <Route path="/admin/events/:id/registrations" element={<LazyAdminEventRegistrations />} />
-                <Route path="/admin/events/:id/attendance" element={<LazyAdminEventAttendance />} />
-                <Route path="/admin/users" element={<LazyAdminUsers />} />
-                <Route path="/admin/projects" element={<LazyAdminProjects />} />
-                <Route path="/admin/news" element={<LazyAdminNews />} />
-                <Route path="/admin/gallery" element={<LazyAdminGallery />} />
-                <Route path="/admin/volunteers" element={<LazyAdminVolunteers />} />
-                <Route path="/admin/donations" element={<LazyAdminDonations />} />
-                <Route path="/admin/contact" element={<LazyAdminContact />} />
-                <Route path="/admin/settings" element={<LazyAdminSettings />} />
-                <Route path="/admin/audit-logs" element={<LazyAdminAuditLogs />} />
+              <Route element={<AuthLayout />}>
+                <Route path="/login" element={<LazyLogin />} />
+                <Route path="/register" element={<LazyRegister />} />
+                <Route path="/forgot-password" element={<LazyForgotPassword />} />
+                <Route path="/reset-password" element={<LazyResetPassword />} />
+                <Route path="/unauthorized" element={<Unauthorized />} />
               </Route>
-            </Route>
 
-            <Route path="*" element={<NotFound />} />
+              <Route element={<RequireAuthOutlet />}>
+                <Route element={<LazyDashboardLayout />}>
+                  <Route path="/dashboard" element={<LazyDashboard />} />
+                  <Route path="/dashboard/events" element={<LazyDashboardEvents />} />
+                  <Route path="/dashboard/profile" element={<LazyDashboardProfile />} />
+                </Route>
+              </Route>
+
+              <Route path="/admin/login" element={<LazyAdminLogin />} />
+              <Route element={<RequireAuthOutlet roles={["SUPER_ADMIN", "ADMIN", "EVENT_MANAGER", "CONTENT_MANAGER"]} />}>
+                <Route element={<LazyAdminLayout />}>
+                  <Route path="/admin" element={<LazyAdminDashboard />} />
+                  <Route path="/admin/events" element={<LazyAdminEvents />} />
+                  <Route path="/admin/events/new" element={<LazyAdminEventForm />} />
+                  <Route path="/admin/events/:id/edit" element={<LazyAdminEventForm />} />
+                  <Route path="/admin/events/:id/registrations" element={<LazyAdminEventRegistrations />} />
+                  <Route path="/admin/events/:id/attendance" element={<LazyAdminEventAttendance />} />
+                  <Route path="/admin/users" element={<LazyAdminUsers />} />
+                  <Route path="/admin/projects" element={<LazyAdminProjects />} />
+                  <Route path="/admin/news" element={<LazyAdminNews />} />
+                  <Route path="/admin/gallery" element={<LazyAdminGallery />} />
+                  <Route path="/admin/volunteers" element={<LazyAdminVolunteers />} />
+                  <Route path="/admin/donations" element={<LazyAdminDonations />} />
+                  <Route path="/admin/contact" element={<LazyAdminContact />} />
+                  <Route path="/admin/settings" element={<LazyAdminSettings />} />
+                  <Route path="/admin/audit-logs" element={<LazyAdminAuditLogs />} />
+                </Route>
+              </Route>
+
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </SettingsProvider>
         </ErrorBoundary>

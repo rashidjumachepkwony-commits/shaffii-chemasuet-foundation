@@ -5,17 +5,24 @@ import { eventsService } from "@/services/events";
 import { FormField } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { useToast } from "@/components/ui/Toast";
-import { User, Mail, Phone, Building, Users } from "lucide-react";
+import {
+  eventActivityLabels,
+  eventActivityValues,
+  eventAgeGroupLabels,
+  eventAgeGroupValues,
+  kenyaCounties,
+} from "@/lib/eventRegistrationOptions";
+import { User, Mail, Phone, Building, Users, MapPin } from "lucide-react";
 
 interface RegistrationDialogProps {
   isOpen: boolean;
   onClose: () => void;
   eventId: string;
   eventTitle: string;
-  userId?: string;
   userEmail?: string;
   onSuccess: () => void;
 }
@@ -25,7 +32,6 @@ export function RegistrationDialog({
   onClose,
   eventId,
   eventTitle,
-  userId,
   userEmail,
   onSuccess,
 }: RegistrationDialogProps) {
@@ -38,6 +44,11 @@ export function RegistrationDialog({
       email: userEmail || "",
       phone: "",
       organization: "",
+      age_group: "",
+      activity_interest: "",
+      activity_other: "",
+      county: "",
+      locality: "",
       attendee_count: 1,
       notes: "",
     },
@@ -49,12 +60,16 @@ export function RegistrationDialog({
           email: values.email,
           phone: values.phone,
           organization: values.organization || undefined,
+          age_group: values.age_group,
+          activity_interest: values.activity_interest,
+          activity_other: values.activity_other || undefined,
+          county: values.county,
+          locality: values.locality || undefined,
           attendee_count: values.attendee_count,
           notes: values.notes || undefined,
         });
         setRegistrationRef(result.registration_reference);
         success("Registration successful!");
-        onSuccess();
       } catch (err: any) {
         showError(err.message || "Registration failed.");
       }
@@ -68,6 +83,11 @@ export function RegistrationDialog({
         email: userEmail || "",
         phone: "",
         organization: "",
+        age_group: "",
+        activity_interest: "",
+        activity_other: "",
+        county: "",
+        locality: "",
         attendee_count: 1,
         notes: "",
       });
@@ -75,11 +95,16 @@ export function RegistrationDialog({
     }
   }, [isOpen, userEmail]);
 
+  const handleClose = () => {
+    if (registrationRef) onSuccess();
+    onClose();
+  };
+
   if (registrationRef) {
     return (
       <Modal
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={handleClose}
         title="Registration Successful"
         showCloseButton
       >
@@ -103,11 +128,11 @@ export function RegistrationDialog({
             </p>
           </div>
           <p className="text-sm text-neutral-500">
-            A confirmation has been sent to your email.
+            Keep this reference for event check-in and any follow-up.
           </p>
         </div>
         <div className="mt-6 flex justify-center">
-          <Button onClick={onClose} variant="secondary" rounded="full">
+          <Button onClick={handleClose} variant="secondary" rounded="full">
             Close
           </Button>
         </div>
@@ -123,6 +148,10 @@ export function RegistrationDialog({
       size="lg"
     >
       <form onSubmit={form.handleSubmit} noValidate>
+        <p className="mb-5 rounded-xl bg-foundation-50 px-4 py-3 text-sm leading-relaxed text-neutral-700">
+          Help us plan a welcoming event for every generation. Tell us who is
+          joining, what interests them, and where you are travelling from.
+        </p>
         <FormField
           label="Full Name"
           name="full_name"
@@ -174,18 +203,120 @@ export function RegistrationDialog({
           />
         </FormField>
 
+        <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
+          <FormField
+            label="Organization (Optional)"
+            name="organization"
+            error={form.errors.organization}
+          >
+            <Input
+              type="text"
+              placeholder="Your organization"
+              value={form.values.organization as string}
+              onChange={(e) => form.handleChange("organization", e.target.value)}
+              onBlur={() => form.handleBlur("organization")}
+              icon={<Building className="h-4 w-4 text-neutral-400" />}
+            />
+          </FormField>
+
+          <FormField
+            label="Age group attending"
+            name="age_group"
+            error={form.errors.age_group}
+            required
+            helpText="Choose the group this registration mainly represents."
+          >
+            <Select
+              value={form.values.age_group as string}
+              onChange={(e) => form.handleChange("age_group", e.target.value)}
+              onBlur={() => form.handleBlur("age_group")}
+              aria-invalid={!!form.errors.age_group}
+            >
+              <option value="">Choose an age group</option>
+              {eventAgeGroupValues.map((value) => (
+                <option key={value} value={value}>
+                  {eventAgeGroupLabels[value]}
+                </option>
+              ))}
+            </Select>
+          </FormField>
+        </div>
+
+        <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
+          <FormField
+            label="Activity of interest"
+            name="activity_interest"
+            error={form.errors.activity_interest}
+            required
+          >
+            <Select
+              value={form.values.activity_interest as string}
+              onChange={(e) => form.handleChange("activity_interest", e.target.value)}
+              onBlur={() => form.handleBlur("activity_interest")}
+              aria-invalid={!!form.errors.activity_interest}
+            >
+              <option value="">Choose an activity</option>
+              {eventActivityValues.map((value) => (
+                <option key={value} value={value}>
+                  {eventActivityLabels[value]}
+                </option>
+              ))}
+            </Select>
+          </FormField>
+
+          <FormField
+            label="County"
+            name="county"
+            error={form.errors.county}
+            required
+          >
+            <Select
+              value={form.values.county as string}
+              onChange={(e) => form.handleChange("county", e.target.value)}
+              onBlur={() => form.handleBlur("county")}
+              aria-invalid={!!form.errors.county}
+            >
+              <option value="">Choose your county</option>
+              {kenyaCounties.map((county) => (
+                <option key={county} value={county}>
+                  {county}
+                </option>
+              ))}
+            </Select>
+          </FormField>
+        </div>
+
+        {form.values.activity_interest === "other" && (
+          <FormField
+            label="Tell us about the activity"
+            name="activity_other"
+            error={form.errors.activity_other}
+            required
+          >
+            <Input
+              type="text"
+              placeholder="What would you like to take part in?"
+              value={form.values.activity_other as string}
+              onChange={(e) => form.handleChange("activity_other", e.target.value)}
+              onBlur={() => form.handleBlur("activity_other")}
+              aria-invalid={!!form.errors.activity_other}
+            />
+          </FormField>
+        )}
+
         <FormField
-          label="Organization (Optional)"
-          name="organization"
-          error={form.errors.organization}
+          label="Town, sub-county, or ward (Optional)"
+          name="locality"
+          error={form.errors.locality}
+          helpText="A more specific location helps us coordinate local participation."
         >
           <Input
             type="text"
-            placeholder="Your organization"
-            value={form.values.organization as string}
-            onChange={(e) => form.handleChange("organization", e.target.value)}
-            onBlur={() => form.handleBlur("organization")}
-            icon={<Building className="h-4 w-4 text-neutral-400" />}
+            placeholder="e.g. Westlands, Nairobi"
+            value={form.values.locality as string}
+            onChange={(e) => form.handleChange("locality", e.target.value)}
+            onBlur={() => form.handleBlur("locality")}
+            icon={<MapPin className="h-4 w-4 text-neutral-400" />}
           />
         </FormField>
 
@@ -207,13 +338,13 @@ export function RegistrationDialog({
         </FormField>
 
         <FormField
-          label="Notes (Optional)"
+          label="Access, dietary, or other support needs (Optional)"
           name="notes"
           error={form.errors.notes}
-          helpText="Any special requirements or dietary restrictions"
+          helpText="Share anything that could help us make the event comfortable and accessible."
         >
           <Textarea
-            placeholder="Your notes..."
+            placeholder="For example, mobility access, interpretation, or dietary needs..."
             value={form.values.notes as string}
             onChange={(e) => form.handleChange("notes", e.target.value)}
             onBlur={() => form.handleBlur("notes")}
