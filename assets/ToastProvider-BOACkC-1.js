@@ -1,0 +1,2 @@
+import{r as e}from"./index-D_-koa00.js";const a=e.createContext(void 0);function u(){const r=e.useContext(a);if(!r)throw new Error("useToast must be used within a ToastProvider");return r}function i(){const{addToast:r}=u(),s=(t,o="default",n)=>r({message:t,variant:o,...n});return{success:(t,o)=>s(t,"success",o),error:(t,o)=>s(t,"error",o),warning:(t,o)=>s(t,"warning",o),info:(t,o)=>s(t,"info",o)}}export{i as u};
+//# sourceMappingURL=ToastProvider-BOACkC-1.js.map
