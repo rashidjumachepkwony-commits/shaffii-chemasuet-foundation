@@ -4,22 +4,75 @@
 
 @layer base {
   :root {
+    --color-brand: #e87524;
+    --color-brand-deep: #c95616;
+    --color-brand-soft: #f28c28;
+    --color-charcoal: #17211b;
+    --color-green-deep: #123c2a;
+    --color-cream: #fff8f0;
+    --color-sand: #f5e9d8;
+    --color-white: #ffffff;
+    --color-text: #2d342f;
     --font-family-sans: 'Inter', ui-sans, system-ui, sans-serif;
-    --font-family-display: 'Playfair Display', serif;
+    --font-family-display: 'Plus Jakarta Sans', 'Poppins', ui-sans, system-ui, sans-serif;
   }
 
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 80px;
   }
 
   body {
-    @apply font-sans bg-neutral-50 text-neutral-900 antialiased;
+    @apply font-sans antialiased;
+    background: linear-gradient(180deg, #fffaf6 0%, #f6f3ee 100%);
+    color: var(--color-text);
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  a {
+    text-decoration: none;
   }
 }
 
 @layer components {
   .font-display {
     font-family: var(--font-family-display);
+  }
+
+  .heading-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-foundation-500 to-foundation-700;
+  }
+
+  .btn-orange {
+    @apply rounded-full bg-foundation-500 text-white font-semibold shadow-md transition-all duration-200 hover:bg-foundation-600 hover:shadow-lg;
+  }
+
+  .glass-card {
+    @apply border border-white/40 bg-white/80 backdrop-blur-sm;
+  }
+
+  .section-shell {
+    @apply mx-auto max-w-7xl px-4 md:px-6;
+  }
+
+  .section-label {
+    @apply inline-flex items-center rounded-full border border-foundation-200 bg-foundation-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-foundation-700;
+  }
+
+  .soft-card {
+    @apply rounded-3xl border border-neutral-200 bg-white shadow-[0_20px_40px_rgba(23,33,27,0.06)];
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
@@ -32,9 +85,9 @@
   background: #f1f1f1;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: #d4a06c;
+  border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #c95616;
 }
