@@ -15,5 +15,15 @@ export default defineConfig({
   build: {
     outDir: "dist",
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          toast: [
+            "@/components/ui/Toast",
+            "@/components/ui/ToastProvider",
+          ],
+        },
+      },
+    },
   },
 });
