@@ -46,70 +46,70 @@ export default function About() {
 
   return (
     <>
-      {/* Page Hero */}
-      <section className="relative bg-neutral-900 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/images/shaffi888.jpg')" }} />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-        <div className="relative z-10 container mx-auto px-4 md:px-6 py-20 md:py-32">
+      <section className="relative overflow-hidden bg-neutral-900 text-white">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/images/shaffi888.jpg')" }}
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-neutral-950/80 via-neutral-900/65 to-foundation-900/35" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+        <div className="relative z-10 section-shell py-20 md:py-28">
           <div className="max-w-3xl">
-            <span className="inline-block text-sm font-medium tracking-wider text-gold-400 uppercase mb-4">
+            <span className="section-label border-gold-300/40 bg-white/5 text-gold-200">
               About Us
             </span>
-            <h1 className="font-display text-4xl font-extrabold sm:text-5xl md:text-6xl">
+            <h1 className="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl md:text-6xl">
               About {foundationName}
             </h1>
-            <p className="mt-6 text-lg text-neutral-200 md:text-xl">
+            <p className="mt-6 max-w-2xl text-lg text-neutral-200 md:text-xl">
               {getSetting("about_subtitle", "Building stronger communities through education, healthcare, and sustainable development.")}
             </p>
           </div>
         </div>
       </section>
 
-      {/* Mission & Vision */}
-      <SectionWrapper className="bg-white">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
-          <Card variant="elevated" padding="lg" className="h-full">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gold-50">
-                <Target className="h-7 w-7 text-gold-600" />
+      <SectionWrapper className="bg-[radial-gradient(circle_at_top,_rgba(232,117,36,0.08),_transparent_55%)]">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          <Card variant="elevated" padding="lg" className="soft-card border-transparent bg-gradient-to-br from-white to-foundation-50/60 h-full">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-100 text-gold-600 shadow-sm">
+                <Target className="h-6 w-6" />
               </div>
-              <h2 className="font-display text-3xl font-bold text-neutral-900">
-                Our Mission
-              </h2>
+              <h2 className="font-display text-3xl font-bold text-neutral-900">Our Mission</h2>
             </div>
-            <p className="text-lg text-neutral-600 leading-relaxed">{mission}</p>
+            <p className="text-lg leading-relaxed text-neutral-600">{mission}</p>
           </Card>
 
-          <Card variant="elevated" padding="lg" className="h-full">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gold-50">
-                <Eye className="h-7 w-7 text-gold-600" />
+          <Card variant="elevated" padding="lg" className="soft-card border-transparent bg-gradient-to-br from-white to-neutral-50 h-full">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-foundation-100 text-foundation-700 shadow-sm">
+                <Eye className="h-6 w-6" />
               </div>
-              <h2 className="font-display text-3xl font-bold text-neutral-900">
-                Our Vision
-              </h2>
+              <h2 className="font-display text-3xl font-bold text-neutral-900">Our Vision</h2>
             </div>
-            <p className="text-lg text-neutral-600 leading-relaxed">{vision}</p>
+            <p className="text-lg leading-relaxed text-neutral-600">{vision}</p>
           </Card>
         </div>
       </SectionWrapper>
 
-      {/* Registration */}
       {registration && (
         <SectionWrapper className="bg-neutral-50">
-          <div className="text-center">
-            <p className="text-sm text-neutral-500">
-              Registration Number: <span className="font-semibold text-neutral-700">{registration}</span>
+          <div className="rounded-3xl border border-foundation-200 bg-white px-6 py-5 text-center shadow-[0_18px_40px_rgba(23,33,27,0.04)]">
+            <p className="text-sm uppercase tracking-[0.2em] text-neutral-500">
+              Registration Number
             </p>
+            <p className="mt-2 text-xl font-semibold text-neutral-800">{registration}</p>
           </div>
         </SectionWrapper>
       )}
 
-      {/* Core Values */}
       <SectionWrapper className="bg-white">
-        <div className="text-center mb-16">
-          <h2 className="font-display text-3xl font-bold text-neutral-900 sm:text-4xl">
-            Our Core Values
+        <div className="mb-16 text-center">
+          <span className="section-label">Our Values</span>
+          <h2 className="mt-5 font-display text-3xl font-bold text-neutral-900 sm:text-4xl">
+            Values that guide every step
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-neutral-600">
             These values guide everything we do and define how we work with communities.
@@ -117,28 +117,26 @@ export default function About() {
         </div>
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {values.map((value) => (
-            <Card key={value.title} variant="elevated" className="text-center group">
+            <Card key={value.title} variant="elevated" className="group text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
               <div className="p-8">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gold-50 group-hover:bg-gold-100 transition-colors">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gold-50 transition-colors group-hover:bg-gold-100">
                   {value.icon}
                 </div>
-                <h3 className="font-display text-xl font-bold text-neutral-900 group-hover:text-gold-600 transition-colors">
+                <h3 className="font-display text-xl font-bold text-neutral-900 transition-colors group-hover:text-gold-600">
                   {value.title}
                 </h3>
-                <p className="mt-3 text-sm text-neutral-600 leading-relaxed">
-                  {value.description}
-                </p>
+                <p className="mt-3 text-sm leading-relaxed text-neutral-600">{value.description}</p>
               </div>
             </Card>
           ))}
         </div>
       </SectionWrapper>
 
-      {/* Areas of Focus */}
       <SectionWrapper className="bg-neutral-50">
-        <div className="text-center mb-16">
-          <h2 className="font-display text-3xl font-bold text-neutral-900 sm:text-4xl">
-            Our Program Areas
+        <div className="mb-16 text-center">
+          <span className="section-label">Program Areas</span>
+          <h2 className="mt-5 font-display text-3xl font-bold text-neutral-900 sm:text-4xl">
+            Where we focus our work
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-neutral-600">
             We work across multiple pillars to create meaningful, lasting impact.
@@ -151,12 +149,12 @@ export default function About() {
             { title: "Education & Mentorship", icon: <GraduationCap className="h-6 w-6 text-gold-500" /> },
             { title: "Digital Skills", icon: <Shield className="h-6 w-6 text-gold-500" /> },
           ].map((area) => (
-            <Card key={area.title} variant="elevated" className="text-center group">
+            <Card key={area.title} variant="elevated" className="group text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
               <div className="p-6">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gold-50 group-hover:bg-gold-100 transition-colors">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-50 transition-colors group-hover:bg-gold-100">
                   {area.icon}
                 </div>
-                <h3 className="font-display text-lg font-bold text-neutral-900 group-hover:text-gold-600 transition-colors">
+                <h3 className="font-display text-lg font-bold text-neutral-900 transition-colors group-hover:text-gold-600">
                   {area.title}
                 </h3>
               </div>
@@ -165,11 +163,10 @@ export default function About() {
         </div>
       </SectionWrapper>
 
-      {/* Impact Stats */}
       <SectionWrapper className="bg-neutral-900 text-white">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {stats.map((stat) => (
-            <div key={stat.label} className="text-center">
+            <div key={stat.label} className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur-sm">
               <div className="font-display text-4xl font-bold text-gold-400">{stat.value}</div>
               <p className="mt-2 text-sm text-neutral-300">{stat.label}</p>
             </div>
@@ -177,12 +174,9 @@ export default function About() {
         </div>
       </SectionWrapper>
 
-      {/* Contact */}
       <SectionWrapper className="bg-white">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="font-display text-3xl font-bold text-center text-neutral-900">
-            Visit Us
-          </h2>
+        <div className="mx-auto max-w-3xl rounded-[2rem] border border-neutral-200 bg-gradient-to-br from-foundation-50 via-white to-neutral-50 p-8 md:p-10 shadow-[0_24px_60px_rgba(23,33,27,0.06)]">
+          <h2 className="font-display text-3xl font-bold text-center text-neutral-900">Visit Us</h2>
           <div className="mt-8 space-y-4 text-center">
             <p className="flex items-center justify-center gap-3 text-neutral-700">
               <MapPin className="h-5 w-5 text-gold-500" />
