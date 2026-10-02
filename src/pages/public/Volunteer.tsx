@@ -75,11 +75,12 @@ export default function Volunteer() {
             </div>
           </div>
           <h1 className="font-display text-3xl font-bold text-neutral-900">
-            Thank You!
+            Thank You for Your Interest
           </h1>
           <p className="mt-4 text-neutral-600">
-            Your volunteer application has been submitted. We will contact you
-            soon regarding next steps.
+            Your volunteer application has been received. Our team will review
+            it and be in touch with the next steps that match your skills,
+            availability, and areas of interest.
           </p>
         </div>
       </SectionWrapper>
@@ -97,7 +98,8 @@ export default function Volunteer() {
             Join our community of change-makers
           </h1>
           <p className="mt-4 text-lg text-neutral-200 md:text-xl">
-            Share your time, skills, and compassion to help more families and young people thrive.
+            Bring your time, talents, and lived experience to help families,
+            learners, and communities thrive with dignity, care, and opportunity.
           </p>
         </div>
       </section>
@@ -109,7 +111,8 @@ export default function Volunteer() {
             How You Can Help
           </h2>
           <p className="mb-6 text-neutral-600">
-            Volunteers can contribute their time and skills across many areas. Choose what inspires you:
+            There are many meaningful ways to contribute. Choose the area where
+            your time, experience, and heart can create the most impact:
           </p>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {volunteerAreas.map((area) => (
@@ -125,10 +128,14 @@ export default function Volunteer() {
         </Card>
 
         <Card variant="elevated" padding="lg" className="bg-white">
-          <h2 className="mb-6 flex items-center gap-3 font-display text-2xl font-bold text-neutral-900">
+          <h2 className="mb-2 flex items-center gap-3 font-display text-2xl font-bold text-neutral-900">
             <User className="h-7 w-7 text-gold-500" />
             Volunteer Application
           </h2>
+          <p className="mb-6 text-neutral-600">
+            Share a little about yourself and we’ll be in touch about opportunities
+            that align with your interests and availability.
+          </p>
 
           <form onSubmit={form.handleSubmit} noValidate>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -273,7 +280,7 @@ export default function Volunteer() {
               size="lg"
               rounded="full"
             >
-              Submit Application
+              Apply to Volunteer
             </Button>
           </form>
         </Card>
