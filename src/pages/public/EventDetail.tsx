@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -26,7 +26,6 @@ export default function EventDetail() {
   const [error, setError] = React.useState<string | null>(null);
   const [showRegisterDialog, setShowRegisterDialog] = React.useState(false);
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!slug) return;
@@ -76,10 +75,6 @@ export default function EventDetail() {
   };
 
   const handleRegister = () => {
-    if (!user) {
-      navigate("/login", { state: { from: `/events/${slug}` } });
-      return;
-    }
     setShowRegisterDialog(true);
   };
 
@@ -247,9 +242,7 @@ export default function EventDetail() {
                 >
                   {getStatusMessage()
                     ? getStatusMessage()
-                    : user
-                    ? "Register for this Event"
-                    : "Login to Register"}
+                    : "Register for this Event"}
                 </Button>
                 {getStatusMessage() && (
                   <p className="text-center text-sm text-neutral-500">
@@ -267,7 +260,6 @@ export default function EventDetail() {
         onClose={() => setShowRegisterDialog(false)}
         eventId={event.id}
         eventTitle={event.title}
-        userId={user?.id}
         userEmail={user?.email}
         onSuccess={() => setShowRegisterDialog(false)}
       />
