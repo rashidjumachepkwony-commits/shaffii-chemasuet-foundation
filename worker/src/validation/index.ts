@@ -1,4 +1,9 @@
 import { z } from "zod";
+import {
+  eventActivityValues,
+  eventAgeGroupValues,
+  kenyaCounties,
+} from "../../../src/lib/eventRegistrationOptions";
 
 export const uuidSchema = z.string().uuid();
 
@@ -26,11 +31,24 @@ export const eventRegistrationSchema = z.object({
     .min(7, "Valid phone number required")
     .max(20),
   organization: z.string().max(100).optional(),
+  age_group: z.enum(eventAgeGroupValues),
+  activity_interest: z.enum(eventActivityValues),
+  activity_other: z.string().max(100).optional(),
+  county: z.enum(kenyaCounties),
+  locality: z.string().max(120).optional(),
   attendee_count: z
     .coerce.number()
     .min(1, "At least 1 attendee required")
     .max(20, "Maximum 20 attendees"),
   notes: z.string().max(500).optional(),
+}).superRefine((values, context) => {
+  if (values.activity_interest === "other" && !values.activity_other?.trim()) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["activity_other"],
+      message: "Please tell us which activity you have in mind",
+    });
+  }
 });
 
 export const contactMessageSchema = z.object({

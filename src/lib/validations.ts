@@ -1,4 +1,9 @@
 import { z } from "zod";
+import {
+  eventActivityValues,
+  eventAgeGroupValues,
+  kenyaCounties,
+} from "@/lib/eventRegistrationOptions";
 
 export const loginSchema = z.object({
   email: z
@@ -82,11 +87,33 @@ export const eventRegistrationSchema = z.object({
     .min(7, "Please enter a valid phone number")
     .max(20),
   organization: z.string().max(100, "Organization name is too long").optional(),
+  age_group: z.string().refine(
+    (value) => eventAgeGroupValues.some((option) => option === value),
+    "Please choose the age group attending"
+  ),
+  activity_interest: z.string().refine(
+    (value) => eventActivityValues.some((option) => option === value),
+    "Please choose an activity"
+  ),
+  activity_other: z.string().max(100, "Activity description is too long").optional(),
+  county: z.string().refine(
+    (value) => kenyaCounties.some((option) => option === value),
+    "Please choose a county"
+  ),
+  locality: z.string().max(120, "Location details are too long").optional(),
   attendee_count: z
     .number()
     .min(1, "You must register at least 1 attendee")
     .max(20, "Maximum 20 attendees per registration"),
   notes: z.string().max(500, "Notes are too long (max 500 characters)").optional(),
+}).superRefine((values, context) => {
+  if (values.activity_interest === "other" && !values.activity_other?.trim()) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["activity_other"],
+      message: "Please tell us which activity you have in mind",
+    });
+  }
 });
 
 export const contactMessageSchema = z.object({

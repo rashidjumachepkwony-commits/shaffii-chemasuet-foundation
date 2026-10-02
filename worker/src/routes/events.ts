@@ -234,6 +234,13 @@ app.post("/:id/register", async (c) => {
       email: values.email,
       phone: values.phone,
       organization: values.organization || null,
+      age_group: values.age_group,
+      activity_interest: values.activity_interest,
+      activity_other: values.activity_interest === "other"
+        ? values.activity_other?.trim() || null
+        : null,
+      county: values.county,
+      locality: values.locality || null,
       attendee_count: values.attendee_count,
       notes: values.notes || null,
       status: "REGISTERED",
