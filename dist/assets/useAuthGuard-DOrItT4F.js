@@ -1,2 +1,0 @@
-import{h as R,f as d,r as c,j as l}from"./index-D-CvhJJT.js";function m({children:o,roles:t,permissions:r,redirectTo:u="/login"}){const{user:a,role:n,permissions:i,initialized:s}=R(),e=d(),[f,h]=c.useState(!1);return c.useEffect(()=>{if(s){if(!a){e(u,{replace:!0});return}if(t&&!t.includes(n)){e("/unauthorized",{replace:!0});return}if(r&&!r.every(x=>i.includes(x))){e("/unauthorized",{replace:!0});return}h(!0)}},[a,n,i,s,e,u,t,r]),!s||!f?null:l.jsx(l.Fragment,{children:o})}export{m as R};
-//# sourceMappingURL=useAuthGuard-DOrItT4F.js.map
