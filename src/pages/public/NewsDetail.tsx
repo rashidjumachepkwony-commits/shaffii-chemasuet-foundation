@@ -5,13 +5,13 @@ import { SectionWrapper } from "@/components/ui/ErrorBoundary";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { newsService } from "@/services/index";
 import type { News } from "@/types";
-import { Calendar, User } from "lucide-react";
+import { Calendar, User, ArrowLeft } from "lucide-react";
 
 export default function NewsDetail() {
   const { slug } = useParams<{ slug: string }>();
   const [news, setNews] = useState<News | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
   useEffect(() => {
     if (!slug) return;
@@ -45,8 +45,9 @@ export default function NewsDetail() {
         <div className="text-center py-12">
           <h1 className="text-2xl font-bold text-neutral-900">Article Not Found</h1>
           <p className="mt-2 text-neutral-600">{error}</p>
-          <Link to="/news" className="mt-4 inline-block text-foundation-700">
-            ← Back to News
+          <Link to="/news" className="mt-4 inline-block text-gold-600 font-semibold hover:underline">
+            <ArrowLeft className="h-4 w-4 inline mr-1" />
+            Back to News
           </Link>
         </div>
       </SectionWrapper>
@@ -58,21 +59,26 @@ export default function NewsDetail() {
       <div className="mx-auto max-w-4xl">
         <Link
           to="/news"
-          className="mb-6 inline-flex items-center text-sm text-neutral-500 hover:text-foundation-700"
+          className="mb-6 inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-gold-600"
         >
-          ← Back to News
+          <ArrowLeft className="h-4 w-4" />
+          Back to News
         </Link>
 
         <div className="flex flex-wrap gap-2 mb-4">
           {news.category && <Badge color="blue">{news.category}</Badge>}
           {news.published_date && (
             <Badge color="neutral" size="sm">
-              {new Date(news.published_date).toLocaleDateString()}
+              {new Date(news.published_date).toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
             </Badge>
           )}
         </div>
 
-        <h1 className="font-display text-4xl font-bold text-neutral-900">
+        <h1 className="font-display text-4xl font-bold text-neutral-900 sm:text-5xl">
           {news.title}
         </h1>
 

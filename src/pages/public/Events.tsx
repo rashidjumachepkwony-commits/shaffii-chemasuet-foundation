@@ -10,7 +10,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { SectionWrapper } from "@/components/ui/ErrorBoundary";
 import { eventsService } from "@/services/events";
 import type { Event, EventCategory } from "@/types";
-import { Calendar, MapPin, Filter, Search } from "lucide-react";
+import { Calendar, MapPin, Filter, Search, ArrowRight } from "lucide-react";
 
 const EVENT_STATUSES = [
   { value: "", label: "All Statuses" },
@@ -19,15 +19,22 @@ const EVENT_STATUSES = [
   { value: "COMPLETED", label: "Completed" },
 ];
 
+const statusColors = {
+  PUBLISHED: "green",
+  CANCELLED: "red",
+  COMPLETED: "blue",
+  DRAFT: "neutral",
+} as const;
+
 export default function EventsPage() {
   const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
   const [categories, setCategories] = useState<EventCategory[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const [totalPages, setTotalPages] = React.useState(1);
+  const [totalItems, setTotalItems] = React.useState(0);
 
   const page = parseInt(params.get("page") || "1");
   const limit = parseInt(params.get("limit") || "9");
@@ -78,7 +85,7 @@ export default function EventsPage() {
 
   return (
     <SectionWrapper spacing="lg">
-      <div className="text-center mb-8">
+      <div className="text-center mb-12">
         <h1 className="font-display text-4xl font-bold text-neutral-900 sm:text-5xl">
           Events
         </h1>
@@ -87,7 +94,7 @@ export default function EventsPage() {
         </p>
       </div>
 
-      <div className="mb-6 flex flex-col sm:flex-row gap-4">
+      <div className="mb-8 flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-2.5 h-5 w-5 text-neutral-400" />
           <Input
@@ -129,6 +136,9 @@ export default function EventsPage() {
         <LoadingSpinner label="Loading events..." />
       ) : events.length === 0 ? (
         <div className="text-center py-12">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100">
+            <Calendar className="h-8 w-8 text-neutral-400" />
+          </div>
           <p className="text-neutral-500">
             {search || category || status
               ? "No events match your search criteria."
@@ -142,7 +152,7 @@ export default function EventsPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {events.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
@@ -165,30 +175,25 @@ export default function EventsPage() {
 
 function EventCard({ event }: { event: Event }) {
   const isPast = new Date(event.event_date) < new Date();
-  const statusColor = {
-    PUBLISHED: "bg-emerald-100 text-emerald-800",
-    CANCELLED: "bg-red-100 text-red-800",
-    COMPLETED: "bg-blue-100 text-blue-800",
-    DRAFT: "bg-neutral-100 text-neutral-800",
-  };
+  const statusColor = statusColors[event.status as keyof typeof statusColors] || "neutral";
 
   return (
     <Link to={`/events/${event.slug}`}>
       <Card
         variant="elevated"
-        className="group h-full transition-all duration-200 hover:scale-[1.02]"
+        className="group h-full overflow-hidden transition-all duration-300 hover:shadow-xl"
       >
         <div className="relative">
           <img
             src={event.featured_image || "/images/event-placeholder.jpg"}
             alt={event.title}
-            className="h-48 w-full rounded-t-2xl object-cover transition-transform group-hover:scale-105"
+            className="h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105"
             onError={(e) => {
               (e.target as HTMLImageElement).src =
                 "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Crect fill='%23e5e7eb' width='400' height='200'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af'%3AEvent Image%3C/text%3E%3C/svg%3E";
             }}
           />
-          <div className="absolute top-4 right-4 flex gap-2">
+          <div className="absolute top-3 right-3 flex gap-2">
             {event.category && (
               <Badge color="blue" size="sm">
                 {event.category.name}
@@ -200,9 +205,7 @@ function EventCard({ event }: { event: Event }) {
           </div>
           {event.status && (
             <span
-              className={`absolute top-4 left-4 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                statusColor[event.status] || statusColor.DRAFT
-              }`}
+              className={`absolute top-3 left-3 rounded-full px-2.5 py-1 text-xs font-semibold ${statusColor === "green" ? "bg-emerald-100 text-emerald-800" : statusColor === "red" ? "bg-red-100 text-red-800" : statusColor === "blue" ? "bg-blue-100 text-blue-800" : "bg-neutral-100 text-neutral-800"}`}
               aria-label={`Event status: ${event.status}`}
             >
               {event.status}
@@ -210,7 +213,7 @@ function EventCard({ event }: { event: Event }) {
           )}
         </div>
         <div className="p-6">
-          <h3 className="font-display text-xl font-bold text-neutral-900 group-hover:text-foundation-700">
+          <h3 className="font-display text-xl font-bold text-neutral-900 group-hover:text-gold-600 transition-colors">
             {event.title}
           </h3>
           <p className="mt-2 text-sm text-neutral-600 line-clamp-2">
@@ -218,15 +221,25 @@ function EventCard({ event }: { event: Event }) {
           </p>
           <div className="mt-4 flex items-center gap-4 text-sm text-neutral-500">
             <div className="flex items-center gap-1">
-              <Calendar className="h-4 w-4 text-foundation-700" />
+              <Calendar className="h-4 w-4 text-gold-500" />
               {new Date(event.event_date).toLocaleDateString()}
             </div>
             {event.venue && (
               <div className="flex items-center gap-1">
-                <MapPin className="h-4 w-4 text-foundation-700" />
+                <MapPin className="h-4 w-4 text-gold-500" />
                 {event.venue}
               </div>
             )}
+          </div>
+          <div className="mt-4 pt-4 border-t border-neutral-100">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-between"
+            >
+              View Details
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Button>
           </div>
         </div>
       </Card>

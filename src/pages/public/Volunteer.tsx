@@ -5,11 +5,12 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { SectionWrapper } from "@/components/ui/ErrorBoundary";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useToast } from "@/components/ui/Toast";
 import { volunteersService } from "@/services/index";
-import { User, Mail, Phone, MapPin, CalendarDays, FileText } from "lucide-react";
+import { User, Mail, Phone, MapPin, CalendarDays, FileText, Heart, Users, GraduationCap, Leaf, Shield, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 const availabilityOptions = [
@@ -19,9 +20,22 @@ const availabilityOptions = [
   "Flexible",
 ];
 
+const volunteerAreas = [
+  { value: "youth_mentorship", label: "Youth Mentorship", description: "Guide and inspire young people" },
+  { value: "education_support", label: "Education Support", description: "Help with tutoring and learning" },
+  { value: "digital_skills", label: "Digital Skills Support", description: "Teach computer and tech skills" },
+  { value: "community_outreach", label: "Community Outreach", description: "Engage with local communities" },
+  { value: "event_support", label: "Event Support", description: "Help organize and run events" },
+  { value: "women_girls_programs", label: "Women & Girls Programs", description: "Support gender equality initiatives" },
+  { value: "environmental_activities", label: "Environmental Activities", description: "Promote sustainability" },
+  { value: "communications", label: "Communications & Media", description: "Help with content and storytelling" },
+  { value: "fundraising", label: "Fundraising Support", description: "Help raise resources" },
+  { value: "administration", label: "Administration", description: "Office and operational support" },
+];
+
 export default function Volunteer() {
   const { success, error } = useToast();
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = React.useState(false);
 
   const form = useForm({
     initialValues: {
@@ -57,7 +71,7 @@ export default function Volunteer() {
         <div className="mx-auto max-w-2xl text-center">
           <div className="mb-6 flex justify-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
-              <User className="h-8 w-8" />
+              <Heart className="h-8 w-8" />
             </div>
           </div>
           <h1 className="font-display text-3xl font-bold text-neutral-900">
@@ -83,149 +97,183 @@ export default function Volunteer() {
         </p>
       </div>
 
-      <div className="mx-auto max-w-2xl">
-        <form onSubmit={form.handleSubmit} noValidate>
-          <FormField
-            label="Full Name"
-            name="full_name"
-            error={form.errors.full_name}
-            required
-          >
-            <Input
-              type="text"
-              placeholder="John Doe"
-              value={form.values.full_name as string}
-              onChange={(e) => form.handleChange("full_name", e.target.value)}
-              onBlur={() => form.handleBlur("full_name")}
-              aria-invalid={!!form.errors.full_name}
-              icon={<User className="h-4 w-4 text-neutral-400" />}
-            />
-          </FormField>
+      <div className="mx-auto max-w-4xl">
+        {/* How You Can Help */}
+        <Card variant="elevated" padding="lg" className="mb-8">
+          <h2 className="font-display text-2xl font-bold text-neutral-900 mb-6 flex items-center gap-3">
+            <Users className="h-7 w-7 text-gold-500" />
+            How You Can Help
+          </h2>
+          <p className="text-neutral-600 mb-6">
+            Volunteers can contribute their time and skills across many areas. Choose what inspires you:
+          </p>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {volunteerAreas.map((area) => (
+              <div
+                key={area.value}
+                className="p-4 rounded-xl border border-neutral-200 hover:border-gold-300 hover:bg-gold-50 transition-colors"
+              >
+                <h4 className="font-medium text-neutral-900">{area.label}</h4>
+                <p className="text-sm text-neutral-600 mt-1">{area.description}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
 
-          <FormField
-            label="Email Address"
-            name="email"
-            error={form.errors.email}
-          >
-            <Input
-              type="email"
-              placeholder="john@example.com"
-              value={form.values.email as string}
-              onChange={(e) => form.handleChange("email", e.target.value)}
-              onBlur={() => form.handleBlur("email")}
-              aria-invalid={!!form.errors.email}
-              icon={<Mail className="h-4 w-4 text-neutral-400" />}
-            />
-          </FormField>
+        {/* Application Form */}
+        <Card variant="elevated" padding="lg">
+          <h2 className="font-display text-2xl font-bold text-neutral-900 mb-6 flex items-center gap-3">
+            <User className="h-7 w-7 text-gold-500" />
+            Volunteer Application
+          </h2>
 
-          <FormField
-            label="Phone Number"
-            name="phone"
-            error={form.errors.phone}
-          >
-            <Input
-              type="tel"
-              placeholder="+254 700 000 000"
-              value={form.values.phone as string}
-              onChange={(e) => form.handleChange("phone", e.target.value)}
-              onBlur={() => form.handleBlur("phone")}
-              aria-invalid={!!form.errors.phone}
-              icon={<Phone className="h-4 w-4 text-neutral-400" />}
-            />
-          </FormField>
+          <form onSubmit={form.handleSubmit} noValidate>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <FormField
+                label="Full Name"
+                name="full_name"
+                error={form.errors.full_name}
+                required
+              >
+                <Input
+                  type="text"
+                  placeholder="John Doe"
+                  value={form.values.full_name as string}
+                  onChange={(e) => form.handleChange("full_name", e.target.value)}
+                  onBlur={() => form.handleBlur("full_name")}
+                  aria-invalid={!!form.errors.full_name}
+                  icon={<User className="h-4 w-4 text-neutral-400" />}
+                />
+              </FormField>
 
-          <FormField
-            label="Location"
-            name="location"
-            error={form.errors.location}
-          >
-            <Input
-              type="text"
-              placeholder="City, Country"
-              value={form.values.location as string}
-              onChange={(e) => form.handleChange("location", e.target.value)}
-              onBlur={() => form.handleBlur("location")}
-              icon={<MapPin className="h-4 w-4 text-neutral-400" />}
-            />
-          </FormField>
+              <FormField
+                label="Email Address"
+                name="email"
+                error={form.errors.email}
+                required
+              >
+                <Input
+                  type="email"
+                  placeholder="john@example.com"
+                  value={form.values.email as string}
+                  onChange={(e) => form.handleChange("email", e.target.value)}
+                  onBlur={() => form.handleBlur("email")}
+                  aria-invalid={!!form.errors.email}
+                  icon={<Mail className="h-4 w-4 text-neutral-400" />}
+                />
+              </FormField>
 
-          <FormField
-            label="Area of Interest"
-            name="area_of_interest"
-            error={form.errors.area_of_interest}
-          >
-            <Input
-              type="text"
-              placeholder="e.g. Education, Health, Environment"
-              value={form.values.area_of_interest as string}
-              onChange={(e) => form.handleChange("area_of_interest", e.target.value)}
-              onBlur={() => form.handleBlur("area_of_interest")}
-              icon={<FileText className="h-4 w-4 text-neutral-400" />}
-            />
-          </FormField>
+              <FormField
+                label="Phone Number"
+                name="phone"
+                error={form.errors.phone}
+              >
+                <Input
+                  type="tel"
+                  placeholder="+254 769 020 852"
+                  value={form.values.phone as string}
+                  onChange={(e) => form.handleChange("phone", e.target.value)}
+                  onBlur={() => form.handleBlur("phone")}
+                  aria-invalid={!!form.errors.phone}
+                  icon={<Phone className="h-4 w-4 text-neutral-400" />}
+                />
+              </FormField>
 
-          <FormField
-            label="Availability"
-            name="availability"
-            error={form.errors.availability}
-          >
-            <Select
-              value={form.values.availability as string}
-              onChange={(e) => form.handleChange("availability", e.target.value)}
+              <FormField
+                label="Location"
+                name="location"
+                error={form.errors.location}
+              >
+                <Input
+                  type="text"
+                  placeholder="City, Country"
+                  value={form.values.location as string}
+                  onChange={(e) => form.handleChange("location", e.target.value)}
+                  onBlur={() => form.handleBlur("location")}
+                  icon={<MapPin className="h-4 w-4 text-neutral-400" />}
+                />
+              </FormField>
+
+              <FormField
+                label="Area of Interest"
+                name="area_of_interest"
+                error={form.errors.area_of_interest}
+              >
+                <Select
+                  value={form.values.area_of_interest as string}
+                  onChange={(e) => form.handleChange("area_of_interest", e.target.value)}
+                >
+                  <option value="">Select area of interest</option>
+                  {volunteerAreas.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </Select>
+              </FormField>
+
+              <FormField
+                label="Availability"
+                name="availability"
+                error={form.errors.availability}
+              >
+                <Select
+                  value={form.values.availability as string}
+                  onChange={(e) => form.handleChange("availability", e.target.value)}
+                >
+                  <option value="">Select availability</option>
+                  {availabilityOptions.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </Select>
+              </FormField>
+            </div>
+
+            <FormField
+              label="Experience"
+              name="experience"
+              error={form.errors.experience}
+              helpText="Briefly describe your relevant experience or skills"
             >
-              <option value="">Select availability</option>
-              {availabilityOptions.map((opt) => (
-                <option key={opt} value={opt}>{opt}</option>
-              ))}
-            </Select>
-          </FormField>
+              <Textarea
+                placeholder="Tell us about your experience..."
+                value={form.values.experience as string}
+                onChange={(e) => form.handleChange("experience", e.target.value)}
+                onBlur={() => form.handleBlur("experience")}
+                rows={3}
+              />
+            </FormField>
 
-          <FormField
-            label="Experience"
-            name="experience"
-            error={form.errors.experience}
-            helpText="Briefly describe your relevant experience or skills"
-          >
-            <Textarea
-              placeholder="Tell us about your experience..."
-              value={form.values.experience as string}
-              onChange={(e) => form.handleChange("experience", e.target.value)}
-              onBlur={() => form.handleBlur("experience")}
-              rows={3}
-            />
-          </FormField>
+            <FormField
+              label="Additional Message"
+              name="message"
+              error={form.errors.message}
+            >
+              <Textarea
+                placeholder="Any additional information..."
+                value={form.values.message as string}
+                onChange={(e) => form.handleChange("message", e.target.value)}
+                onBlur={() => form.handleBlur("message")}
+                rows={4}
+              />
+            </FormField>
 
-          <FormField
-            label="Additional Message"
-            name="message"
-            error={form.errors.message}
-          >
-            <Textarea
-              placeholder="Any additional information..."
-              value={form.values.message as string}
-              onChange={(e) => form.handleChange("message", e.target.value)}
-              onBlur={() => form.handleBlur("message")}
-              rows={4}
-            />
-          </FormField>
+            {form.errors.root && (
+              <p className="mb-4 text-sm text-red-600" role="alert">
+                {form.errors.root}
+              </p>
+            )}
 
-          {form.errors.root && (
-            <p className="mb-4 text-sm text-red-600" role="alert">
-              {form.errors.root}
-            </p>
-          )}
-
-          <Button
-            type="submit"
-            disabled={form.isSubmitting}
-            loading={form.isSubmitting}
-            className="w-full"
-            size="lg"
-            rounded="full"
-          >
-            Submit Application
-          </Button>
-        </form>
+            <Button
+              type="submit"
+              disabled={form.isSubmitting}
+              loading={form.isSubmitting}
+              className="w-full"
+              size="lg"
+              rounded="full"
+            >
+              Submit Application
+            </Button>
+          </form>
+        </Card>
       </div>
     </SectionWrapper>
   );
