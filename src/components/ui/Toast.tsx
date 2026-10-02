@@ -3,7 +3,7 @@ import { CheckCircle, Info, XCircle } from "lucide-react";
 
 export type ToastVariant = "default" | "success" | "error" | "warning" | "info";
 
-export { useToastApi as useToast, useToastApi } from "./ToastProvider";
+export { useToastApi as useToast } from "./ToastProvider";
 
 export interface ToastProps {
   id: string;
