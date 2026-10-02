@@ -32,7 +32,8 @@ export default function Donate() {
               Support Our Mission
             </h1>
             <p className="mt-4 text-lg text-neutral-200 md:text-xl">
-              Your generous contribution helps us sustain and expand our community programs across Kenya.
+              Your generosity sustains education, health, mentorship, and community
+              resilience across Kenya — helping turn need into opportunity.
             </p>
           </div>
         </section>
@@ -43,7 +44,7 @@ export default function Donate() {
           </h2>
 
           <div className="mb-8">
-            <p className="mb-4 text-sm font-medium text-neutral-700">Select an amount (KES)</p>
+            <p className="mb-4 text-sm font-medium text-neutral-700">Choose a giving amount (KES)</p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
               {donationAmounts.map((amount) => (
                 <button
@@ -119,7 +120,8 @@ export default function Donate() {
                   <div>
                     <h4 className="font-semibold text-neutral-900">Card Payments</h4>
                     <p className="mt-1 text-sm text-neutral-600">
-                      Card payments are being set up and will be available soon.
+                      Secure digital card giving is being prepared for launch and will be
+                      available soon.
                     </p>
                     <span className="mt-1 inline-block text-xs font-medium text-amber-600">Coming soon</span>
                   </div>
@@ -128,7 +130,7 @@ export default function Donate() {
 
               <div className="mt-6 rounded-2xl bg-neutral-50 p-4">
                 <p className="text-sm leading-relaxed text-neutral-600">
-                  <strong className="font-semibold text-neutral-900">Thank you for your interest in supporting us.</strong>
+                  <strong className="font-semibold text-neutral-900">Thank you for standing with us.</strong>
                   {donationInfo && <span className="mt-2 block">{donationInfo}</span>}
                 </p>
               </div>
@@ -138,7 +140,7 @@ export default function Donate() {
           <div className="border-t border-neutral-200 pt-6">
             <p className="flex items-center gap-2 text-sm text-neutral-500">
               <Shield className="h-4 w-4" />
-              Donations are processed securely. Payment integration is being set up.
+              Every contribution is handled with care, transparency, and accountability.
             </p>
           </div>
         </Card>
