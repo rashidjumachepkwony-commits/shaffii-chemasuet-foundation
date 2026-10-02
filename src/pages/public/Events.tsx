@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/Card";

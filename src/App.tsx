@@ -6,6 +6,7 @@ import { SettingsProvider } from "@/contexts/SettingsContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary, NotFound, Unauthorized } from "@/components/ui/ErrorBoundary";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { ToastProvider } from "@/components/ui/ToastProvider";
 import { useAuth } from "@/contexts/AuthContext";
 import { Permission } from "@/types";
 import { useEffect } from "react";
@@ -133,10 +134,11 @@ function RequireAuthOutlet({
 export function App() {
   return (
     <AuthProvider>
-      <ErrorBoundary>
-        <SettingsProvider>
-          <ScrollToTop />
-          <Routes>
+      <ToastProvider>
+        <ErrorBoundary>
+          <SettingsProvider>
+            <ScrollToTop />
+            <Routes>
             <Route element={<PublicLayout />}>
               <Route path="/" element={<LazyHome />} />
               <Route path="/about" element={<LazyAbout />} />
@@ -190,9 +192,10 @@ export function App() {
             </Route>
 
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </SettingsProvider>
-      </ErrorBoundary>
+            </Routes>
+          </SettingsProvider>
+        </ErrorBoundary>
+      </ToastProvider>
     </AuthProvider>
   );
 }

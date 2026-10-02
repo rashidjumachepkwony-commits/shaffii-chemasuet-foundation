@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/Badge";
