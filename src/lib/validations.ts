@@ -206,3 +206,41 @@ export const projectSchema = z.object({
   end_date: z.string().optional(),
   location: z.string().max(200).optional(),
 });
+
+export const supportRequestSchema = z.object({
+  full_name: z
+    .string()
+    .min(2, "Please enter your full name")
+    .max(200, "Name is too long"),
+  id_number: z
+    .string()
+    .min(3, "Please enter a valid ID number")
+    .max(100),
+  phone_number: z
+    .string()
+    .min(8, "Please enter a valid phone number")
+    .max(20),
+  alternative_phone: z.string().max(20, "Phone number is too long").optional(),
+  email: z
+    .string()
+    .email("Please enter a valid email address")
+    .optional()
+    .or(z.literal("")),
+  country: z.string().min(1, "Please enter your country"),
+  county: z.string().min(1, "Please select your county"),
+  sub_county: z.string().min(1, "Please enter your sub-county"),
+  ward: z.string().min(1, "Please enter your ward"),
+  location: z.string().min(1, "Please enter your location"),
+  current_location: z.string().min(2, "Please describe your current physical location"),
+  support_type: z.string().min(1, "Please select the type of support needed"),
+  support_description: z
+    .string()
+    .min(10, "Please provide more details about the support needed")
+    .max(2000, "Description is too long"),
+  urgency: z.enum(["Emergency", "Urgent", "Normal"], {
+    errorMap: () => ({ message: "Please select an urgency level" }),
+  }),
+  people_needing_support: z.string().optional(),
+  additional_information: z.string().max(2000, "Information is too long").optional(),
+  preferred_contact_method: z.string().optional(),
+});
