@@ -35,7 +35,7 @@ type FormData = {
   email: string;
   country: string;
   county: string;
-  sub_county: string;
+  error: string | null;
   ward: string;
   location: string;
   current_location: string;
@@ -72,7 +72,7 @@ export default function RequestSupport() {
       success("Your support request has been submitted successfully");
       setReference(res?.reference_number || res?.id || null);
       setSubmitted(true);
-    } catch (err: any) {
+    } catch (err) {
       showError(err.message || "Failed to submit request. Please try again.");
     } finally {
       setLoading(false);
