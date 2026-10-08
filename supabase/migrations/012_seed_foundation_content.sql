@@ -9,7 +9,7 @@ insert into projects (title, slug, summary, description, featured_image, status,
   ('Water Well Construction in Marsabit',
    'water-well-marsabit',
    'Installing a borehole water system to provide clean drinking water to a remote community.',
-   'The Shaffii Chemasuet Foundation is constructing a borehole water system in Marsabit County to provide reliable access to clean drinking water. This project will serve approximately 500 households and includes the installation of a solar-powered pump, storage tank, and distribution points.',
+   'The Shafie Chemasuet Foundation is constructing a borehole water system in Marsabit County to provide reliable access to clean drinking water. This project will serve approximately 500 households and includes the installation of a solar-powered pump, storage tank, and distribution points.',
    '/images/shaffi3.jpg',
    'IN_PROGRESS',
    '2026-01-15',
@@ -94,7 +94,7 @@ insert into news (title, slug, excerpt, content, featured_image, category, autho
   ('Foundation Partners with Local Schools to Launch Digital Literacy Program',
    'digital-literacy-partnership',
    'We are excited to announce our partnership with 3 primary schools in Kakamega County to launch a comprehensive digital literacy program.',
-   'The Shaffii Chemasuet Foundation has partnered with three primary schools in Kakamega County to launch a digital literacy program aimed at bridging the technology gap in rural education. The program will provide over 500 students with their first exposure to computers and digital skills.
+   'The Shafie Chemasuet Foundation has partnered with three primary schools in Kakamega County to launch a digital literacy program aimed at bridging the technology gap in rural education. The program will provide over 500 students with their first exposure to computers and digital skills.
 
 "Access to technology is no longer a luxury but a necessity in today''s world," said the Foundation''s Program Director. "This partnership ensures that rural students have the same opportunities as their urban counterparts."
 
@@ -122,7 +122,7 @@ The borehole drilling is complete, and construction of the water storage tank an
   ('Annual Fundraising Gala Raises Ksh 2.5 Million',
    'fundraising-gala-success',
    'Our annual gala dinner exceeded its fundraising goal, securing funds for three new projects.',
-   'The Shaffii Chemasuet Foundation''s annual fundraising gala, held in August 2026, successfully raised Ksh 2.5 million—exceeding our goal of Ksh 2 million.
+   'The Shafie Chemasuet Foundation''s annual fundraising gala, held in August 2026, successfully raised Ksh 2.5 million—exceeding our goal of Ksh 2 million.
 
 The funds raised will support three new initiatives: the Community Garden Project, the Skills Training Center, and expanded maternal health services in Turkana County.
 
@@ -166,7 +166,7 @@ The library was officially opened on March 15, 2026, with a ceremony attended by
   ('Celebrating International Women''s Day with Community Leaders',
    'womens-day-celebration',
    'We joined women leaders across Kenya to celebrate International Women''s Day 2026.',
-   'On March 8, 2026, the Shaffii Chemasuet Foundation joined community leaders across Kenya to celebrate International Women''s Day. Our CEO participated in a panel discussion on women''s economic empowerment, alongside other prominent female leaders.
+   'On March 8, 2026, the Shafie Chemasuet Foundation joined community leaders across Kenya to celebrate International Women''s Day. Our CEO participated in a panel discussion on women''s economic empowerment, alongside other prominent female leaders.
 
 The event, held at Kenyatta University, brought together over 300 women from various sectors including education, business, healthcare, and community organizing. Discussions focused on creating more opportunities for women in leadership and entrepreneurship.
 
@@ -180,7 +180,7 @@ The event, held at Kenyatta University, brought together over 300 women from var
   ('Foundation Receives Recognition for Community Impact',
    'foundation-recognition',
    'The Foundation was awarded the Community Impact Excellence Award by the Kenya NGO Council.',
-   'We are honored to announce that the Shaffii Chemasuet Foundation has received the Community Impact Excellence Award from the Kenya NGO Council for our outstanding contributions to community development in 2025.
+   'We are honored to announce that the Shafie Chemasuet Foundation has received the Community Impact Excellence Award from the Kenya NGO Council for our outstanding contributions to community development in 2025.
 
 The award recognizes our work across education, healthcare, and water access projects that have directly benefited over 10,000 people. The ceremony was held at the United Nations Offices at Nairobi (UNON).
 
@@ -196,7 +196,7 @@ This recognition reinforces our commitment to excellence in community developmen
   ('Volunteer Spotlight: Mary Kamau''s Journey with Our Foundation',
    'volunteer-spotlight-mary',
    'Meet Mary Kamau, a dedicated volunteer who has been with us for three years.',
-   'Mary Kamau first joined the Shaffii Chemasuet Foundation as a volunteer in 2023, assisting with our school feeding program. Over the past three years, she has become a cornerstone of our community outreach efforts.
+   'Mary Kamau first joined the Shafie Chemasuet Foundation as a volunteer in 2023, assisting with our school feeding program. Over the past three years, she has become a cornerstone of our community outreach efforts.
 
 Mary coordinates our weekly food distribution drives, mentors new volunteers, and leads our literacy tutoring sessions. Her dedication and passion have inspired many others to get involved.
 
@@ -227,10 +227,10 @@ This event is held at our community center in Kibera, Nairobi.',
    '2026-10-10',
    '10:00:00',
    '14:00:00',
-   'Shaffii Chemasuet Foundation Community Center',
+   'Shafie Chemasuet Foundation Community Center',
    'Kibera, Nairobi, Kenya',
-   'Shaffii Chemasuet Foundation',
-   'events@shaffiichemasuet.org',
+   'Shafie Chemasuet Foundation',
+   'events@shafiechemasuet.org',
    '2026-10-09',
    200,
    true,
@@ -276,7 +276,7 @@ This event is part of our broader Mobile Health Clinic Initiative and is complet
    'Mathare Community Health Center',
    'Mathare, Nairobi, Kenya',
    'Dr. Samuel Ochieng',
-   'health@shaffiichemasuet.org',
+   'health@shafiechemasuet.org',
    '2026-11-10',
    300,
    true,
@@ -299,7 +299,7 @@ This event is suitable for all ages and fitness levels. Children under 12 must b
    'Kakamega Forest Reserve',
    'Kakamega County, Kenya',
    'Dr. Jane Mwangi, Environmental Officer',
-   'events@shaffiichemasuet.org',
+   'events@shafiechemasuet.org',
    '2026-12-01',
    100,
    true,
@@ -319,8 +319,8 @@ The inauguration ceremony will feature keynote speeches from local government of
    '16:00:00',
    'Shaffii Chemasuet Skills Training Center',
    'Eldoret, Kenya',
-   'Shaffii Chemasuet Foundation',
-   'events@shaffiichemasuet.org',
+   'Shafie Chemasuet Foundation',
+   'events@shafiechemasuet.org',
    '2027-03-10',
    150,
    false,
@@ -330,7 +330,7 @@ The inauguration ceremony will feature keynote speeches from local government of
   ('Annual General Meeting 2027',
    'agm-2027',
    'Our yearly stakeholder meeting to review impact and plan for the future.',
-   'The Shaffii Chemasuet Foundation''s Annual General Meeting brings together our community partners, donors, volunteers, and stakeholders to review the year''s achievements and plan for future initiatives.
+   'The Shafie Chemasuet Foundation''s Annual General Meeting brings together our community partners, donors, volunteers, and stakeholders to review the year''s achievements and plan for future initiatives.
 
 The meeting will include a presentation of our annual report, financial statements, and impact metrics. There will be a Q&A session and networking opportunity. All stakeholders and community members are welcome to attend.
 
@@ -343,7 +343,7 @@ Light refreshments will be provided.',
    'Kenyatta University Conference Center',
    'Nairobi, Kenya',
    'Board of Trustees',
-   'info@shaffiichemasuet.org',
+   'info@shafiechemasuet.org',
    '2027-04-15',
    250,
    false,

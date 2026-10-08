@@ -58,7 +58,7 @@ export default function Register() {
             Create Your Account
           </h1>
           <p className="mt-2 text-sm text-neutral-600">
-            Join the Shaffii Chemasuet Foundation community.
+            Join the Shafie Chemasuet Foundation community.
           </p>
         </div>
 

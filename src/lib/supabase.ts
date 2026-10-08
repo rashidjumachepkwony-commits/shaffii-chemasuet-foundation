@@ -11,7 +11,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
   global: {
     headers: {
-      "x-application-name": "shaffii-chemasuet-foundation",
+      "x-application-name": "shafie-chemasuet-foundation",
     },
   },
 });

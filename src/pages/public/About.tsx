@@ -6,7 +6,7 @@ import { Target, Eye, MapPin, Phone, Mail, Users, Heart, Leaf, GraduationCap, Sh
 export default function About() {
   const { getSetting } = useSettings();
 
-  const foundationName = getSetting("foundation_name", "Shaffii Chemasuet Foundation");
+  const foundationName = getSetting("foundation_name", "Shafie Chemasuet Foundation");
   const mission = getSetting("mission", "We empower communities through education, healthcare, and sustainable development.");
   const vision = getSetting("vision", "A Kenya where every person has the opportunity to learn, grow, and build a dignified future.");
   const address = getSetting("foundation_address", "Nairobi, Kenya");

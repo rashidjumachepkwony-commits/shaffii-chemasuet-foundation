@@ -6,11 +6,11 @@ export function Footer() {
   const { settings } = useSettings();
 
   const foundationName =
-    settings["foundation_name"]?.value || "Shaffii Chemasuet Foundation";
+    settings["foundation_name"]?.value || "Shafie Chemasuet Foundation";
   const foundationEmail = settings["foundation_email"]?.value || "info@shaffiichemasuetfoundation.org";
   const foundationPhone = settings["foundation_phone"]?.value || "+254 769 020 852";
   const foundationAddress = settings["foundation_address"]?.value || "Nairobi, Kenya";
-  const footerText = settings["footer_text"]?.value || "The Shaffii Chemasuet Foundation is a registered non-profit organization dedicated to sustainable community development and social impact across Kenya.";
+  const footerText = settings["footer_text"]?.value || "The Shafie Chemasuet Foundation is a registered non-profit organization dedicated to sustainable community development and social impact across Kenya.";
 
   const facebook = settings["social_facebook"]?.value;
   const twitter = settings["social_twitter"]?.value;
