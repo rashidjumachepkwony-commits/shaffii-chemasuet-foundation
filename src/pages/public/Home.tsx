@@ -79,7 +79,7 @@ export default function Home() {
     fetchData();
   }, []);
 
-  const foundationName = getSetting("foundation_name", "Shaffii Chemasuet Foundation");
+  const foundationName = getSetting("foundation_name", "Shafie Chemasuet Foundation");
   const mission = getSetting("mission", "We empower communities through education, healthcare, and sustainable development.");
   const tagline = getSetting("foundation_tagline", "Empowering People. Strengthening Communities.");
 
@@ -159,6 +159,16 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <section className="bg-foundation-50 py-12 md:py-16">
+        <div className="container mx-auto px-4 md:px-6 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">Need Support?</h2>
+          <p className="text-neutral-600 mb-6 max-w-2xl mx-auto">
+Tell us how we can help. Submit your support request online and our team will review it.
+          </p>
+          <Link to="/support" className="inline-flex items-center rounded-full bg-foundation-700 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-foundation-600">Request Support</Link>
+        </div>
+      </section>
+
 
       {/* Foundation Introduction */}
       <SectionWrapper className="bg-white">

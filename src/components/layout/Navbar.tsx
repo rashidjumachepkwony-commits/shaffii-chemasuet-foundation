@@ -15,6 +15,7 @@ const navigation = [
   { name: "Volunteer", href: "/volunteer" },
   { name: "Donate", href: "/donate" },
   { name: "Contact", href: "/contact" },
+  { name: 'Request Support', href: '/support' },
 ];
 
 export function Navbar() {
@@ -23,7 +24,7 @@ export function Navbar() {
   const { getSetting } = useSettings();
   const navigate = useNavigate();
 
-  const foundationName = getSetting("foundation_name", "Shaffii Chemasuet Foundation");
+  const foundationName = getSetting("foundation_name", "Shafie Chemasuet Foundation");
   const foundationTagline = getSetting("foundation_tagline", "Empowering People. Strengthening Communities. Creating Opportunities.");
 
   const handleLogout = async () => {
@@ -176,3 +177,6 @@ export function Navbar() {
     </header>
   );
 }
+
+import { HelpCircle } from 'lucide-react';
+

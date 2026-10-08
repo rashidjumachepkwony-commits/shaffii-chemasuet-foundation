@@ -1,4 +1,4 @@
-name = "shaffii-chemasuet-foundation-worker"
+name = "shafie-chemasuet-foundation-worker"
 main = "src/index.ts"
 compatibility_date = "2024-09-25"
 account_id = "YOUR_ACCOUNT_ID"
@@ -16,5 +16,5 @@ port = 8787
 # Routes will be configured in the Cloudflare dashboard
 # or via Wrangler after deployment
 # routes = [
-#   { pattern = "api.foundation.example/*", zone_name = "foundation.example", script = "shaffii-chemasuet-foundation-worker" }
+#   { pattern = "api.foundation.example/*", zone_name = "foundation.example", script = "shafie-chemasuet-foundation-worker" }
 # ]

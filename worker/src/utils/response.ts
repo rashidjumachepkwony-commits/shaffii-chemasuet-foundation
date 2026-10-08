@@ -59,3 +59,7 @@ export function extractPaginationParams(c: Context) {
   const limit = Math.min(100, Math.max(1, parseInt(c.req.query("limit") || "20")));
   return { page, limit, offset: (page - 1) * limit };
 }
+
+export function tooManyRequests(c: Context, error = 'Too many requests'): Response {
+  return c.json({ success: false, error }, 429);
+}
