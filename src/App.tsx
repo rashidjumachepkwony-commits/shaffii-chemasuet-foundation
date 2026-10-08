@@ -47,6 +47,7 @@ const LazyAdminDonations = React.lazy(() => import("@/pages/admin/Donations"));
 const LazyAdminContact = React.lazy(() => import("@/pages/admin/Contact"));
 const LazyAdminSettings = React.lazy(() => import("@/pages/admin/Settings"));
 const LazyAdminAuditLogs = React.lazy(() => import("@/pages/admin/AuditLogs"));
+const LazyAdminSupportRequests = React.lazy(() => import("@/pages/admin/SupportRequests"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -189,6 +190,7 @@ export function App() {
                   <Route path="/admin/contact" element={<LazyAdminContact />} />
                   <Route path="/admin/settings" element={<LazyAdminSettings />} />
                   <Route path="/admin/audit-logs" element={<LazyAdminAuditLogs />} />
+                <Route path="/admin/support" element={<LazyAdminSupportRequests />} />
                 </Route>
               </Route>
 
