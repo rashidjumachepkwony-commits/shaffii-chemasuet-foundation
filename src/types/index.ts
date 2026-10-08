@@ -27,6 +27,7 @@ export type Permission =
   | "gallery.manage"
   | "volunteers.manage"
   | "donations.manage"
+  | "support.manage"
   | "settings.manage"
   | "audit_logs.view"
   | "messages.manage"
@@ -55,6 +56,7 @@ export const ROLE_PERMISSIONS: Record<RoleName, Permission[]> = {
     "gallery.manage",
     "volunteers.manage",
     "donations.manage",
+    "support.manage",
     "settings.manage",
     "audit_logs.view",
     "messages.manage",
@@ -82,6 +84,7 @@ export const ROLE_PERMISSIONS: Record<RoleName, Permission[]> = {
     "gallery.manage",
     "volunteers.manage",
     "donations.manage",
+    "support.manage",
     "settings.manage",
     "audit_logs.view",
     "messages.manage",

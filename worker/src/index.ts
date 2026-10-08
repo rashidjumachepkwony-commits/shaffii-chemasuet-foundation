@@ -99,6 +99,7 @@ app.route("/api/donations", donationsRouter);
 app.route("/api/contact", contactRouter);
 app.route("/api/upload", uploadRouter);
 app.route("/api/support", supportRouter);
+app.route("/api/admin/support", supportRouter);
 app.route("/api/public/settings", publicSettingsRouter);
 
 app.get("/", (c) => {
