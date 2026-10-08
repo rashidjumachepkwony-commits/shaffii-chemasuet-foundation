@@ -1,2 +1,0 @@
-import{r as c,j as o}from"./toast-C6WUNn23.js";import{e as x,c as R}from"./index-BUNnhC-U.js";function A({children:l,roles:t,permissions:r,redirectTo:u="/login"}){const{user:a,role:n,permissions:i,initialized:s}=x(),e=R(),[f,h]=c.useState(!1);return c.useEffect(()=>{if(s){if(!a){e(u,{replace:!0});return}if(t&&!t.includes(n)){e("/unauthorized",{replace:!0});return}if(r&&!r.every(m=>i.includes(m))){e("/unauthorized",{replace:!0});return}h(!0)}},[a,n,i,s,e,u,t,r]),!s||!f?null:o.jsx(o.Fragment,{children:l})}export{A as R};
-//# sourceMappingURL=useAuthGuard-CqR6nb3t.js.map

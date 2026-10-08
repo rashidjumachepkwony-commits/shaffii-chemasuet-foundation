@@ -199,3 +199,6 @@ export function App() {
     </AuthProvider>
   );
 }
+
+const LazySupportRequest = React.lazy(() => import('@/pages/public/support/RequestSupport'));
+

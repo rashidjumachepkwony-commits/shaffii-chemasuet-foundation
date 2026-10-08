@@ -1,0 +1,2 @@
+import{r as n,j as l,c as i}from"./toast-Df8JbvaJ.js";const b=n.forwardRef(({className:r,variant:e="default",padding:a="md",...d},s)=>{const t={default:"bg-white border border-neutral-200",elevated:"bg-white shadow-lg border border-neutral-100",bordered:"bg-white border-2 border-neutral-200"},o={none:"p-0",sm:"p-4",md:"p-6",lg:"p-8"};return l.jsx("div",{className:i("rounded-2xl transition-shadow",t[e],o[a],r),ref:s,...d})});b.displayName="Card";export{b as C};
+//# sourceMappingURL=Card-DdaRWgn0.js.map

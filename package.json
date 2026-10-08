@@ -1,7 +1,7 @@
 {
-  "name": "shaffii-chemasuet-foundation",
+  "name": "shafie-chemasuet-foundation",
   "version": "1.0.0",
-  "description": "Shaffii Chemasuet Foundation - professional nonprofit management platform",
+  "description": "Shafie Chemasuet Foundation - professional nonprofit management platform",
   "private": true,
   "scripts": {
     "dev": "vite",
