@@ -152,6 +152,7 @@ export function App() {
                 <Route path="/volunteer" element={<LazyVolunteer />} />
                 <Route path="/donate" element={<LazyDonate />} />
                 <Route path="/contact" element={<LazyContact />} />
+                <Route path="/support" element={<LazySupportRequest />} />
               </Route>
 
               <Route element={<AuthLayout />}>
