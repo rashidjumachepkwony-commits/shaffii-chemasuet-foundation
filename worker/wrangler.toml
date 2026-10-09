@@ -1,7 +1,7 @@
 name = "shafie-chemasuet-foundation-worker"
 main = "src/index.ts"
 compatibility_date = "2024-09-25"
-account_id = "YOUR_ACCOUNT_ID"
+account_id = "0123627158662d9787fbcaed50687469"
 
 [vars]
 ENVIRONMENT = "development"
