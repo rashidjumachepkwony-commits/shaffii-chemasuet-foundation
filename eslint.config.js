@@ -1,9 +1,9 @@
 import js from "@eslint/js";
 import reactHooks from "eslint-plugin-react-hooks";
-import tseslint from "@typescript-eslint/eslint-plugin";
+import tseslint from "typescript-eslint";
 
-const tsFlatConfig = [
-  ...tseslint.configs["flat/recommended"],
+const tsFlatConfig = tseslint.config(
+  ...tseslint.configs.recommended,
   {
     files: ["**/*.ts", "**/*.tsx"],
     plugins: {
@@ -17,7 +17,7 @@ const tsFlatConfig = [
       "@typescript-eslint/no-non-null-assertion": "off"
     }
   }
-];
+);
 
 const config = [
   js.configs.recommended,
