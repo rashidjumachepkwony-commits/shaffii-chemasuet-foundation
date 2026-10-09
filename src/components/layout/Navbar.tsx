@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Menu, X, LogIn, User, LogOut } from "lucide-react";
+import { Menu, X, LogIn, User, LogOut, Shield } from "lucide-react";
 import * as React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSettings } from "@/contexts/SettingsContext";
@@ -93,6 +93,13 @@ export function Navbar() {
                 <User className="h-4 w-4 inline mr-1" />
                 Dashboard
               </Link>
+              <Link
+                to="/admin/login"
+                className="inline-flex items-center rounded-full bg-foundation-700 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-foundation-800 hover:shadow-md"
+              >
+                <Shield className="h-4 w-4 mr-1.5" />
+                Admin
+              </Link>
               <button
                 onClick={handleLogout}
                 disabled={loading}
@@ -103,13 +110,22 @@ export function Navbar() {
               </button>
             </>
           ) : (
-            <Link
-              to="/login"
-              className="inline-flex items-center rounded-full bg-gold-500 px-5 py-2.5 text-sm font-semibold text-neutral-900 transition-all duration-200 hover:bg-gold-400 hover:shadow-md"
-            >
-              <LogIn className="h-4 w-4 mr-1.5" />
-              Sign In
-            </Link>
+            <>
+              <Link
+                to="/admin/login"
+                className="inline-flex items-center rounded-full bg-foundation-700 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-foundation-800 hover:shadow-md"
+              >
+                <Shield className="h-4 w-4 mr-1.5" />
+                Admin
+              </Link>
+              <Link
+                to="/login"
+                className="inline-flex items-center rounded-full bg-gold-500 px-5 py-2.5 text-sm font-semibold text-neutral-900 transition-all duration-200 hover:bg-gold-400 hover:shadow-md"
+              >
+                <LogIn className="h-4 w-4 mr-1.5" />
+                Sign In
+              </Link>
+            </>
           )}
         </div>
 
@@ -163,14 +179,24 @@ export function Navbar() {
               Logout
             </button>
           ) : (
-            <Link
-              to="/login"
-              onClick={() => setMenuOpen(false)}
-              className="rounded-xl bg-gold-500 px-4 py-3 text-center text-sm font-semibold text-neutral-900 hover:bg-gold-400"
-            >
-              <LogIn className="h-4 w-4 inline mr-2" />
-              Sign In
-            </Link>
+            <>
+              <Link
+                to="/admin/login"
+                onClick={() => setMenuOpen(false)}
+                className="rounded-xl bg-foundation-700 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-foundation-800"
+              >
+                <Shield className="h-4 w-4 inline mr-2" />
+                Admin Login
+              </Link>
+              <Link
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="rounded-xl bg-gold-500 px-4 py-3 text-center text-sm font-semibold text-neutral-900 hover:bg-gold-400"
+              >
+                <LogIn className="h-4 w-4 inline mr-2" />
+                Sign In
+              </Link>
+            </>
           )}
         </div>
       </div>
