@@ -37,17 +37,17 @@ const app = new Hono<{
 }>();
 
 app.use("*", cors({
-  origin: ["https://foundation.example", "http://localhost:3000"],
+  origin: ["https://shafie-chemasuet-foundation.pages.dev", "http://localhost:3000"],
   allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 }));
 
 app.use("*", secureHeaders({
-  frameGuard: "DENY",
-  contentTypeNosniff: true,
-  xrefingPolicy: "no-referrer-when-downgrade",
-  xssProtection: true,
+  xFrameOptions: "DENY",
+  xContentTypeOptions: true,
+  referrerPolicy: "no-referrer-when-downgrade",
+  xXssProtection: true,
   strictTransportSecurity: "max-age=31536000; includeSubDomains; preload",
   contentSecurityPolicy: {
     defaultSrc: ["'self'"],
@@ -57,7 +57,6 @@ app.use("*", secureHeaders({
     connectSrc: ["'self'", "https:", "wss:"],
     frameAncestors: ["'none'"],
   },
-  referrerPolicy: "strict-origin-when-cross-origin",
 }));
 
 app.use("*", logger());
@@ -74,7 +73,15 @@ app.use("/api/*", async (c, next) => {
   await authenticate(c, next);
 });
 
-const publicSettingsRouter = new Hono();
+const publicSettingsRouter = new Hono<{
+  Bindings: {
+    SUPABASE_URL: string;
+    SUPABASE_SERVICE_ROLE_KEY: string;
+  };
+  Variables: {
+    supabase: ReturnType<typeof createSupabaseServerClient>;
+  };
+}>();
 publicSettingsRouter.get("/", async (c) => {
   const supabase = c.get("supabase") || createSupabaseServerClient(c);
   const { data, error } = await supabase
@@ -112,7 +119,7 @@ app.get("/", (c) => {
 
 app.notFound((c) => c.json({ success: false, error: "Not found" }, 404));
 app.onError((e, c) => {
-  log("error", { error: e.message, stack: e.stack });
+  log("error", { msg: "Internal server error", error: e.message, stack: e.stack });
   return c.json({ success: false, error: "Internal server error" }, 500);
 });
 

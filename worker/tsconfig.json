@@ -16,12 +16,8 @@
     "noEmit": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "jsx": "react-jsx",
-    "paths": {
-      "@@types": ["../src/types"],
-      "@@lib/*": ["../src/lib/*"]
-    }
+    "jsx": "react-jsx"
   },
-  "include": ["src", "../src/types", "../src/lib"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }
