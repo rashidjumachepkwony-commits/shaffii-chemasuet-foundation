@@ -15,7 +15,7 @@ const navigation = [
   { name: "Volunteer", href: "/volunteer" },
   { name: "Donate", href: "/donate" },
   { name: "Contact", href: "/contact" },
-  { name: 'Request Support', href: '/support' },
+  { name: "Request Support", href: "/support" },
 ];
 
 export function Navbar() {
@@ -178,5 +178,4 @@ export function Navbar() {
   );
 }
 
-import { HelpCircle } from 'lucide-react';
 
