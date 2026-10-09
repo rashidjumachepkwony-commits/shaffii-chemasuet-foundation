@@ -71,7 +71,7 @@ app.post("/events", async (c) => {
     const supabase = c.get("supabase");
     const { data, error } = await supabase.from("events").insert({ ...valid.data, created_by: c.get("user")?.id, updated_by: c.get("user")?.id }).select().single();
     if (error) return serverError(c, error.message);
-    await logAudit(c, "EVENT_CREATED", "events", data.id, null, data);
+    await logAudit(c, "EVENT_CREATED", "events", data.id, undefined);
     return ok(c, data);
   });
 });
@@ -91,7 +91,7 @@ app.put("/events/:id", async (c) => {
     const supabase = c.get("supabase");
     const { data, error } = await supabase.from("events").update({ ...valid.data, updated_by: c.get("user")?.id, updated_at: new Date().toISOString() }).eq("id", c.req.param("id")).select().single();
     if (error) return serverError(c, error.message);
-    await logAudit(c, "EVENT_UPDATED", "events", data.id, null, data);
+    await logAudit(c, "EVENT_UPDATED", "events", data.id, undefined);
     return ok(c, data);
   });
 });
@@ -150,7 +150,7 @@ app.post("/projects", async (c) => {
     const supabase = c.get("supabase");
     const { data, error } = await supabase.from("projects").insert({ ...body, created_by: c.get("user")?.id, updated_by: c.get("user")?.id }).select().single();
     if (error) return serverError(c, error.message);
-    await logAudit(c, "PROJECT_CREATED", "projects", data.id, null, data);
+    await logAudit(c, "PROJECT_CREATED", "projects", data.id, undefined);
     return ok(c, data);
   });
 });
@@ -161,7 +161,7 @@ app.put("/projects/:id", async (c) => {
     const supabase = c.get("supabase");
     const { data, error } = await supabase.from("projects").update({ ...body, updated_by: c.get("user")?.id, updated_at: new Date().toISOString() }).eq("id", c.req.param("id")).select().single();
     if (error) return serverError(c, error.message);
-    await logAudit(c, "PROJECT_UPDATED", "projects", data.id, null, data);
+    await logAudit(c, "PROJECT_UPDATED", "projects", data.id, undefined);
     return ok(c, data);
   });
 });
@@ -193,7 +193,7 @@ app.post("/news", async (c) => {
     const supabase = c.get("supabase");
     const { data, error } = await supabase.from("news").insert({ ...body, created_by: c.get("user")?.id, updated_by: c.get("user")?.id }).select().single();
     if (error) return serverError(c, error.message);
-    await logAudit(c, "NEWS_CREATED", "news", data.id, null, data);
+    await logAudit(c, "NEWS_CREATED", "news", data.id, undefined);
     return ok(c, data);
   });
 });
@@ -204,7 +204,7 @@ app.put("/news/:id", async (c) => {
     const supabase = c.get("supabase");
     const { data, error } = await supabase.from("news").update({ ...body, updated_by: c.get("user")?.id, updated_at: new Date().toISOString() }).eq("id", c.req.param("id")).select().single();
     if (error) return serverError(c, error.message);
-    await logAudit(c, "NEWS_UPDATED", "news", data.id, null, data);
+    await logAudit(c, "NEWS_UPDATED", "news", data.id, undefined);
     return ok(c, data);
   });
 });
@@ -375,7 +375,7 @@ app.patch("/settings/:key", async (c) => {
     const supabase = c.get("supabase");
     const { data, error } = await supabase.from("site_settings").update({ value: body.value, updated_at: new Date().toISOString() }).eq("key", key).select().single();
     if (error) return serverError(c, error.message);
-    await logAudit(c, "SETTING_UPDATED", "site_settings", data.id, null, { key, value: body.value });
+    await logAudit(c, "SETTING_UPDATED", "site_settings", data.id, undefined, { key, value: body.value });
     return ok(c, data);
   });
 });

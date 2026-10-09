@@ -65,7 +65,7 @@ app.patch("/admin/:key", async (c) => {
       return serverError(c, error.message);
     }
 
-    await logAudit(c, "SETTING_UPDATED", "site_settings", data.id, null, { key, value: body.value });
+    await logAudit(c, "SETTING_UPDATED", "site_settings", data.id, undefined, { key, value: body.value });
 
     return ok(c, data);
   });

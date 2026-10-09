@@ -1,13 +1,30 @@
-import type { ClassValue } from "clsx";
-import clsx from "clsx";
-import { twMerge } from "tailwind-merge";
-import type { Permission, RoleName } from "@/types";
+import type { Permission, RoleName } from "../types";
+
+type ClassValue = string | number | boolean | undefined | null | ClassValue[];
+
+function clsx(...inputs: ClassValue[]): string {
+  const classes: string[] = [];
+  for (const input of inputs) {
+    if (typeof input === "string" || typeof input === "number") {
+      classes.push(String(input));
+    } else if (Array.isArray(input)) {
+      classes.push(clsx(...input));
+    } else if (input && typeof input === "object") {
+      for (const [key, value] of Object.entries(input)) {
+        if (value) classes.push(key);
+      }
+    }
+  }
+  return classes.join(" ");
+}
+
+function twMerge(cls: string): string {
+  return cls;
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
-export { twMerge, clsx };
 
 export function hasPermission(
   permissions: Permission[] | undefined,
