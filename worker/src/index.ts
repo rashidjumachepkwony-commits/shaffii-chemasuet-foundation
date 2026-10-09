@@ -99,7 +99,7 @@ app.route("/api/donations", donationsRouter);
 app.route("/api/contact", contactRouter);
 app.route("/api/upload", uploadRouter);
 app.route("/api/support", publicRouter);
-app.route("/api/admin/support", adminRouter);
+app.route("/api/admin/support", supportAdminRouter);
 app.route("/api/public/settings", publicSettingsRouter);
 
 app.get("/", (c) => {
@@ -118,5 +118,6 @@ app.onError((e, c) => {
 
 export default app;
 
-import { publicRouter, adminRouter } from './routes/support';
+import { publicRouter } from './routes/support';
+import { adminRouter as supportAdminRouter } from './routes/support';
 

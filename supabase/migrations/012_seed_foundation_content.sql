@@ -170,7 +170,7 @@ The library was officially opened on March 15, 2026, with a ceremony attended by
 
 The event, held at Kenyatta University, brought together over 300 women from various sectors including education, business, healthcare, and community organizing. Discussions focused on creating more opportunities for women in leadership and entrepreneurship.
 
-"The future of our communities depends on empowering all our members," said our CEO. "Women''s contributions to society are invaluable and deserve recognition and support."'
+"The future of our communities depends on empowering all our members," said our CEO. "Women''s contributions to society are invaluable and deserve recognition and support.",
    '/images/shaffikkk.jpg',
    'Community',
    'Foundation Team',
@@ -202,7 +202,7 @@ Mary coordinates our weekly food distribution drives, mentors new volunteers, an
 
 "I started volunteering because I wanted to give back to my community," Mary shares. "Seeing the impact of our work on children and families has been incredibly rewarding. Every moment is worth it when I see a child''s eyes light up after learning to read."
 
-Mary''s story is a reminder that each of us has the power to create positive change in our communities. Thank you, Mary!'
+Mary''s story is a reminder that each of us has the power to create positive change in our communities. Thank you, Mary!',
    '/images/shaffivvv.jpg',
    'Volunteer',
    'Foundation Team',
@@ -367,3 +367,4 @@ insert into gallery_items (image_url, thumbnail_url, caption, category, alt_text
   ('/images/shaffillll.jpg', '/images/shaffillll.jpg', 'Community volunteers in action', 'Volunteer', 'Volunteers serving meals', 10),
   ('/images/shaffivb.jpg', '/images/shaffivb.jpg', 'Health screening event', 'Health', 'Doctor examining patient', 11),
   ('/images/shaffivvv.jpg', '/images/shaffivvv.jpg', 'Volunteer recognition ceremony', 'Volunteer', 'Group photo with certificates', 12);
+

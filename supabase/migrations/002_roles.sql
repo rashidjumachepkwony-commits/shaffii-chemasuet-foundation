@@ -9,7 +9,8 @@ insert into roles (name, display_name, description, permissions) values
   'projects.create', 'projects.update', 'projects.delete',
   'news.create', 'news.update', 'news.delete', 'news.publish',
   'gallery.manage', 'volunteers.manage', 'donations.manage',
-  'settings.manage', 'audit_logs.view', 'messages.manage', 'contact.manage'
+  'settings.manage', 'audit_logs.view', 'messages.manage', 'contact.manage',
+  'support.manage'
 ]),
 ('ADMIN', 'Administrator', 'Full administrative access', array[
   'events.view', 'events.create', 'events.update', 'events.delete', 'events.publish',
@@ -18,7 +19,8 @@ insert into roles (name, display_name, description, permissions) values
   'projects.create', 'projects.update', 'projects.delete',
   'news.create', 'news.update', 'news.delete', 'news.publish',
   'gallery.manage', 'volunteers.manage', 'donations.manage',
-  'settings.manage', 'audit_logs.view', 'messages.manage', 'contact.manage'
+  'settings.manage', 'audit_logs.view', 'messages.manage', 'contact.manage',
+  'support.manage'
 ]),
 ('EVENT_MANAGER', 'Event Manager', 'Manage events and registrations', array[
   'events.view', 'events.create', 'events.update', 'events.publish',

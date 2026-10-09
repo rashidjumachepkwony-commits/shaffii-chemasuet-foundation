@@ -1,5 +1,14 @@
--- Support requests table for people requesting assistance from the foundation
-create table if not exists public.support_requests (
+-- 014_support_requests.sql
+-- Idempotent migration for support requests system
+
+-- Drop existing objects (for safe re-run)
+drop table if exists public.support_requests cascade;
+drop sequence if exists support_request_ref_seq;
+drop function if exists set_support_request_fields();
+drop trigger if exists trg_set_support_request_fields on public.support_requests;
+
+-- Create support requests table
+create table public.support_requests (
   id uuid default gen_random_uuid() primary key,
   full_name text not null,
   id_number text not null,
@@ -25,12 +34,14 @@ create table if not exists public.support_requests (
   updated_at timestamp with time zone default now()
 );
 
+-- Indexes
 create index if not exists idx_support_requests_status on public.support_requests(status);
 create index if not exists idx_support_requests_urgency on public.support_requests(urgency);
 create index if not exists idx_support_requests_support_type on public.support_requests(support_type);
 create index if not exists idx_support_requests_county on public.support_requests(county);
 create index if not exists idx_support_requests_created_at on public.support_requests(created_at desc);
 
+-- Row Level Security
 alter table public.support_requests enable row level security;
 
 create policy "Anyone can submit support requests"
@@ -43,7 +54,7 @@ create policy "Admins can view support requests"
   to authenticated
   using (exists (
     select 1 from user_roles ur
-    join roles r on ur.role_id = r.id
+    join roles r on ur.role = r.name
     join profiles p on ur.user_id = p.id
     where ur.user_id = auth.uid() and r.name in ('SUPER_ADMIN', 'ADMIN', 'EVENT_MANAGER', 'CONTENT_MANAGER')
   ));
@@ -53,21 +64,22 @@ create policy "Admins can update support requests"
   to authenticated
   using (exists (
     select 1 from user_roles ur
-    join roles r on ur.role_id = r.id
+    join roles r on ur.role = r.name
     join profiles p on ur.user_id = p.id
     where ur.user_id = auth.uid() and r.name in ('SUPER_ADMIN', 'ADMIN', 'EVENT_MANAGER', 'CONTENT_MANAGER')
   ))
   with check (exists (
     select 1 from user_roles ur
-    join roles r on ur.role_id = r.id
+    join roles r on ur.role = r.name
     join profiles p on ur.user_id = p.id
     where ur.user_id = auth.uid() and r.name in ('SUPER_ADMIN', 'ADMIN', 'EVENT_MANAGER', 'CONTENT_MANAGER')
   ));
 
+-- Reference number sequence and trigger
 create sequence if not exists support_request_ref_seq start 1;
 
 create or replace function set_support_request_fields()
-returns trigger as 
+returns trigger as $$
 begin
   if new.reference_number is null then
     new.reference_number := 'SCF-' || to_char(now(), 'YYYYMMDD') || '-' || lpad(nextval('support_request_ref_seq'::regclass)::text, 6, '0');
@@ -75,9 +87,8 @@ begin
   new.updated_at := now();
   return new;
 end;
- language plpgsql;
+$$ language plpgsql;
 
 create trigger trg_set_support_request_fields
   before insert or update on public.support_requests
   for each row execute function set_support_request_fields();
-
