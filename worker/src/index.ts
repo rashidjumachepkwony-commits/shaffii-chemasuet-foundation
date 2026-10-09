@@ -98,8 +98,8 @@ app.route("/api/volunteers", volunteersRouter);
 app.route("/api/donations", donationsRouter);
 app.route("/api/contact", contactRouter);
 app.route("/api/upload", uploadRouter);
-app.route("/api/support", supportRouter);
-app.route("/api/admin/support", supportRouter);
+app.route("/api/support", publicRouter);
+app.route("/api/admin/support", adminRouter);
 app.route("/api/public/settings", publicSettingsRouter);
 
 app.get("/", (c) => {
@@ -118,5 +118,5 @@ app.onError((e, c) => {
 
 export default app;
 
-import supportRouter from './routes/support';
+import { publicRouter, adminRouter } from './routes/support';
 

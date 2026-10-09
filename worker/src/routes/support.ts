@@ -5,23 +5,14 @@ import { supportRequestSchema } from "../validation/support";
 import { requirePermission } from "../middleware/auth";
 import { log } from "../utils/logger";
 
-const supportRouter = new Hono<{
-  Bindings: {
-    SUPABASE_URL: string;
-    SUPABASE_SERVICE_ROLE_KEY: string;
-  };
-  Variables: {
-    user: any;
-    supabase: any;
-    role: string | null;
-    permissions: string[];
-  };
-}>();
-
 const statusSchema = z.enum(["New", "Under Review", "Approved", "In Progress", "Completed", "Rejected", "Closed"]);
 
-// Public endpoint - submit a support request
-const publicRouter = new Hono();
+// Public router - for submitting support requests (no auth required)
+const publicRouter = new Hono<{
+  Variables: {
+    supabase: any;
+  };
+}>();
 
 publicRouter.post("/", async (c) => {
   try {
@@ -59,25 +50,30 @@ publicRouter.post("/", async (c) => {
   }
 });
 
-// Admin endpoints - require appropriate permissions
-supportRouter.use("/admin/*", async (c, next) => {
-  const user = c.get("user");
-  if (!user) {
-    return badRequest(c, "Not authenticated");
-  }
-  const permissions: string[] = c.get("permissions") || [];
-  const hasPermission = permissions.includes("support.manage");
-  if (!hasPermission) {
-    return forbidden(c, "You do not have permission to manage support requests");
-  }
-  await next();
-});
+// Admin router - for managing support requests (requires "support.manage" permission)
+const adminRouter = new Hono<{
+  Bindings: {
+    SUPABASE_URL: string;
+    SUPABASE_SERVICE_ROLE_KEY: string;
+  };
+  Variables: {
+    user: any;
+    supabase: any;
+    role: string | null;
+    permissions: string[];
+  };
+}>();
 
-supportRouter.get("/admin", async (c) => {
+adminRouter.use("/*", (c, next) => requirePermission("support.manage", c, next));
+
+adminRouter.get("/", async (c) => {
   try {
-    const { page, limit, search, status, supportType, county } = extractRequest(c);
+    const { page, limit, offset } = extractPaginationParams(c);
     const supabase = c.get("supabase");
-    const { offset } = extractPaginationParams(page, limit);
+    const search = c.req.query("search");
+    const status = c.req.query("status");
+    const supportType = c.req.query("support_type");
+    const county = c.req.query("county");
 
     let query = supabase.from("support_requests").select("*", { count: "exact" });
     query = query.order("created_at", { ascending: false });
@@ -111,7 +107,7 @@ supportRouter.get("/admin", async (c) => {
   }
 });
 
-supportRouter.get("/admin/:id", async (c) => {
+adminRouter.get("/:id", async (c) => {
   try {
     const supabase = c.get("supabase");
     const { id } = c.req.param();
@@ -132,7 +128,7 @@ supportRouter.get("/admin/:id", async (c) => {
   }
 });
 
-supportRouter.patch("/admin/:id/status", async (c) => {
+adminRouter.patch("/:id/status", async (c) => {
   try {
     const supabase = c.get("supabase");
     const { id } = c.req.param();
@@ -163,15 +159,5 @@ supportRouter.patch("/admin/:id/status", async (c) => {
   }
 });
 
-function extractRequest(c: any) {
-  const url = new URL(c.req.url);
-  const page = parseInt(url.searchParams.get("page") || "1", 10);
-  const limit = parseInt(url.searchParams.get("limit") || "20", 10);
-  const search = url.searchParams.get("search") || undefined;
-  const status = url.searchParams.get("status") || undefined;
-  const supportType = url.searchParams.get("support_type") || undefined;
-  const county = url.searchParams.get("county") || undefined;
-  return { page, limit, search, status, supportType, county, supabase: c.get("supabase") };
-}
-
-export default supportRouter;
+export { publicRouter, adminRouter };
+export default publicRouter;

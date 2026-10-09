@@ -52,7 +52,7 @@ type SupportRequestInput = {
 export default function RequestSupport() {
   const [submitted, setSubmitted] = useState(false);
   const [reference, setReference] = useState<string | null>(null);
-  const { success, error: showError } = useToast();
+  const { success } = useToast();
   const navigate = useNavigate();
 
   const form = useForm({
