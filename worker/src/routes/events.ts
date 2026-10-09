@@ -8,7 +8,7 @@ import {
   extractPaginationParams,
 } from "../utils/response";
 import { logAudit } from "../middleware/auth";
-import { generateRegistrationReference } from "../../src/lib/utils";
+import { generateRegistrationReference } from "../lib/utils";
 
 const app = new Hono<{
   Bindings: {

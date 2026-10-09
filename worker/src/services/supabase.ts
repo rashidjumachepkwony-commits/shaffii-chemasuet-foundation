@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Context } from "hono";
-import type { RoleName } from "../../src/types";
-import { ROLE_PERMISSIONS } from "../../src/types";
+import type { RoleName } from "../types";
+import { ROLE_PERMISSIONS } from "../types";
 
 export function createSupabaseServerClient(c: Context) {
   return createClient(
