@@ -260,7 +260,7 @@ app.post("/:id/register", async (c) => {
     "REGISTRATION_CREATED",
     "event_registrations",
     data.id,
-    null,
+    undefined,
     { registration_reference: registrationReference }
   );
 

@@ -33,16 +33,16 @@ app.get("/", async (c) => {
   const registrations = registrationsRes.data || [];
 
   const upcoming = registrations.filter(
-    (r) => new Date(r.event.event_date) > new Date() && r.status !== "CANCELLED"
+    (r: any) => new Date(r.event.event_date) > new Date() && r.status !== "CANCELLED"
   );
   const past = registrations.filter(
-    (r) => new Date(r.event.event_date) < new Date() || r.status === "CHECKED_IN" || r.status === "DID_NOT_ATTEND"
+    (r: any) => new Date(r.event.event_date) < new Date() || r.status === "CHECKED_IN" || r.status === "DID_NOT_ATTEND"
   );
 
   const stats = {
     upcoming_events: upcoming.length,
     total_registrations: registrations.length,
-    attended: registrations.filter((r) => r.status === "CHECKED_IN").length,
+    attended: registrations.filter((r: any) => r.status === "CHECKED_IN").length,
   };
 
   return ok(c, {

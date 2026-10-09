@@ -9,6 +9,7 @@ export async function authenticate(context: Context, next: () => Promise<void>) 
     context.set("user", null);
     context.set("role", null);
     context.set("permissions", []);
+    await next();
     return;
   }
 
@@ -37,7 +38,7 @@ export async function authenticate(context: Context, next: () => Promise<void>) 
   await next();
 }
 
-export async function requireAuth(context: Context, next: () => Promise<void>) {
+export async function requireAuth(context: Context, next: () => Promise<Response>) {
   const user = context.var.user;
   if (!user) {
     return context.json({ success: false, error: "Authentication required" }, 401);
@@ -48,7 +49,7 @@ export async function requireAuth(context: Context, next: () => Promise<void>) {
 export async function requireRole(
   roles: RoleName | RoleName[],
   context: Context,
-  next: () => Promise<void>
+  next: () => Promise<Response>
 ) {
   const userRole = context.var.role;
   const allowedRoles = Array.isArray(roles) ? roles : [roles];
@@ -71,7 +72,7 @@ export async function requireRole(
 export async function requirePermission(
   permission: string,
   context: Context,
-  next: () => Promise<void>
+  next: () => Promise<Response>
 ) {
   const permissions = context.var.permissions;
   if (!permissions || !permissions.includes(permission)) {
