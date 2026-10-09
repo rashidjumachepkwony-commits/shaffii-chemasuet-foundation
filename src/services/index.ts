@@ -17,6 +17,30 @@ export const authService = {
   async getMe(): Promise<{ profile: Profile | null; role: string | null; permissions: string[] }> {
     return extractData(await apiGet<ApiResponse<{ profile: Profile | null; role: string | null; permissions: string[] }>>("/auth/me"));
   },
+
+  async login(email: string, password: string): Promise<{
+    user: { id: string; email: string };
+    session: { access_token: string; refresh_token: string; expires_at: number };
+    profile: Profile | null;
+    role: string;
+    permissions: string[];
+  }> {
+    return extractData(await apiPost("/auth/login", { email, password }));
+  },
+
+  async register(data: {
+    email: string;
+    password: string;
+    full_name: string;
+    phone?: string;
+    organization?: string;
+  }): Promise<{ message: string; user: { id: string; email: string } }> {
+    return extractData(await apiPost("/auth/register", data));
+  },
+
+  async verifyAdmin(): Promise<{ role: string; permissions: string[] }> {
+    return extractData(await apiGet("/auth/verify-admin"));
+  },
 };
 
 export interface ProjectsListParams {
