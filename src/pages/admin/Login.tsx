@@ -7,31 +7,35 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { authService } from "@/services";
 import { Mail, Lock, Shield } from "lucide-react";
 
 export default function AdminLogin() {
   const { success, error: showError } = useToast();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    if (useAuth.getState().user) {
+    if (user) {
       navigate("/admin", { replace: true });
     }
-  }, [navigate]);
+  }, [user, navigate]);
 
   const form = useForm({
     initialValues: { email: "", password: "" },
     validationSchema: loginSchema,
     onSubmit: async (values) => {
       try {
-        const result = await authService.login(values.email, values.password);
-        if (result.role === "USER") {
+        const { error } = await login(values.email, values.password);
+        if (error) {
+          showError(error.message || "Login failed.");
+          return;
+        }
+        // Check if user has admin access
+        const verifyResult = await authService.verifyAdmin();
+        if (verifyResult.role === "USER") {
           showError("You do not have admin access.");
           return;
         }
-        await login(result);
         success("Admin login successful!");
         navigate("/admin", { replace: true });
       } catch (err: any) {

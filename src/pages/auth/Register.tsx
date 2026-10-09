@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/Toast";
 import { User, Mail, Phone, Lock, UserPlus } from "lucide-react";
 
 export default function Register() {
-  const { signUp } = useAuth();
+  const { register } = useAuth();
   const { error: showError, success: showSuccess } = useToast();
   const navigate = useNavigate();
 
@@ -23,7 +23,7 @@ export default function Register() {
     },
     validationSchema: registerSchema,
     onSubmit: async (values) => {
-      const { error, data } = await signUp(values.email, values.password, {
+      const { error, data } = await register(values.email, values.password, {
         full_name: values.full_name,
         phone: values.phone,
       });
@@ -33,10 +33,10 @@ export default function Register() {
         return;
       }
 
-      const userData = data as any;
-      if (userData?.user && !userData?.session) {
+      // New API returns { message: string; user: { id: string; email: string } }
+      if (data?.user) {
         showSuccess(
-          "Registration successful! Please check your email to verify your account."
+          "Registration successful! Your account is pending admin approval."
         );
         navigate("/login");
         return;
