@@ -27,6 +27,7 @@ const app = new Hono<{
     SUPABASE_SERVICE_ROLE_KEY: string;
     WORKER_AUTH_SECRET: string;
     ENVIRONMENT: string;
+    ASSETS: Fetcher;
   };
   Variables: {
     user: any;
@@ -36,7 +37,7 @@ const app = new Hono<{
   };
 }>();
 
-app.use("*", cors({
+app.use("/api/*", cors({
   origin: (origin) => {
     const allowedOrigins = [
       "https://shafie-chemasuet-foundation.pages.dev",
@@ -49,7 +50,6 @@ app.use("*", cors({
       "https://shafie-chemasuet-foundation-worker.rashidjumachepkwony.workers.dev",
     ];
     if (allowedOrigins.includes(origin)) return origin;
-    // Allow any *.pages.dev preview subdomain for the correct project
     if (origin && origin.endsWith(".shafie-chemasuet-foundation.pages.dev")) return origin;
     return null;
   },
@@ -58,7 +58,7 @@ app.use("*", cors({
   credentials: true,
 }));
 
-app.use("*", secureHeaders({
+app.use("/api/*", secureHeaders({
   xFrameOptions: "DENY",
   xContentTypeOptions: true,
   referrerPolicy: "no-referrer-when-downgrade",
@@ -74,11 +74,11 @@ app.use("*", secureHeaders({
   },
 }));
 
-app.use("*", logger());
-app.use("*", timing());
-app.use("*", rateLimit);
+app.use("/api/*", logger());
+app.use("/api/*", timing());
+app.use("/api/*", rateLimit);
 
-app.use("*", async (c, next) => {
+app.use("/api/*", async (c, next) => {
   c.set("supabase", createSupabaseServerClient(c));
   await next();
 });
@@ -123,12 +123,32 @@ app.route("/api/support", publicRouter);
 app.route("/api/admin/support", supportAdminRouter);
 app.route("/api/public/settings", publicSettingsRouter);
 
-app.get("/", (c) => {
+app.get("/api", (c) => {
   return c.json({
     success: true,
     message: "Shafie Chemasuet Foundation API",
     version: "1.0.0",
   });
+});
+
+app.get("/api/health", (c) => {
+  return ok(c, { success: true, status: "healthy" });
+});
+
+app.get("*", async (c) => {
+  try {
+    const request = new Request(c.req.url, c.req);
+    const response = await c.env.ASSETS.fetch(request);
+    if (response.status === 404) {
+      const indexRequest = new Request(new URL("/index.html", c.req.url).href, { method: "GET" });
+      const indexResponse = await c.env.ASSETS.fetch(indexRequest);
+      if (!indexResponse.ok) throw new Error();
+      return indexResponse;
+    }
+    return response;
+  } catch {
+    return c.notFound();
+  }
 });
 
 app.notFound((c) => c.json({ success: false, error: "Not found" }, 404));
