@@ -172,7 +172,23 @@ export function App() {
                 </Route>
               </Route>
 
-              <Route path="/admin/login" element={<LazyAdminLogin />} />
+              <Route element={<AuthLayout />}>
+                <Route path="/login" element={<LazyLogin />} />
+                <Route path="/register" element={<LazyRegister />} />
+                <Route path="/forgot-password" element={<LazyForgotPassword />} />
+                <Route path="/reset-password" element={<LazyResetPassword />} />
+                <Route path="/admin/login" element={<LazyAdminLogin />} />
+                <Route path="/unauthorized" element={<Unauthorized />} />
+              </Route>
+
+              <Route element={<RequireAuthOutlet />}>
+                <Route element={<LazyDashboardLayout />}>
+                  <Route path="/dashboard" element={<LazyDashboard />} />
+                  <Route path="/dashboard/events" element={<LazyDashboardEvents />} />
+                  <Route path="/dashboard/profile" element={<LazyDashboardProfile />} />
+                </Route>
+              </Route>
+
               <Route element={<RequireAuthOutlet roles={["SUPER_ADMIN", "ADMIN", "EVENT_MANAGER", "CONTENT_MANAGER"]} />}>
                 <Route element={<LazyAdminLayout />}>
                   <Route path="/admin" element={<LazyAdminDashboard />} />
@@ -190,9 +206,11 @@ export function App() {
                   <Route path="/admin/contact" element={<LazyAdminContact />} />
                   <Route path="/admin/settings" element={<LazyAdminSettings />} />
                   <Route path="/admin/audit-logs" element={<LazyAdminAuditLogs />} />
-                <Route path="/admin/support" element={<LazyAdminSupportRequests />} />
+                  <Route path="/admin/support" element={<LazyAdminSupportRequests />} />
                 </Route>
               </Route>
+
+              <Route path="*" element={<NotFound />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>
