@@ -17,6 +17,7 @@ import donationsRouter from "./routes/donations";
 import contactRouter from "./routes/contact";
 import uploadRouter from "./routes/upload";
 import dashboardRouter from "./routes/dashboard";
+import { publicRouter, adminRouter as supportAdminRouter } from "./routes/support";
 import { log } from "./utils/logger";
 import { ok, serverError } from "./utils/response";
 
@@ -36,14 +37,22 @@ const app = new Hono<{
 }>();
 
 app.use("*", cors({
-  origin: [
-    "https://shaffii-chemasuet-foundation.pages.dev",
-    "https://*.shaffii-chemasuet-foundation.pages.dev",
-    "https://shaffiichemasuetfoundation.co.ke",
-    "https://www.shaffiichemasuetfoundation.co.ke",
-    "http://localhost:3000",
-    "https://shafie-chemasuet-foundation-worker.rashidjumachepkwony.workers.dev"
-  ],
+  origin: (origin) => {
+    const allowedOrigins = [
+      "https://shafie-chemasuet-foundation.pages.dev",
+      "https://www.shafie-chemasuetfoundation.co.ke",
+      "https://shafie-chemasuetfoundation.co.ke",
+      "https://shaffiichemasuetfoundation.co.ke",
+      "https://www.shaffiichemasuetfoundation.co.ke",
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "https://shafie-chemasuet-foundation-worker.rashidjumachepkwony.workers.dev",
+    ];
+    if (allowedOrigins.includes(origin)) return origin;
+    // Allow any *.pages.dev preview subdomain for the correct project
+    if (origin && origin.endsWith(".shafie-chemasuet-foundation.pages.dev")) return origin;
+    return null;
+  },
   allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowHeaders: ["Content-Type", "Authorization"],
   credentials: true,
@@ -129,6 +138,3 @@ app.onError((e, c) => {
 });
 
 export default app;
-
-import { publicRouter } from './routes/support';
-import { adminRouter as supportAdminRouter } from './routes/support';

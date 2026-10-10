@@ -47,13 +47,13 @@ const adminNavItems: AdminNavItem[] = [
 
 export default function AdminLayout() {
   const location = useLocation();
-  const { signOut, role } = useAuth();
+  const { logout, role } = useAuth();
   const { can } = usePermissions();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const handleLogout = async () => {
-    await signOut();
+    await logout();
     navigate("/admin/login", { replace: true });
   };
 

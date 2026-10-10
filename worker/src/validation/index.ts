@@ -3,7 +3,7 @@ import {
   eventActivityValues,
   eventAgeGroupValues,
   kenyaCounties,
-} from "../../../src/lib/eventRegistrationOptions";
+} from "../lib/eventRegistrationOptions";
 
 export const uuidSchema = z.string().uuid();
 

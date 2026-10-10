@@ -1,7 +1,8 @@
 import { Hono } from "hono";
 import { z } from "zod";
-import { ok, badRequest, serverError, unauthorized, created } from "../utils/response";
+import { ok, badRequest, serverError, unauthorized, forbidden, created } from "../utils/response";
 import { getUserRole, getPermissionsForRole, createSupabaseServerClient } from "../services/supabase";
+import { log } from "../utils/logger";
 import type { RoleName } from "../../src/types";
 
 const loginSchema = z.object({
@@ -47,17 +48,24 @@ app.post("/login", async (c) => {
   });
 
   if (error || !data.user) {
+    log("warn", { msg: "Login attempt failed", error: error?.message || "Invalid credentials" });
     return unauthorized(c, "Invalid email or password");
   }
 
   const role = await getUserRole(supabase, data.user.id);
   const permissions = getPermissionsForRole(role);
 
-  const { data: profile } = await supabase
+  log("info", { msg: "Login successful", userId: data.user.id, role });
+
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", data.user.id)
     .single();
+
+  if (profileError && profileError.code !== "PGRST116") {
+    log("warn", { msg: "Profile lookup error during login", userId: data.user.id, error: profileError.message });
+  }
 
   return ok(c, {
     user: {
@@ -182,7 +190,13 @@ app.get("/verify-admin", async (c) => {
   const adminRoles: RoleName[] = ["SUPER_ADMIN", "ADMIN", "EVENT_MANAGER", "CONTENT_MANAGER"];
 
   if (!role || !adminRoles.includes(role as RoleName)) {
-    return badRequest(c, "Access denied: administrator privileges required");
+    log("warn", {
+      msg: "Admin verification denied",
+      userId: user?.id,
+      actualRole: role,
+      requiredRoles: adminRoles,
+    });
+    return forbidden(c, "Access denied: administrator privileges required");
   }
 
   return ok(c, { role, permissions: c.get("permissions") });
@@ -194,6 +208,47 @@ app.get("/roles", async (c) => {
     return unauthorized(c);
   }
   return ok(c, { role: c.get("role"), permissions: c.get("permissions") });
+});
+
+app.patch("/profile", async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return unauthorized(c);
+  }
+
+  const body = await c.req.json();
+  const { full_name, phone, organization, password } = body;
+
+  const supabase = c.get("supabase");
+  const updates: Record<string, unknown> = {};
+
+  if (full_name !== undefined) updates.full_name = full_name;
+  if (phone !== undefined) updates.phone = phone;
+  if (organization !== undefined) updates.organization = organization;
+
+  if (Object.keys(updates).length > 0) {
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update(updates)
+      .eq("id", user.id);
+
+    if (profileError) {
+      log("error", { msg: "Profile update failed", userId: user.id, error: profileError.message });
+      return serverError(c, profileError.message);
+    }
+  }
+
+  if (password) {
+    const { error: passwordError } = await supabase.auth.admin.updateUser(user.id, {
+      password,
+    });
+    if (passwordError) {
+      log("error", { msg: "Password update failed", userId: user.id, error: passwordError.message });
+      return serverError(c, passwordError.message);
+    }
+  }
+
+  return ok(c, { success: true });
 });
 
 export default app;

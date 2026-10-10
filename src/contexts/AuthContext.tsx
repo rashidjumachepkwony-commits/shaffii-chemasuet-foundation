@@ -1,6 +1,5 @@
 import * as React from "react";
 import { setTokenProvider } from "@/services/api";
-import { apiRequest } from "@/services/api";
 import type { RoleName, Permission } from "@/types";
 import { hasPermission } from "@/lib/utils";
 import { authService } from "@/services";
@@ -27,7 +26,7 @@ interface AuthContextType {
   permissions: Permission[];
   loading: boolean;
   initialized: boolean;
-  login: (
+   login: (
     email: string,
     password: string
   ) => Promise<{ error: Error | null; data: { needsEmailConfirmation?: boolean } }>;
@@ -35,7 +34,10 @@ interface AuthContextType {
     email: string,
     password: string,
     metadata: { full_name?: string; phone?: string; organization?: string }
-  ) => Promise<{ error: Error | null; data: unknown }>;
+  ) => Promise<{ error: Error | null; data: { message: string; user: { id: string; email: string } } | null }>;
+  updateProfile: (
+    data: { full_name?: string; phone?: string; organization?: string; password?: string }
+  ) => Promise<{ error: Error | null }>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
   refreshSession: () => Promise<void>;
@@ -78,20 +80,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const loadProfileAndRole = React.useCallback(async () => {
     try {
-      const profileRes = await apiRequest<{
-        profile: AuthContextType["profile"];
-        role: RoleName | null;
-        permissions: Permission[];
-      } | null>("/auth/me");
-      if (profileRes) {
-        setProfile(profileRes.profile);
-        setRole(profileRes.role);
-        setPermissions(profileRes.permissions);
-      } else {
-        setProfile(null);
-        setRole(null);
-        setPermissions([]);
-      }
+      const result = await authService.getMe();
+      setProfile(result.profile);
+      setRole(result.role as RoleName | null);
+      setPermissions(result.permissions as Permission[]);
     } catch {
       setProfile(null);
       setRole(null);
@@ -139,8 +131,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser({ id: result.user.id, email: result.user.email });
       setSession(result.session);
       setProfile(result.profile);
-      setRole(result.role);
-      setPermissions(result.permissions);
+      setRole(result.role as RoleName);
+      setPermissions(result.permissions as Permission[]);
       localStorage.setItem("auth_session", JSON.stringify(result.session));
       localStorage.setItem("auth_user", JSON.stringify({ id: result.user.id, email: result.user.email }));
       return { error: null, data: { needsEmailConfirmation: false } };
@@ -197,6 +189,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     await loadProfileAndRole();
   };
 
+  const updateProfile = async (
+    data: { full_name?: string; phone?: string; organization?: string; password?: string }
+  ) => {
+    setLoading(true);
+    try {
+      await authService.updateProfile(data);
+      await loadProfileAndRole();
+      return { error: null };
+    } catch (err: any) {
+      return { error: err };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value: AuthContextType = {
     user,
     session,
@@ -210,7 +217,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     logout,
     resetPassword,
     refreshSession,
-  };
+    updateProfile,
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

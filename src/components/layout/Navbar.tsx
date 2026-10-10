@@ -20,7 +20,7 @@ const navigation = [
 
 export function Navbar() {
   const [menuOpen, setMenuOpen] = React.useState(false);
-  const { user, signOut, loading } = useAuth();
+  const { user, logout, loading } = useAuth();
   const { getSetting } = useSettings();
   const navigate = useNavigate();
 
@@ -28,7 +28,7 @@ export function Navbar() {
   const foundationTagline = getSetting("foundation_tagline", "Empowering People. Strengthening Communities. Creating Opportunities.");
 
   const handleLogout = async () => {
-    await signOut();
+    await logout();
     navigate("/login", { replace: true });
   };
 
