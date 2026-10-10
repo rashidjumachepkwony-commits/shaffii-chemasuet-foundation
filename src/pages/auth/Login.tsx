@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/Toast";
 import { Mail, Lock, LogIn } from "lucide-react";
 
 export default function Login() {
-  const { signIn } = useAuth();
+  const { login } = useAuth();
   const { error: showError } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,7 +20,7 @@ export default function Login() {
     initialValues: { email: "", password: "" },
     validationSchema: loginSchema,
     onSubmit: async (values) => {
-      const { error } = await signIn(values.email, values.password);
+      const { error } = await login(values.email, values.password);
       if (error) {
         showError(error.message || "Login failed. Please check your credentials.");
         return;

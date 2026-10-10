@@ -38,8 +38,17 @@ export const authService = {
     return extractData(await apiPost("/auth/register", data));
   },
 
-  async verifyAdmin(): Promise<{ role: string; permissions: string[] }> {
+   async verifyAdmin(): Promise<{ role: string; permissions: string[] }> {
     return extractData(await apiGet("/auth/verify-admin"));
+  },
+
+  async updateProfile(data: {
+    full_name?: string;
+    phone?: string;
+    organization?: string;
+    password?: string;
+  }): Promise<{ success: boolean }> {
+    return extractData(await apiPatch("/auth/profile", data));
   },
 };
 

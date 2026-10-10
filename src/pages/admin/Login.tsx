@@ -8,11 +8,12 @@ import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { authService } from "@/services";
+import { ApiError } from "@/services/api";
 import { Mail, Lock, Shield } from "lucide-react";
 
 export default function AdminLogin() {
   const { success, error: showError } = useToast();
-  const { login, user } = useAuth();
+  const { login, logout, user } = useAuth();
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -28,17 +29,28 @@ export default function AdminLogin() {
       try {
         const { error } = await login(values.email, values.password);
         if (error) {
-          showError(error.message || "Login failed.");
+          showError(error.message || "Login failed. Please check your credentials.");
           return;
         }
-        // Check if user has admin access
-        const verifyResult = await authService.verifyAdmin();
-        if (verifyResult.role === "USER") {
-          showError("You do not have admin access.");
-          return;
+        try {
+          const verifyResult = await authService.verifyAdmin();
+          if (verifyResult.role === "USER" || !verifyResult.role) {
+            showError("This account does not have administrator privileges. Please use the member login.");
+            await logout();
+            return;
+          }
+          success("Admin login successful!");
+          navigate("/admin", { replace: true });
+        } catch (verifyErr: any) {
+          if (verifyErr instanceof ApiError && verifyErr.status === 403) {
+            showError("This account does not have administrator privileges. Please use the member login.");
+          } else if (verifyErr instanceof ApiError && verifyErr.status === 401) {
+            showError("Session expired. Please try logging in again.");
+          } else {
+            showError(verifyErr.message || "Unable to verify administrator access. Please try again.");
+          }
+          await logout();
         }
-        success("Admin login successful!");
-        navigate("/admin", { replace: true });
       } catch (err: any) {
         showError(err.message || "Login failed.");
       }
