@@ -1,6 +1,7 @@
 import type { ApiResponse, PaginatedResponse } from "@/types";
 
-const API_BASE = import.meta.env.VITE_API_URL || "/api";
+const BASE = import.meta.env.VITE_API_URL || "";
+const API_BASE = BASE ? `${BASE.replace(/\/$/, "")}/api` : "/api";
 
 export class ApiError extends Error {
   constructor(
@@ -38,10 +39,19 @@ export async function apiRequest<T = unknown>(
 ): Promise<T> {
   const url = `${API_BASE}${path}`;
   const headers = await getHeaders();
-  const response = await fetch(url, {
-    ...options,
-    headers: { ...headers, ...(options.headers as HeadersInit) },
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers: { ...headers, ...(options.headers as HeadersInit) },
+    });
+  } catch (err) {
+    throw new ApiError(
+      "Unable to reach the server. Check your network connection or CORS configuration.",
+      0,
+      "NETWORK_ERROR"
+    );
+  }
 
   const contentType = response.headers.get("content-type");
   let data: unknown;
@@ -53,13 +63,13 @@ export async function apiRequest<T = unknown>(
 
   if (!response.ok) {
     const errorResponse = data as ApiResponse;
-    throw new ApiError(
-      errorResponse.error ||
-        errorResponse.message ||
-        `Request failed with status ${response.status}`,
-      response.status,
-      errorResponse.error
-    );
+    const message =
+      (errorResponse.error || errorResponse.message) && typeof errorResponse.error === "string"
+        ? errorResponse.error
+        : typeof errorResponse.message === "string"
+        ? errorResponse.message
+        : `Request failed with status ${response.status}`;
+    throw new ApiError(message, response.status, errorResponse.error);
   }
 
   return data as T;

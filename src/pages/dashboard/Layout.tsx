@@ -19,12 +19,12 @@ const dashboardNav = [
 
 export function DashboardLayout() {
   const location = useLocation();
-  const { user, signOut, role } = useAuth();
+  const { user, logout, role } = useAuth();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const handleLogout = async () => {
-    await signOut();
+    await logout();
     navigate("/login", { replace: true });
   };
 
