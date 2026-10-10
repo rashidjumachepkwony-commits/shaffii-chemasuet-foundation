@@ -218,6 +218,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     resetPassword,
     refreshSession,
     updateProfile,
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
