@@ -73,33 +73,6 @@ export default function RequestSupport() {
     },
   });
 
-  const handleCountryChange = (country: string) => {
-    form.handleChange("country", country);
-    setSelectedCountry(country);
-    form.setFieldValue("county", "");
-    form.setFieldValue("sub_county", "");
-    form.setFieldValue("ward", "");
-    form.setFieldValue("location", "");
-  };
-
-  const handleCountyChange = (county: string) => {
-    form.handleChange("county", county);
-    form.setFieldValue("sub_county", "");
-    form.setFieldValue("ward", "");
-    form.setFieldValue("location", "");
-  };
-
-  const handleSubCountyChange = (subCounty: string) => {
-    form.handleChange("sub_county", subCounty);
-    form.setFieldValue("ward", "");
-    form.setFieldValue("location", "");
-  };
-
-  const handleWardChange = (ward: string) => {
-    form.handleChange("ward", ward);
-    form.setFieldValue("location", "");
-  };
-
   const resetForm = () => {
     form.reset();
     setSelectedCountry("Kenya");
@@ -198,11 +171,18 @@ export default function RequestSupport() {
                   <Select
                     required
                     value={form.values.country as string}
-                    onChange={(e) => handleCountryChange(e.target.value)}
+                    onChange={(e) => {
+                      const country = e.target.value;
+                      form.handleChange("country", country);
+                      setSelectedCountry(country);
+                      form.setFieldValue("county", "");
+                      form.setFieldValue("sub_county", "");
+                      form.setFieldValue("ward", "");
+                      form.setFieldValue("location", "");
+                    }}
                     onBlur={() => form.handleBlur("country")}
                     aria-invalid={!!form.errors.country}
                   >
-                    <option value="" disabled>Select country</option>
                     {countries.map((c) => (
                       <option key={c} value={c}>{c}</option>
                     ))}
@@ -215,7 +195,13 @@ export default function RequestSupport() {
                     <Select
                       required
                       value={form.values.county as string}
-                      onChange={(e) => handleCountyChange(e.target.value)}
+                      onChange={(e) => {
+                        const county = e.target.value;
+                        form.handleChange("county", county);
+                        form.setFieldValue("sub_county", "");
+                        form.setFieldValue("ward", "");
+                        form.setFieldValue("location", "");
+                      }}
                       onBlur={() => form.handleBlur("county")}
                       aria-invalid={!!form.errors.county}
                       disabled={!selectedCountry}
@@ -243,7 +229,12 @@ export default function RequestSupport() {
                     <Select
                       required
                       value={form.values.sub_county as string}
-                      onChange={(e) => handleSubCountyChange(e.target.value)}
+                      onChange={(e) => {
+                        const subCounty = e.target.value;
+                        form.handleChange("sub_county", subCounty);
+                        form.setFieldValue("ward", "");
+                        form.setFieldValue("location", "");
+                      }}
                       onBlur={() => form.handleBlur("sub_county")}
                       aria-invalid={!!form.errors.sub_county}
                     >
@@ -259,8 +250,8 @@ export default function RequestSupport() {
                       onChange={(e) => form.handleChange("sub_county", e.target.value)}
                       onBlur={() => form.handleBlur("sub_county")}
                       aria-invalid={!!form.errors.sub_county}
-                      placeholder={form.values.county ? "Enter sub-county" : "Select county first"}
-                      disabled={!form.values.county}
+                      placeholder={form.values.county && selectedCountry === "Kenya" ? "Select sub-county" : "Select county first"}
+                      disabled={!form.values.county || selectedCountry !== "Kenya"}
                     />
                   )}
                   {form.errors.sub_county && <p className="mt-1 text-sm text-red-600">{form.errors.sub_county}</p>}
@@ -271,7 +262,11 @@ export default function RequestSupport() {
                     <Select
                       required
                       value={form.values.ward as string}
-                      onChange={(e) => handleWardChange(e.target.value)}
+                      onChange={(e) => {
+                        const ward = e.target.value;
+                        form.handleChange("ward", ward);
+                        form.setFieldValue("location", "");
+                      }}
                       onBlur={() => form.handleBlur("ward")}
                       aria-invalid={!!form.errors.ward}
                     >
@@ -287,8 +282,8 @@ export default function RequestSupport() {
                       onChange={(e) => form.handleChange("ward", e.target.value)}
                       onBlur={() => form.handleBlur("ward")}
                       aria-invalid={!!form.errors.ward}
-                      placeholder={form.values.sub_county ? "Enter ward" : "Select sub-county first"}
-                      disabled={!form.values.sub_county}
+                      placeholder={form.values.sub_county && selectedCountry === "Kenya" ? "Select ward" : "Select sub-county first"}
+                      disabled={!form.values.sub_county || selectedCountry !== "Kenya"}
                     />
                   )}
                   {form.errors.ward && <p className="mt-1 text-sm text-red-600">{form.errors.ward}</p>}
@@ -315,8 +310,8 @@ export default function RequestSupport() {
                       onChange={(e) => form.handleChange("location", e.target.value)}
                       onBlur={() => form.handleBlur("location")}
                       aria-invalid={!!form.errors.location}
-                      placeholder={form.values.ward ? "Enter location" : "Select ward first"}
-                      disabled={!form.values.ward}
+                      placeholder={form.values.ward && selectedCountry === "Kenya" ? "Select location" : "Select ward first"}
+                      disabled={!form.values.ward || selectedCountry !== "Kenya"}
                     />
                   )}
                   {form.errors.location && <p className="mt-1 text-sm text-red-600">{form.errors.location}</p>}
