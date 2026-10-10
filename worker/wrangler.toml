@@ -9,6 +9,10 @@ ENVIRONMENT = "development"
 [env.production]
 vars = { ENVIRONMENT = "production" }
 
+# Serve frontend static assets from ../dist
+[assets]
+directory = "../dist"
+
 # Configure for local development
 [dev]
 port = 8787
