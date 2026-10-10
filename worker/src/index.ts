@@ -136,13 +136,13 @@ app.get("/api/health", (c) => {
 });
 
 app.get("*", async (c) => {
+  const url = new URL(c.req.url);
   try {
-    const request = new Request(c.req.url, c.req);
-    const response = await c.env.ASSETS.fetch(request);
+    const response = await c.env.ASSETS.fetch(c.req.raw);
     if (response.status === 404) {
-      const indexRequest = new Request(new URL("/index.html", c.req.url).href, { method: "GET" });
-      const indexResponse = await c.env.ASSETS.fetch(indexRequest);
-      if (!indexResponse.ok) throw new Error();
+      url.pathname = "/index.html";
+      const indexResponse = await c.env.ASSETS.fetch(new Request(url.toString()));
+      if (!indexResponse.ok) return c.notFound();
       return indexResponse;
     }
     return response;

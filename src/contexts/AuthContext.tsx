@@ -92,7 +92,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   React.useEffect(() => {
-    let mounted = true;
+    const mounted = true;
 
     const initialize = async () => {
       const storedSession = localStorage.getItem("auth_session");
@@ -181,7 +181,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const resetPassword = async (email: string) => {
+  const resetPassword = async (_email: string) => {
     return { error: new Error("Password reset not implemented") };
   };
 
