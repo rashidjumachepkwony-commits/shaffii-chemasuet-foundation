@@ -193,6 +193,7 @@ export default function RequestSupport() {
                   <label className="block text-sm font-medium mb-1">County <span className="text-red-600">*</span></label>
                   {selectedCountry === "Kenya" ? (
                     <Select
+                      key={`county-${selectedCountry}`}
                       required
                       value={form.values.county as string}
                       onChange={(e) => {
@@ -222,11 +223,13 @@ export default function RequestSupport() {
                     />
                   )}
                   {form.errors.county && <p className="mt-1 text-sm text-red-600">{form.errors.county}</p>}
+                  <p className="text-xs text-neutral-500 mt-1">Debug county: {form.values.county || "empty"} | selectedCountry: {selectedCountry}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Sub-County <span className="text-red-600">*</span></label>
                   {selectedCountry === "Kenya" && form.values.county ? (
                     <Select
+                      key={`subcounty-${form.values.county}`}
                       required
                       value={form.values.sub_county as string}
                       onChange={(e) => {
@@ -260,6 +263,7 @@ export default function RequestSupport() {
                   <label className="block text-sm font-medium mb-1">Ward <span className="text-red-600">*</span></label>
                   {selectedCountry === "Kenya" && form.values.county && form.values.sub_county ? (
                     <Select
+                      key={`ward-${form.values.sub_county}`}
                       required
                       value={form.values.ward as string}
                       onChange={(e) => {
@@ -292,6 +296,7 @@ export default function RequestSupport() {
                   <label className="block text-sm font-medium mb-1">Location <span className="text-red-600">*</span></label>
                   {selectedCountry === "Kenya" && form.values.county && form.values.sub_county && form.values.ward ? (
                     <Select
+                      key={`location-${form.values.ward}`}
                       required
                       value={form.values.location as string}
                       onChange={(e) => form.handleChange("location", e.target.value)}

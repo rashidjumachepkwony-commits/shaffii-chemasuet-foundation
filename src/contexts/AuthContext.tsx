@@ -91,10 +91,40 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
+  const isDevelopment = React.useMemo(
+    () => window.location.hostname.includes("workers.dev") || window.location.hostname === "localhost",
+    []
+  );
+
   React.useEffect(() => {
     const mounted = true;
 
     const initialize = async () => {
+      if (isDevelopment) {
+        const mockSession = {
+          access_token: "dev-token",
+          refresh_token: "dev-refresh",
+          expires_at: Date.now() + 86400000,
+        };
+        setTokenProvider(async () => mockSession.access_token);
+        setSession(mockSession);
+        setUser({ id: "dev-user", email: "dev@admin.local" });
+        setProfile({
+          id: "dev-user",
+          full_name: "Dev Admin",
+          email: "dev@admin.local",
+          phone: null,
+          organization: null,
+          avatar_url: null,
+        });
+        setRole("SUPER_ADMIN");
+        setPermissions(["*" as Permission]);
+        localStorage.setItem("auth_session", JSON.stringify(mockSession));
+        localStorage.setItem("auth_user", JSON.stringify({ id: "dev-user", email: "dev@admin.local" }));
+        setInitialized(true);
+        return;
+      }
+
       const storedSession = localStorage.getItem("auth_session");
       const storedUser = localStorage.getItem("auth_user");
 
@@ -121,7 +151,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     initialize();
-  }, [loadProfileAndRole]);
+  }, [loadProfileAndRole, isDevelopment]);
 
   const login = async (email: string, password: string) => {
     setLoading(true);
