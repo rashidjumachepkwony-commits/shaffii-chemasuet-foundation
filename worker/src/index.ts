@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
-import { prettyJSON } from "hono/pretty-json";
 import { timing } from "hono/timing";
 import { secureHeaders } from "hono/secure-headers";
 import { rateLimit } from "./middleware/rateLimit";
@@ -37,7 +36,14 @@ const app = new Hono<{
 }>();
 
 app.use("*", cors({
-  origin: ["https://shafie-chemasuet-foundation.pages.dev", "http://localhost:3000"],
+  origin: [
+    "https://shaffii-chemasuet-foundation.pages.dev",
+    "https://*.shaffii-chemasuet-foundation.pages.dev",
+    "https://shaffiichemasuetfoundation.co.ke",
+    "https://www.shaffiichemasuetfoundation.co.ke",
+    "http://localhost:3000",
+    "https://shafie-chemasuet-foundation-worker.rashidjumachepkwony.workers.dev"
+  ],
   allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowHeaders: ["Content-Type", "Authorization"],
   credentials: true,
@@ -60,7 +66,6 @@ app.use("*", secureHeaders({
 }));
 
 app.use("*", logger());
-app.use("*", prettyJSON());
 app.use("*", timing());
 app.use("*", rateLimit);
 
@@ -127,4 +132,3 @@ export default app;
 
 import { publicRouter } from './routes/support';
 import { adminRouter as supportAdminRouter } from './routes/support';
-
