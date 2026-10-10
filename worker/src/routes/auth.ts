@@ -72,11 +72,13 @@ app.post("/login", async (c) => {
       id: data.user.id,
       email: data.user.email,
     },
-    session: {
-      access_token: data.session?.access_token,
-      refresh_token: data.session?.refresh_token,
-      expires_at: data.session?.expires_at,
-    },
+    session: data.session
+      ? {
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+          expires_at: data.session.expires_at ?? Math.floor(Date.now() / 1000) + 3600,
+        }
+      : null,
     profile: profile ? {
       id: profile.id,
       full_name: profile.full_name,
@@ -246,6 +248,92 @@ app.patch("/profile", async (c) => {
       log("error", { msg: "Password update failed", userId: user.id, error: passwordError.message });
       return serverError(c, passwordError.message);
     }
+  }
+
+  return ok(c, { success: true });
+});
+
+const refreshSchema = z.object({
+  refresh_token: z.string(),
+});
+
+app.post("/refresh", async (c) => {
+  const body = await c.req.json();
+  const parsed = refreshSchema.safeParse(body);
+  if (!parsed.success) {
+    return badRequest(c, "Invalid request");
+  }
+
+  const supabase = createSupabaseServerClient(c);
+  const { data, error } = await supabase.auth.refreshSession({
+    refresh_token: parsed.data.refresh_token,
+  });
+
+  if (error || !data.session) {
+    log("warn", { msg: "Token refresh failed", error: error?.message });
+    return unauthorized(c, "Invalid or expired refresh token");
+  }
+
+  return ok(c, {
+    access_token: data.session.access_token,
+    refresh_token: data.session.refresh_token ?? parsed.data.refresh_token,
+    expires_at: data.session.expires_at ?? Math.floor(Date.now() / 1000) + 3600,
+  });
+});
+
+app.post("/logout", async (c) => {
+  const user = c.get("user");
+  if (user) {
+    const supabase = c.get("supabase");
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      log("warn", { msg: "Logout: supabase signOut failed", error: err });
+    }
+  }
+  return ok(c, { success: true });
+});
+
+const resetPasswordSchema = z.object({
+  email: z.string().email(),
+});
+
+app.post("/reset-password", async (c) => {
+  const body = await c.req.json();
+  const parsed = resetPasswordSchema.safeParse(body);
+  if (!parsed.success) {
+    return badRequest(c, "Invalid email address");
+  }
+
+  const supabase = createSupabaseServerClient(c);
+  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo: `${c.req.header("origin") || ""}/reset-password`,
+  });
+
+  if (error) {
+    return serverError(c, error.message);
+  }
+
+  return ok(c, { message: "Password reset email sent. Please check your inbox." });
+});
+
+app.post("/update-password", async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return unauthorized(c);
+  }
+
+  const body = await c.req.json();
+  const { password } = body;
+  if (!password || password.length < 8) {
+    return badRequest(c, "Password must be at least 8 characters");
+  }
+
+  const supabase = c.get("supabase");
+  const { error } = await supabase.auth.updateUser({ password });
+
+  if (error) {
+    return serverError(c, error.message);
   }
 
   return ok(c, { success: true });

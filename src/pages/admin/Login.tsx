@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import * as React from "react";
 import { useForm } from "@/hooks/useForm";
 import { loginSchema } from "@/lib/validations";
@@ -7,50 +7,35 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { authService } from "@/services";
-import { ApiError } from "@/services/api";
 import { Mail, Lock, Shield } from "lucide-react";
+
+const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "EVENT_MANAGER", "CONTENT_MANAGER"];
 
 export default function AdminLogin() {
   const { success, error: showError } = useToast();
-  const { login, logout, user } = useAuth();
+  const { login, logout } = useAuth();
   const navigate = useNavigate();
-
-  React.useEffect(() => {
-    if (user) {
-      navigate("/admin", { replace: true });
-    }
-  }, [user, navigate]);
 
   const form = useForm({
     initialValues: { email: "", password: "" },
     validationSchema: loginSchema,
     onSubmit: async (values) => {
       try {
-        const { error } = await login(values.email, values.password);
+        const { error, data } = await login(values.email, values.password);
         if (error) {
           showError(error.message || "Login failed. Please check your credentials.");
           return;
         }
-        try {
-          const verifyResult = await authService.verifyAdmin();
-          if (verifyResult.role === "USER" || !verifyResult.role) {
-            showError("This account does not have administrator privileges. Please use the member login.");
-            await logout();
-            return;
-          }
-          success("Admin login successful!");
-          navigate("/admin", { replace: true });
-        } catch (verifyErr: any) {
-          if (verifyErr instanceof ApiError && verifyErr.status === 403) {
-            showError("This account does not have administrator privileges. Please use the member login.");
-          } else if (verifyErr instanceof ApiError && verifyErr.status === 401) {
-            showError("Session expired. Please try logging in again.");
-          } else {
-            showError(verifyErr.message || "Unable to verify administrator access. Please try again.");
-          }
+
+        const userRole = data?.role;
+        if (!userRole || !ADMIN_ROLES.includes(userRole)) {
+          showError("This account does not have administrator privileges. Please use the member login.");
           await logout();
+          return;
         }
+
+        success("Admin login successful!");
+        navigate("/admin", { replace: true });
       } catch (err: any) {
         showError(err.message || "Login failed.");
       }
@@ -131,12 +116,12 @@ export default function AdminLogin() {
         </form>
 
         <div className="mt-6 text-center">
-          <Link
-            to="/login"
+          <button
+            onClick={() => navigate("/login", { replace: true })}
             className="text-sm text-neutral-400 hover:text-neutral-200"
           >
             ← Back to member login
-          </Link>
+          </button>
         </div>
       </div>
     </div>
