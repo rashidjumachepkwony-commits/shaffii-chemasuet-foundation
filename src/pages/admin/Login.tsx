@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { authService } from "@/services";
 import { Mail, Lock, Shield } from "lucide-react";
 
 export default function AdminLogin() {
