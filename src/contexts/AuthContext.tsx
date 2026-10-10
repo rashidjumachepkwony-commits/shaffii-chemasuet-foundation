@@ -4,32 +4,41 @@ import type { RoleName, Permission } from "@/types";
 import { hasPermission } from "@/lib/utils";
 import { authService } from "@/services";
 
+type AuthSession = {
+  access_token: string;
+  refresh_token: string;
+  expires_at: number;
+};
+
+type AuthUser = {
+  id: string;
+  email: string;
+};
+
+type AuthProfile = {
+  id: string;
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+  organization: string | null;
+  avatar_url: string | null;
+};
+
 interface AuthContextType {
-  user: {
-    id: string;
-    email: string;
-  } | null;
-  session: {
-    access_token: string;
-    refresh_token: string;
-    expires_at: number;
-  } | null;
-  profile: {
-    id: string;
-    full_name: string | null;
-    email: string | null;
-    phone: string | null;
-    organization: string | null;
-    avatar_url: string | null;
-  } | null;
+  user: AuthUser | null;
+  session: AuthSession | null;
+  profile: AuthProfile | null;
   role: RoleName | null;
   permissions: Permission[];
   loading: boolean;
   initialized: boolean;
-   login: (
+  login: (
     email: string,
     password: string
-  ) => Promise<{ error: Error | null; data: { needsEmailConfirmation?: boolean } }>;
+  ) => Promise<{
+    error: Error | null;
+    data: { needsEmailConfirmation?: boolean; role?: string; permissions?: string[] } | null;
+  }>;
   register: (
     email: string,
     password: string,
@@ -65,24 +74,56 @@ export function usePermissions() {
   };
 }
 
+const STORAGE_SESSION_KEY = "scf-auth-session";
+const STORAGE_USER_KEY = "scf-auth-user";
+
+function isTokenExpired(expiresAt: number): boolean {
+  const bufferMs = 5 * 60 * 1000;
+  return Date.now() + bufferMs >= expiresAt;
+}
+
+function getStoredSession(): { session: AuthSession | null; user: AuthUser | null } {
+  try {
+    const sessionJson = localStorage.getItem(STORAGE_SESSION_KEY);
+    const userJson = localStorage.getItem(STORAGE_USER_KEY);
+    const session = sessionJson ? (JSON.parse(sessionJson) as AuthSession) : null;
+    const user = userJson ? (JSON.parse(userJson) as AuthUser) : null;
+    return { session, user };
+  } catch {
+    localStorage.removeItem(STORAGE_SESSION_KEY);
+    localStorage.removeItem(STORAGE_USER_KEY);
+    return { session: null, user: null };
+  }
+}
+
+function storeSession(session: AuthSession | null, user: AuthUser | null) {
+  if (session && user) {
+    localStorage.setItem(STORAGE_SESSION_KEY, JSON.stringify(session));
+    localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(user));
+  } else {
+    localStorage.removeItem(STORAGE_SESSION_KEY);
+    localStorage.removeItem(STORAGE_USER_KEY);
+  }
+}
+
 interface AuthProviderProps {
   children: React.ReactNode;
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = React.useState<AuthContextType["user"]>(null);
-  const [session, setSession] = React.useState<AuthContextType["session"]>(null);
-  const [profile, setProfile] = React.useState<AuthContextType["profile"] | null>(null);
+  const [user, setUser] = React.useState<AuthUser | null>(null);
+  const [session, setSession] = React.useState<AuthSession | null>(null);
+  const [profile, setProfile] = React.useState<AuthProfile | null>(null);
   const [role, setRole] = React.useState<RoleName | null>(null);
   const [permissions, setPermissions] = React.useState<Permission[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [initialized, setInitialized] = React.useState(false);
 
-  const loadProfileAndRole = React.useCallback(async () => {
+  const loadProfileAndRole = React.useCallback(async (token: string) => {
     try {
       const result = await authService.getMe();
       setProfile(result.profile);
-      setRole(result.role as RoleName | null);
+      setRole(result.role ? (result.role as RoleName) : null);
       setPermissions(result.permissions as Permission[]);
     } catch {
       setProfile(null);
@@ -92,23 +133,76 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const isDevelopment = React.useMemo(
-    () => window.location.hostname.includes("workers.dev") || window.location.hostname === "localhost",
+    () => import.meta.env.VITE_APP_ENV === "development",
     []
   );
+
+  const refreshAccessToken = React.useCallback(async () => {
+    if (!session?.refresh_token) return false;
+
+    try {
+      const result = await authService.refreshToken(session.refresh_token);
+      if (!result?.access_token) return false;
+
+      const newSession: AuthSession = {
+        access_token: result.access_token,
+        refresh_token: result.refresh_token ?? session.refresh_token,
+        expires_at: result.expires_at ?? Math.floor(Date.now() / 1000) + 3600,
+      };
+
+      setSession(newSession);
+      setTokenProvider(async () => newSession.access_token);
+      storeSession(newSession, user);
+      return true;
+    } catch {
+      return false;
+    }
+  }, [session, user]);
+
+  const initializeFromStorage = React.useCallback(async () => {
+    const { session: storedSession, user: storedUser } = getStoredSession();
+
+    if (storedSession && storedUser) {
+      let activeSession = storedSession;
+
+      if (isTokenExpired(storedSession.expires_at * 1000)) {
+        const refreshed = await refreshAccessToken();
+        if (!refreshed) {
+          storeSession(null, null);
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          setRole(null);
+          setPermissions([]);
+          setInitialized(true);
+          return;
+        }
+        activeSession = session ?? storedSession;
+      }
+
+      setTokenProvider(async () => activeSession.access_token);
+      setSession(activeSession);
+      setUser(storedUser);
+      await loadProfileAndRole(activeSession.access_token);
+    }
+
+    setInitialized(true);
+  }, [isDevelopment, refreshAccessToken, loadProfileAndRole, session]);
 
   React.useEffect(() => {
     const mounted = true;
 
     const initialize = async () => {
       if (isDevelopment) {
-        const mockSession = {
+        const devSession: AuthSession = {
           access_token: "dev-token",
           refresh_token: "dev-refresh",
-          expires_at: Date.now() + 86400000,
+          expires_at: Math.floor(Date.now() / 1000) + 86400,
         };
-        setTokenProvider(async () => mockSession.access_token);
-        setSession(mockSession);
-        setUser({ id: "dev-user", email: "dev@admin.local" });
+        const devUser: AuthUser = { id: "dev-user", email: "dev@admin.local" };
+        setTokenProvider(async () => devSession.access_token);
+        setSession(devSession);
+        setUser(devUser);
         setProfile({
           id: "dev-user",
           full_name: "Dev Admin",
@@ -118,56 +212,52 @@ export function AuthProvider({ children }: AuthProviderProps) {
           avatar_url: null,
         });
         setRole("SUPER_ADMIN");
-        setPermissions(["*" as Permission]);
-        localStorage.setItem("auth_session", JSON.stringify(mockSession));
-        localStorage.setItem("auth_user", JSON.stringify({ id: "dev-user", email: "dev@admin.local" }));
+        setPermissions(["*"] as Permission[]);
+        storeSession(devSession, devUser);
         setInitialized(true);
         return;
       }
 
-      const storedSession = localStorage.getItem("auth_session");
-      const storedUser = localStorage.getItem("auth_user");
-
-      if (storedSession && storedUser) {
-        try {
-          const sessionData = JSON.parse(storedSession);
-          const userData = JSON.parse(storedUser);
-
-          if (sessionData.access_token) {
-            setTokenProvider(async () => sessionData.access_token);
-            setSession(sessionData);
-            setUser(userData);
-            await loadProfileAndRole();
-          }
-        } catch {
-          localStorage.removeItem("auth_session");
-          localStorage.removeItem("auth_user");
-        }
-      }
-
-      if (mounted) {
-        setInitialized(true);
-      }
+      await initializeFromStorage();
     };
 
     initialize();
-  }, [loadProfileAndRole, isDevelopment]);
+  }, [isDevelopment, initializeFromStorage]);
 
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
       const result = await authService.login(email, password);
-      setTokenProvider(async () => result.session.access_token);
-      setUser({ id: result.user.id, email: result.user.email });
-      setSession(result.session);
-      setProfile(result.profile);
-      setRole(result.role as RoleName);
-      setPermissions(result.permissions as Permission[]);
-      localStorage.setItem("auth_session", JSON.stringify(result.session));
-      localStorage.setItem("auth_user", JSON.stringify({ id: result.user.id, email: result.user.email }));
-      return { error: null, data: { needsEmailConfirmation: false } };
+
+      if (!result.session) {
+        return {
+          error: new Error("Login failed: no session returned. Please try again."),
+          data: { needsEmailConfirmation: false },
+        };
+      }
+
+      const { session: authSession, user: authUser, profile: authProfile, role: authRole, permissions: authPermissions } = result;
+
+      const normalizedSession: AuthSession = {
+        access_token: authSession.access_token,
+        refresh_token: authSession.refresh_token,
+        expires_at: authSession.expires_at,
+      };
+
+      setTokenProvider(async () => normalizedSession.access_token);
+      setSession(normalizedSession);
+      setUser(authUser);
+      setProfile(authProfile);
+      setRole(authRole as RoleName);
+      setPermissions(authPermissions as Permission[]);
+      storeSession(normalizedSession, authUser);
+
+      return {
+        error: null,
+        data: { needsEmailConfirmation: false, role: authRole, permissions: authPermissions },
+      };
     } catch (err: any) {
-      return { error: err, data: { needsEmailConfirmation: false } };
+      return { error: err, data: null };
     } finally {
       setLoading(false);
     }
@@ -198,25 +288,39 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = async () => {
     setLoading(true);
     try {
-      localStorage.removeItem("auth_session");
-      localStorage.removeItem("auth_user");
+      await authService.logout();
+    } catch {
+      // ignore network errors during logout
+    } finally {
       setTokenProvider(async () => null);
       setUser(null);
       setSession(null);
       setProfile(null);
       setRole(null);
       setPermissions([]);
+      storeSession(null, null);
+      setLoading(false);
+    }
+  };
+
+  const resetPassword = async (email: string) => {
+    setLoading(true);
+    try {
+      await authService.resetPassword(email);
+      return { error: null };
+    } catch (err: any) {
+      return { error: err };
     } finally {
       setLoading(false);
     }
   };
 
-  const resetPassword = async (_email: string) => {
-    return { error: new Error("Password reset not implemented") };
-  };
-
   const refreshSession = async () => {
-    await loadProfileAndRole();
+    if (!session?.refresh_token) return;
+    await refreshAccessToken();
+    if (session) {
+      await loadProfileAndRole(session.access_token);
+    }
   };
 
   const updateProfile = async (
@@ -225,7 +329,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setLoading(true);
     try {
       await authService.updateProfile(data);
-      await loadProfileAndRole();
+      await loadProfileAndRole(session?.access_token || "");
       return { error: null };
     } catch (err: any) {
       return { error: err };

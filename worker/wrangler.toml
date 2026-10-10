@@ -4,9 +4,14 @@ compatibility_date = "2024-11-18"
 account_id = "0123627158662d9787fbcaed50687469"
 
 [vars]
-ENVIRONMENT = "development"
+ENVIRONMENT = "production"
+
+[env.development]
+name = "shafie-chemasuet-foundation-worker-dev"
+vars = { ENVIRONMENT = "development" }
 
 [env.production]
+name = "shafie-chemasuet-foundation-worker"
 vars = { ENVIRONMENT = "production" }
 
 [assets]

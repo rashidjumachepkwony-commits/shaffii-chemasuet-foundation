@@ -20,7 +20,7 @@ export const authService = {
 
   async login(email: string, password: string): Promise<{
     user: { id: string; email: string };
-    session: { access_token: string; refresh_token: string; expires_at: number };
+    session: { access_token: string; refresh_token: string; expires_at: number } | null;
     profile: Profile | null;
     role: string;
     permissions: string[];
@@ -38,8 +38,24 @@ export const authService = {
     return extractData(await apiPost("/auth/register", data));
   },
 
-   async verifyAdmin(): Promise<{ role: string; permissions: string[] }> {
+  async refreshToken(refreshToken: string): Promise<{
+    access_token: string;
+    refresh_token: string | null;
+    expires_at: number | null;
+  } | null> {
+    return extractData(await apiPost("/auth/refresh", { refresh_token: refreshToken }));
+  },
+
+  async verifyAdmin(): Promise<{ role: string; permissions: string[] }> {
     return extractData(await apiGet("/auth/verify-admin"));
+  },
+
+  async logout(): Promise<void> {
+    await apiPost("/auth/logout");
+  },
+
+  async resetPassword(email: string): Promise<{ message?: string }> {
+    return extractData(await apiPost("/auth/reset-password", { email }));
   },
 
   async updateProfile(data: {
