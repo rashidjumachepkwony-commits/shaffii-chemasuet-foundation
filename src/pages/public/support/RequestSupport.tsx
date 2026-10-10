@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
@@ -10,6 +9,7 @@ import { Loader2, CheckCircle } from "lucide-react";
 import { useForm } from "@/hooks/useForm";
 import { supportRequestSchema } from "@/lib/validations";
 import { apiPost } from "@/services/api";
+import { countries, getCounties, getSubCounties, getWards, getLocations } from "@/lib/locations";
 
 const supportTypes = [
   "Education support",
@@ -52,8 +52,8 @@ type SupportRequestInput = {
 export default function RequestSupport() {
   const [submitted, setSubmitted] = useState(false);
   const [reference, setReference] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState("Kenya");
   const { success } = useToast();
-  const navigate = useNavigate();
 
   const form = useForm({
     initialValues: {
@@ -73,35 +73,39 @@ export default function RequestSupport() {
     },
   });
 
+  const handleCountryChange = (country: string) => {
+    form.handleChange("country", country);
+    setSelectedCountry(country);
+    form.setFieldValue("county", "");
+    form.setFieldValue("sub_county", "");
+    form.setFieldValue("ward", "");
+    form.setFieldValue("location", "");
+  };
+
+  const handleCountyChange = (county: string) => {
+    form.handleChange("county", county);
+    form.setFieldValue("sub_county", "");
+    form.setFieldValue("ward", "");
+    form.setFieldValue("location", "");
+  };
+
+  const handleSubCountyChange = (subCounty: string) => {
+    form.handleChange("sub_county", subCounty);
+    form.setFieldValue("ward", "");
+    form.setFieldValue("location", "");
+  };
+
+  const handleWardChange = (ward: string) => {
+    form.handleChange("ward", ward);
+    form.setFieldValue("location", "");
+  };
+
   const resetForm = () => {
     form.reset();
+    setSelectedCountry("Kenya");
     setSubmitted(false);
     setReference(null);
   };
-
-  if (submitted) {
-    return (
-      <div className="min-h-screen bg-neutral-50 py-12">
-        <div className="container mx-auto px-4 max-w-2xl">
-          <Card className="p-8 text-center">
-            <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
-            <h1 className="text-2xl md:text-3xl font-bold mb-4">Request Submitted Successfully</h1>
-            <p className="text-neutral-600 mb-4">
-              Your support request has been received and will be reviewed by our team.
-              We will contact you using the contact information you provided.
-            </p>
-            {reference && (
-              <p className="text-sm text-neutral-500 mb-6">Reference: {reference}</p>
-            )}
-            <div className="flex gap-4 justify-center flex-wrap">
-              <Button onClick={() => navigate("/")}>Return to Home</Button>
-              <Button variant="outline" onClick={resetForm}>Submit Another Request</Button>
-            </div>
-          </Card>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-neutral-50 py-12">
@@ -191,57 +195,130 @@ export default function RequestSupport() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-1">Country <span className="text-red-600">*</span></label>
-                  <Input
+                  <Select
                     required
                     value={form.values.country as string}
-                    onChange={(e) => form.handleChange("country", e.target.value)}
+                    onChange={(e) => handleCountryChange(e.target.value)}
                     onBlur={() => form.handleBlur("country")}
                     aria-invalid={!!form.errors.country}
-                  />
+                  >
+                    <option value="" disabled>Select country</option>
+                    {countries.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </Select>
                   {form.errors.country && <p className="mt-1 text-sm text-red-600">{form.errors.country}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">County <span className="text-red-600">*</span></label>
-                  <Input
-                    required
-                    value={form.values.county as string}
-                    onChange={(e) => form.handleChange("county", e.target.value)}
-                    onBlur={() => form.handleBlur("county")}
-                    aria-invalid={!!form.errors.county}
-                  />
+                  {selectedCountry === "Kenya" ? (
+                    <Select
+                      required
+                      value={form.values.county as string}
+                      onChange={(e) => handleCountyChange(e.target.value)}
+                      onBlur={() => form.handleBlur("county")}
+                      aria-invalid={!!form.errors.county}
+                      disabled={!selectedCountry}
+                    >
+                      <option value="" disabled>Select county</option>
+                      {getCounties().map((county) => (
+                        <option key={county} value={county}>{county}</option>
+                      ))}
+                    </Select>
+                  ) : (
+                    <Input
+                      required
+                      value={form.values.county as string}
+                      onChange={(e) => form.handleChange("county", e.target.value)}
+                      onBlur={() => form.handleBlur("county")}
+                      aria-invalid={!!form.errors.county}
+                      placeholder="Enter county"
+                    />
+                  )}
                   {form.errors.county && <p className="mt-1 text-sm text-red-600">{form.errors.county}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Sub-County <span className="text-red-600">*</span></label>
-                  <Input
-                    required
-                    value={form.values.sub_county as string}
-                    onChange={(e) => form.handleChange("sub_county", e.target.value)}
-                    onBlur={() => form.handleBlur("sub_county")}
-                    aria-invalid={!!form.errors.sub_county}
-                  />
+                  {selectedCountry === "Kenya" && form.values.county ? (
+                    <Select
+                      required
+                      value={form.values.sub_county as string}
+                      onChange={(e) => handleSubCountyChange(e.target.value)}
+                      onBlur={() => form.handleBlur("sub_county")}
+                      aria-invalid={!!form.errors.sub_county}
+                    >
+                      <option value="" disabled>Select sub-county</option>
+                      {getSubCounties(form.values.county as string).map((sub) => (
+                        <option key={sub} value={sub}>{sub}</option>
+                      ))}
+                    </Select>
+                  ) : (
+                    <Input
+                      required
+                      value={form.values.sub_county as string}
+                      onChange={(e) => form.handleChange("sub_county", e.target.value)}
+                      onBlur={() => form.handleBlur("sub_county")}
+                      aria-invalid={!!form.errors.sub_county}
+                      placeholder={form.values.county ? "Enter sub-county" : "Select county first"}
+                      disabled={!form.values.county}
+                    />
+                  )}
                   {form.errors.sub_county && <p className="mt-1 text-sm text-red-600">{form.errors.sub_county}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Ward <span className="text-red-600">*</span></label>
-                  <Input
-                    required
-                    value={form.values.ward as string}
-                    onChange={(e) => form.handleChange("ward", e.target.value)}
-                    onBlur={() => form.handleBlur("ward")}
-                    aria-invalid={!!form.errors.ward}
-                  />
+                  {selectedCountry === "Kenya" && form.values.county && form.values.sub_county ? (
+                    <Select
+                      required
+                      value={form.values.ward as string}
+                      onChange={(e) => handleWardChange(e.target.value)}
+                      onBlur={() => form.handleBlur("ward")}
+                      aria-invalid={!!form.errors.ward}
+                    >
+                      <option value="" disabled>Select ward</option>
+                      {getWards(form.values.county as string, form.values.sub_county as string).map((ward) => (
+                        <option key={ward} value={ward}>{ward}</option>
+                      ))}
+                    </Select>
+                  ) : (
+                    <Input
+                      required
+                      value={form.values.ward as string}
+                      onChange={(e) => form.handleChange("ward", e.target.value)}
+                      onBlur={() => form.handleBlur("ward")}
+                      aria-invalid={!!form.errors.ward}
+                      placeholder={form.values.sub_county ? "Enter ward" : "Select sub-county first"}
+                      disabled={!form.values.sub_county}
+                    />
+                  )}
                   {form.errors.ward && <p className="mt-1 text-sm text-red-600">{form.errors.ward}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Location <span className="text-red-600">*</span></label>
-                  <Input
-                    required
-                    value={form.values.location as string}
-                    onChange={(e) => form.handleChange("location", e.target.value)}
-                    onBlur={() => form.handleBlur("location")}
-                    aria-invalid={!!form.errors.location}
-                  />
+                  {selectedCountry === "Kenya" && form.values.county && form.values.sub_county && form.values.ward ? (
+                    <Select
+                      required
+                      value={form.values.location as string}
+                      onChange={(e) => form.handleChange("location", e.target.value)}
+                      onBlur={() => form.handleBlur("location")}
+                      aria-invalid={!!form.errors.location}
+                    >
+                      <option value="" disabled>Select location</option>
+                      {getLocations(form.values.county as string, form.values.sub_county as string, form.values.ward as string).map((loc) => (
+                        <option key={loc} value={loc}>{loc}</option>
+                      ))}
+                    </Select>
+                  ) : (
+                    <Input
+                      required
+                      value={form.values.location as string}
+                      onChange={(e) => form.handleChange("location", e.target.value)}
+                      onBlur={() => form.handleBlur("location")}
+                      aria-invalid={!!form.errors.location}
+                      placeholder={form.values.ward ? "Enter location" : "Select ward first"}
+                      disabled={!form.values.ward}
+                    />
+                  )}
                   {form.errors.location && <p className="mt-1 text-sm text-red-600">{form.errors.location}</p>}
                 </div>
                 <div className="md:col-span-2">
@@ -343,10 +420,20 @@ export default function RequestSupport() {
               <span>Required fields</span>
             </div>
 
-            <Button type="submit" className="w-full md:w-auto" size="lg" disabled={form.isSubmitting}>
+            <Button type="submit" className="w-full md:w-auto" size="lg" disabled={form.isSubmitting || submitted}>
               {form.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Submit Support Request
             </Button>
+            {submitted && (
+              <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-xl flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-green-800">Your support request has been submitted successfully!</p>
+                  {reference && <p className="mt-1 text-xs text-green-700">Reference: {reference}</p>}
+                </div>
+                <Button variant="outline" size="sm" onClick={resetForm}>Submit Another</Button>
+              </div>
+            )}
           </form>
         </Card>
       </div>

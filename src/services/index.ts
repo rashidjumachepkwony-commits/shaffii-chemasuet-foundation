@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPut, apiPatch, apiDelete, extractData } from "@/services/api";
+import { apiGet, apiPost, apiPatch, extractData } from "@/services/api";
 import type {
   Profile,
   Project,

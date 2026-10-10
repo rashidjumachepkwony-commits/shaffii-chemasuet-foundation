@@ -1,6 +1,6 @@
 name = "shafie-chemasuet-foundation-worker"
 main = "src/index.ts"
-compatibility_date = "2024-09-25"
+compatibility_date = "2024-11-18"
 account_id = "0123627158662d9787fbcaed50687469"
 
 [vars]
@@ -9,9 +9,9 @@ ENVIRONMENT = "development"
 [env.production]
 vars = { ENVIRONMENT = "production" }
 
-# Serve frontend static assets from ../dist
 [assets]
 directory = "../dist"
+binding = "ASSETS"
 
 # Configure for local development
 [dev]
