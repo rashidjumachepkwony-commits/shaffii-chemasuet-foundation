@@ -31,8 +31,6 @@ interface AdminNavItem {
 const adminNavItems: AdminNavItem[] = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard, permission: "", },
   { name: "Events", href: "/admin/events", icon: Calendar, permission: "events.view" },
-  { name: "Registrations", href: "/admin/events", permission: "registrations.view", icon: Users },
-  { name: "Attendance", href: "/admin/attendance", icon: Shovel, permission: "attendance.view" },
   { name: "Users", href: "/admin/users", icon: Users, permission: "users.view" },
   { name: "Projects", href: "/admin/projects", icon: Folder, permission: "projects.create" },
   { name: "News", href: "/admin/news", icon: Newspaper, permission: "news.create" },
@@ -41,6 +39,7 @@ const adminNavItems: AdminNavItem[] = [
   { name: "Donations", href: "/admin/donations", icon: Shovel, permission: "donations.manage" },
   { name: "Messages", href: "/admin/contact", icon: MessageCircle, permission: "contact.manage" },
   { name: "Support Requests", href: "/admin/support", icon: HelpCircle, permission: "support.manage" },
+  { name: "Content Sections", href: "/admin/content-sections", icon: FileText, permission: "settings.manage" },
   { name: "Settings", href: "/admin/settings", icon: Settings, permission: "settings.manage" },
   { name: "Audit Logs", href: "/admin/audit-logs", icon: FileText, permission: "audit_logs.view" },
 ];

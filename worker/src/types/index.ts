@@ -344,6 +344,28 @@ export interface Notification {
   created_at: string;
 }
 
+export type ContentSectionType =
+  | "section"
+  | "hero"
+  | "stat"
+  | "team_member"
+  | "testimonial";
+
+export interface ContentSection {
+  id: UUID;
+  section_key: string;
+  title: string | null;
+  type: ContentSectionType;
+  content: Record<string, unknown>;
+  sort_order: number;
+  is_published: boolean;
+  published_at: string | null;
+  created_by: UUID | null;
+  updated_by: UUID | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
