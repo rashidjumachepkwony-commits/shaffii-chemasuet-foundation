@@ -9,7 +9,7 @@ export async function authenticate(context: Context, next: () => Promise<void>) 
 
   if (!authHeader?.startsWith("Bearer ")) {
     if (isDevelopment) {
-      context.set("user", { id: "dev-user", email: "dev@example.com", role: "SUPER_ADMIN" });
+      context.set("user", { id: "00000000-0000-0000-0000-000000000000", email: "dev@example.com", role: "SUPER_ADMIN" });
       context.set("role", "SUPER_ADMIN");
       context.set("permissions", ["*"]);
       await next();
@@ -28,7 +28,7 @@ export async function authenticate(context: Context, next: () => Promise<void>) 
   const user = await verifyUserToken(supabase, accessToken);
   if (!user) {
     if (isDevelopment) {
-      context.set("user", { id: "dev-user", email: "dev@example.com", role: "SUPER_ADMIN" });
+      context.set("user", { id: "00000000-0000-0000-0000-000000000000", email: "dev@example.com", role: "SUPER_ADMIN" });
       context.set("role", "SUPER_ADMIN");
       context.set("permissions", ["*"]);
       await next();
@@ -59,7 +59,7 @@ export async function requireAuth(context: Context, next: () => Promise<Response
   if (!user) {
     return context.json({ success: false, error: "Authentication required" }, 401);
   }
-  await next();
+  return next();
 }
 
 export async function requireRole(
@@ -82,7 +82,7 @@ export async function requireRole(
       403
     );
   }
-  await next();
+  return next();
 }
 
 export async function requirePermission(
@@ -102,7 +102,7 @@ export async function requirePermission(
       403
     );
   }
-  await next();
+  return next();
 }
 
 export async function logAudit(

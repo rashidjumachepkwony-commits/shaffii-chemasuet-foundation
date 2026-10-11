@@ -1,4 +1,4 @@
-const https = require("https");
+const http = require("http");
 
 const paths = [
   "/api/admin/dashboard",
@@ -13,17 +13,19 @@ const paths = [
   "/api/admin/news",
   "/api/admin/gallery",
   "/api/admin/donations",
-  "/api/admin/content-sections",
+  "/api/admin/events",
+  "/api/auth/me",
 ];
 
 let i = 0;
 function next() {
   if (i >= paths.length) return;
   const p = paths[i++];
-  https
+  http
     .get(
       {
-        hostname: "shafie-chemasuet-foundation-worker.rashidjumachepkwony.workers.dev",
+        host: "127.0.0.1",
+        port: 8787,
         path: p,
         headers: { Authorization: "Bearer dev-token" },
       },
@@ -31,7 +33,7 @@ function next() {
         let b = "";
         res.on("data", (d) => (b += d));
         res.on("end", () => {
-          console.log(res.statusCode, p, b.slice(0, 130));
+          console.log(res.statusCode, p, b.slice(0, 110));
           next();
         });
       }
