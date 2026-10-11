@@ -35,7 +35,7 @@ app.get("/admin", async (c) => {
     const { data, error } = await supabase
       .from("site_settings")
       .select("*")
-      .order("group");
+      .order("group_name");
 
     if (error) {
       return serverError(c, error.message);

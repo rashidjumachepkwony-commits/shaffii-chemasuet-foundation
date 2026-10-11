@@ -310,7 +310,7 @@ export interface SiteSetting {
   key: string;
   value: string;
   type: string;
-  group: string;
+  group_name: string;
   label: string;
   description: string | null;
   is_public: boolean;

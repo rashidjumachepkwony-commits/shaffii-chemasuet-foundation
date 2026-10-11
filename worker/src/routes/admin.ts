@@ -597,7 +597,7 @@ app.delete("/contact/:id", async (c) => {
 app.get("/settings", async (c) => {
   return requirePermission("settings.manage", c, async () => {
     const supabase = c.get("supabase");
-    const { data, error } = await supabase.from("site_settings").select("*").order("group");
+    const { data, error } = await supabase.from("site_settings").select("*")      .order("group_name");
     if (error) return serverError(c, error.message);
     return ok(c, data || []);
   });
