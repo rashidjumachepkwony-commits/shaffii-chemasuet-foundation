@@ -9,9 +9,11 @@ import type {
   ContactMessage,
   SiteSetting,
   AuditLog,
+  ContentSection,
   ApiResponse,
   PaginatedResponse,
 } from "@/types";
+import { apiDelete } from "@/services/api";
 
 export const authService = {
   async getMe(): Promise<{ profile: Profile | null; role: string | null; permissions: string[] }> {
@@ -192,7 +194,57 @@ export const adminService = {
       page: params.page,
       limit: params.limit,
       action: params.action,
-      actor_id: params.actor_id,
+       actor_id: params.actor_id,
+     });
+   },
+};
+
+export const contentSectionsService = {
+  async list(params: {
+    page?: number;
+    limit?: number;
+    type?: string;
+    search?: string;
+  } = {}): Promise<PaginatedResponse<ContentSection>> {
+    return apiGet<PaginatedResponse<ContentSection>>("/admin/content", {
+      page: params.page,
+      limit: params.limit,
+      type: params.type,
+      search: params.search,
+    });
+  },
+
+  async getById(id: string): Promise<ContentSection> {
+    return extractData(await apiGet<ApiResponse<ContentSection>>(`/admin/content/${id}`));
+  },
+
+  async create(payload: Partial<ContentSection>): Promise<ContentSection> {
+    return extractData(await apiPost<ContentSection>("/admin/content", payload));
+  },
+
+  async update(id: string, payload: Partial<ContentSection>): Promise<ContentSection> {
+    return extractData(await apiPatch<ContentSection>(`/admin/content/${id}`, payload));
+  },
+
+  async delete(id: string): Promise<{ success: boolean }> {
+    return extractData(await apiDelete<{ success: boolean }>(`/admin/content/${id}`));
+  },
+
+  async getBySectionKey(key: string): Promise<ContentSection | null> {
+    return extractData(await apiGet<ApiResponse<ContentSection | null>>(`/public/content/${key}`));
+  },
+
+  async listPublic(params: {
+    type?: string;
+    key?: string;
+    page?: number;
+    limit?: number;
+  } = {}): Promise<PaginatedResponse<ContentSection>> {
+    return apiGet<PaginatedResponse<ContentSection>>("/public/content", {
+      type: params.type,
+      key: params.key,
+      page: params.page,
+      limit: params.limit,
     });
   },
 };

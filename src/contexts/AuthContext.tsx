@@ -212,7 +212,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           avatar_url: null,
         });
         setRole("SUPER_ADMIN");
-        setPermissions(["*"] as Permission[]);
+        setPermissions(["*"] as unknown as Permission[]);
         storeSession(devSession, devUser);
         setInitialized(true);
         return;

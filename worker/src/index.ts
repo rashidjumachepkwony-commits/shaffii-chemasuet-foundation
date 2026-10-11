@@ -20,6 +20,7 @@ import dashboardRouter from "./routes/dashboard";
 import { publicRouter, adminRouter as supportAdminRouter } from "./routes/support";
 import { log } from "./utils/logger";
 import { ok, serverError } from "./utils/response";
+import { publicContentRouter, adminContentRouter } from "./routes/content";
 
 const app = new Hono<{
   Bindings: {
@@ -122,6 +123,8 @@ app.route("/api/upload", uploadRouter);
 app.route("/api/support", publicRouter);
 app.route("/api/admin/support", supportAdminRouter);
 app.route("/api/public/settings", publicSettingsRouter);
+app.route("/api/public/content", publicContentRouter);
+app.route("/api/admin/content", adminContentRouter);
 
 app.get("/api", (c) => {
   return c.json({
