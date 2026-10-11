@@ -8,12 +8,13 @@ import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Mail, Lock, Shield } from "lucide-react";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "EVENT_MANAGER", "CONTENT_MANAGER"];
 
 export default function AdminLogin() {
   const { success, error: showError } = useToast();
-  const { login, logout } = useAuth();
+  const { login, logout, user, role, initialized } = useAuth();
   const navigate = useNavigate();
 
   const form = useForm({
@@ -41,6 +42,20 @@ export default function AdminLogin() {
       }
     },
   });
+
+  React.useEffect(() => {
+    if (initialized && user && role && ADMIN_ROLES.includes(role)) {
+      navigate("/admin", { replace: true });
+    }
+  }, [initialized, user, role, navigate]);
+
+  if (!initialized) {
+    return <LoadingSpinner label="Loading..." />;
+  }
+
+  if (user && role && ADMIN_ROLES.includes(role)) {
+    return <LoadingSpinner label="Redirecting to admin panel..." />;
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-neutral-900 py-12">

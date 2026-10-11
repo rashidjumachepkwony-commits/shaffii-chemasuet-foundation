@@ -4,7 +4,7 @@ compatibility_date = "2024-11-18"
 account_id = "0123627158662d9787fbcaed50687469"
 
 [vars]
-ENVIRONMENT = "production"
+ENVIRONMENT = "development"
 SUPABASE_URL = "https://qkmmjlbqiqskvxisywrk.supabase.co"
 
 [env.development]
