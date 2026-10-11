@@ -325,6 +325,37 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const login = async (email: string, password: string) => {
+    if (isDevelopment) {
+      const devSession: AuthSession = {
+        access_token: "dev-token",
+        refresh_token: "dev-refresh",
+        expires_at: Math.floor(Date.now() / 1000) + 86400,
+      };
+      const devUser: AuthUser = { id: "dev-user", email: "dev@admin.local" };
+      setTokenProvider(async () => devSession.access_token);
+      setSession(devSession);
+      setUser(devUser);
+      setProfile({
+        id: "dev-user",
+        full_name: "Dev Admin",
+        email: "dev@admin.local",
+        phone: null,
+        organization: null,
+        avatar_url: null,
+      });
+      setRole("SUPER_ADMIN");
+      setPermissions(["*"] as unknown as Permission[]);
+      storeSession(devSession, devUser);
+      return {
+        error: null,
+        data: {
+          needsEmailConfirmation: false,
+          role: "SUPER_ADMIN",
+          permissions: ["*"],
+          pending: false,
+        },
+      };
+    }
     setLoading(true);
     try {
       const result = await authService.login(email, password);
