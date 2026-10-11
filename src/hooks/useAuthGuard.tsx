@@ -38,7 +38,7 @@ export function RequireAuth({
 
     if (requiredPermissions) {
       const hasAll = requiredPermissions.every((p) =>
-        permissions.includes(p)
+        permissions.includes("*" as Permission) || permissions.includes(p)
       );
       if (!hasAll) {
         navigate("/unauthorized", { replace: true });
@@ -74,7 +74,7 @@ interface AdminGateProps {
 export function AdminGate({ children, permission, role: requiredRole }: AdminGateProps) {
   const { role: userRole, permissions } = useAuth();
 
-  if (permission && !permissions.includes(permission)) {
+  if (permission && !(permissions.includes("*" as Permission) || permissions.includes(permission))) {
     return null;
   }
 
