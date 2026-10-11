@@ -142,11 +142,6 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
       "Vihiga": ["Vihiga", "Mbale", "Chaveta"],
     },
   },
-  "Kisumu": {
-    "Kisumu East": {
-      "Kisumu East": ["Kisumu", "Ahero", "Muhoroni"],
-    },
-  },
   "Turkana": {
     "Turkana East": {
       "Turkana East": ["Turkana", "Kakuma", "Lokichar"],

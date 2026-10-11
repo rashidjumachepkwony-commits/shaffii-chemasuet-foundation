@@ -6,7 +6,7 @@ import { Pagination } from "@/components/ui/Pagination";
 import { FileUploader } from "@/components/ui/FileUploader";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useToast } from "@/components/ui/Toast";
-import { apiGet, apiPost, apiDelete } from "@/services/api";
+import { apiGet, apiPost, apiDelete, API_BASE } from "@/services/api";
 import type { GalleryItem, PaginatedResponse, ApiResponse } from "@/types";
 import { Plus, Search, Trash2, Save, Image, Upload } from "lucide-react";
 import { useForm } from "@/hooks/useForm";
@@ -74,9 +74,7 @@ export default function AdminGallery() {
         formData.append("alt_text", values.alt_text);
 
         const token = session?.access_token;
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL || "/api"}/upload`,
-          {
+        const res = await fetch(`${API_BASE}/upload`, {
             method: "POST",
             headers: token ? { Authorization: `Bearer ${token}` } : {},
             body: formData,

@@ -5,7 +5,7 @@ import { timing } from "hono/timing";
 import { secureHeaders } from "hono/secure-headers";
 import { rateLimit } from "./middleware/rateLimit";
 import { authenticate } from "./middleware/auth";
-import { createSupabaseServerClient } from "./services/supabase";
+import { createSupabaseServerClient, isSupabaseConfigured } from "./services/supabase";
 import eventsRouter from "./routes/events";
 import authRouter from "./routes/auth";
 import adminRouter from "./routes/admin";
@@ -80,7 +80,13 @@ app.use("/api/*", timing());
 app.use("/api/*", rateLimit);
 
 app.use("/api/*", async (c, next) => {
-  c.set("supabase", createSupabaseServerClient(c));
+  if (isSupabaseConfigured(c)) {
+    try {
+      c.set("supabase", createSupabaseServerClient(c));
+    } catch (err) {
+      log("warn", { msg: "Supabase client creation failed", error: err });
+    }
+  }
   await next();
 });
 

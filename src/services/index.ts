@@ -52,12 +52,39 @@ export const authService = {
     return extractData(await apiGet("/auth/verify-admin"));
   },
 
+  async oauthSession(payload: {
+    access_token: string;
+    refresh_token?: string;
+    expires_at?: number;
+  }): Promise<{
+    user: { id: string; email: string };
+    session: { access_token: string; refresh_token: string; expires_at: number };
+    profile: Profile | null;
+    role: string | null;
+    pending: boolean;
+    permissions: string[];
+  }> {
+    return extractData(await apiPost("/auth/oauth-session", payload));
+  },
+
   async logout(): Promise<void> {
     await apiPost("/auth/logout");
   },
 
   async resetPassword(email: string): Promise<{ message?: string }> {
     return extractData(await apiPost("/auth/reset-password", { email }));
+  },
+
+  async confirmResetPassword(
+    accessToken: string,
+    password: string
+  ): Promise<{ message?: string }> {
+    return extractData(
+      await apiPost("/auth/reset-password/confirm", {
+        access_token: accessToken,
+        password,
+      })
+    );
   },
 
   async updateProfile(data: {
