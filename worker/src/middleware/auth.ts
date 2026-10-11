@@ -91,7 +91,7 @@ export async function requirePermission(
   next: () => Promise<Response>
 ) {
   const permissions = context.var.permissions;
-  if (!permissions || !permissions.includes(permission)) {
+  if (!permissions || (!permissions.includes("*") && !permissions.includes(permission))) {
     log("warn", {
       msg: "Access denied - insufficient permission",
       requiredPermission: permission,

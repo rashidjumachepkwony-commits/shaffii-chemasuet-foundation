@@ -14,6 +14,7 @@ export function hasPermission(
   permission: Permission
 ): boolean {
   if (!permissions) return false;
+  if (permissions.includes("*" as Permission)) return true;
   return permissions.includes(permission);
 }
 
