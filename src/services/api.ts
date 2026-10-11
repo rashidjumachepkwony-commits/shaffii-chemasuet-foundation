@@ -1,7 +1,20 @@
 import type { ApiResponse, PaginatedResponse } from "@/types";
 
-const BASE = import.meta.env.VITE_API_URL || "";
-const API_BASE = BASE ? `${BASE.replace(/\/$/, "")}/api` : "/api";
+function normalizeApiBase(raw: string | undefined): string {
+  const fallback = "/api";
+  const value = (raw || "").trim();
+  if (!value) return fallback;
+
+  // Strip trailing slashes so "…/api/" and "…/" behave identically.
+  const trimmed = value.replace(/\/+$/, "");
+
+  // Never double the suffix — VITE_API_URL may already include "/api".
+  return /\/api$/i.test(trimmed) ? trimmed : `${trimmed}/api`;
+}
+
+const API_BASE = normalizeApiBase(import.meta.env.VITE_API_URL);
+
+export { API_BASE };
 
 export class ApiError extends Error {
   constructor(
@@ -20,6 +33,25 @@ export function setTokenProvider(fn: () => Promise<string | null>) {
   getToken = fn;
 }
 
+type RefreshHandler = () => Promise<boolean> | boolean;
+
+let onUnauthorized: RefreshHandler | null = null;
+
+const AUTH_WHITELIST = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/refresh",
+  "/auth/reset-password",
+];
+
+export function setUnauthorizedHandler(handler: RefreshHandler | null) {
+  onUnauthorized = handler;
+}
+
+function isAuthRequest(path: string) {
+  return AUTH_WHITELIST.some((route) => path.startsWith(route));
+}
+
 async function getHeaders(): Promise<HeadersInit> {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
@@ -33,13 +65,37 @@ async function getHeaders(): Promise<HeadersInit> {
   return headers;
 }
 
+function extractErrorMessage(data: unknown, response: Response): string {
+  const errorResponse = data as ApiResponse;
+  if (
+    (errorResponse?.error || errorResponse?.message) &&
+    typeof errorResponse.error === "string"
+  ) {
+    return errorResponse.error;
+  }
+  if (typeof errorResponse?.message === "string") {
+    return errorResponse.message;
+  }
+  return `Request failed with status ${response.status}`;
+}
+
+async function readResponse(response: Response): Promise<unknown> {
+  const contentType = response.headers.get("content-type");
+  if (contentType?.includes("application/json")) {
+    return response.json();
+  }
+  return response.text();
+}
+
 export async function apiRequest<T = unknown>(
   path: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  isRetry = false
 ): Promise<T> {
   const url = `${API_BASE}${path}`;
   const headers = await getHeaders();
   let response: Response;
+
   try {
     response = await fetch(url, {
       ...options,
@@ -53,23 +109,26 @@ export async function apiRequest<T = unknown>(
     );
   }
 
-  const contentType = response.headers.get("content-type");
-  let data: unknown;
-  if (contentType?.includes("application/json")) {
-    data = await response.json();
-  } else {
-    data = await response.text();
+  const data = await readResponse(response);
+
+  if (
+    response.status === 401 &&
+    !isRetry &&
+    !isAuthRequest(path) &&
+    onUnauthorized
+  ) {
+    const refreshed = await onUnauthorized();
+    if (refreshed) {
+      return apiRequest<T>(path, options, true);
+    }
   }
 
   if (!response.ok) {
-    const errorResponse = data as ApiResponse;
-    const message =
-      (errorResponse.error || errorResponse.message) && typeof errorResponse.error === "string"
-        ? errorResponse.error
-        : typeof errorResponse.message === "string"
-        ? errorResponse.message
-        : `Request failed with status ${response.status}`;
-    throw new ApiError(message, response.status, errorResponse.error);
+    throw new ApiError(
+      extractErrorMessage(data, response),
+      response.status,
+      (data as ApiResponse)?.error
+    );
   }
 
   return data as T;

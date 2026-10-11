@@ -27,6 +27,7 @@ const LazyLogin = React.lazy(() => import("@/pages/auth/Login"));
 const LazyRegister = React.lazy(() => import("@/pages/auth/Register"));
 const LazyForgotPassword = React.lazy(() => import("@/pages/auth/ForgotPassword"));
 const LazyResetPassword = React.lazy(() => import("@/pages/auth/ResetPassword"));
+const LazyPendingApproval = React.lazy(() => import("@/pages/auth/PendingApproval"));
 const LazyDashboardLayout = React.lazy(() => import("@/pages/dashboard/Layout"));
 const LazyDashboard = React.lazy(() => import("@/pages/dashboard/Dashboard"));
 const LazyDashboardEvents = React.lazy(() => import("@/pages/dashboard/Events"));

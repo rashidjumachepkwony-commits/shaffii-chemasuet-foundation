@@ -5,6 +5,7 @@ import {
   paginatedResponse,
   extractPaginationParams,
 } from "../utils/response";
+import { requirePermission } from "../middleware/auth";
 
 const app = new Hono<{
   Bindings: { SUPABASE_URL: string; SUPABASE_SERVICE_ROLE_KEY: string };
@@ -12,19 +13,21 @@ const app = new Hono<{
 }>();
 
 app.get("/", async (c) => {
-  const { page, limit, offset } = extractPaginationParams(c);
+  return requirePermission("donations.manage", c, async () => {
+    const { page, limit, offset } = extractPaginationParams(c);
 
-  const supabase = c.get("supabase");
-  const { data, error, count } = await supabase
-    .from("donations")
-    .select("*", { count: "exact" })
-    .order("created_at", { ascending: false })
-    .range(offset, offset + limit - 1);
+    const supabase = c.get("supabase");
+    const { data, error, count } = await supabase
+      .from("donations")
+      .select("*", { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limit - 1);
 
-  if (error) {
-    return serverError(c, error.message);
-  }
-  return paginatedResponse(c, data || [], page, limit, count || 0);
+    if (error) {
+      return serverError(c, error.message);
+    }
+    return paginatedResponse(c, data || [], page, limit, count || 0);
+  });
 });
 
 app.post("/", async (c) => {

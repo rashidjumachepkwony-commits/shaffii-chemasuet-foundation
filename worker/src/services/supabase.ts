@@ -1,27 +1,61 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Context } from "hono";
 import type { RoleName } from "../types";
 import { ROLE_PERMISSIONS } from "../types";
 
-export function createSupabaseServerClient(c: Context) {
-  return createClient(
-    c.env.SUPABASE_URL,
-    c.env.SUPABASE_SERVICE_ROLE_KEY,
-    {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
+function normalizeEnvValue(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+function isMissingConfig(url: string | undefined, key: string | undefined): boolean {
+  if (!url || !key) return true;
+  try {
+    new URL(url);
+    return false;
+  } catch {
+    return true;
+  }
+}
+
+export class SupabaseConfigError extends Error {
+  constructor() {
+    super(
+      "Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY."
+    );
+    this.name = "SupabaseConfigError";
+  }
+}
+
+export function isSupabaseConfigured(c: Context): boolean {
+  const url = normalizeEnvValue((c.env as any)?.SUPABASE_URL);
+  const key = normalizeEnvValue((c.env as any)?.SUPABASE_SERVICE_ROLE_KEY);
+  return !isMissingConfig(url, key);
+}
+
+export function createSupabaseServerClient(c: Context): SupabaseClient {
+  const url = normalizeEnvValue((c.env as any)?.SUPABASE_URL);
+  const key = normalizeEnvValue((c.env as any)?.SUPABASE_SERVICE_ROLE_KEY);
+
+  if (isMissingConfig(url, key)) {
+    throw new SupabaseConfigError();
+  }
+
+  return createClient(url as string, key as string, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+    global: {
+      headers: {
+        "x-application-name": "foundation-worker",
       },
-      global: {
-        headers: {
-          "x-application-name": "foundation-worker",
-        },
-      },
-      db: {
-        schema: "public",
-      },
-    }
-  );
+    },
+    db: {
+      schema: "public",
+    },
+  });
 }
 
 export async function verifyUserToken(
@@ -38,7 +72,7 @@ export async function verifyUserToken(
 export async function getUserRole(
   supabase: ReturnType<typeof createSupabaseServerClient>,
   userId: string
-): Promise<RoleName> {
+): Promise<RoleName | "PENDING"> {
   const { data, error } = await supabase
     .from("user_roles")
     .select("role")
@@ -46,7 +80,8 @@ export async function getUserRole(
     .single();
 
   if (error || !data) {
-    return "USER";
+    // No role row means the account has not been approved by an admin yet.
+    return "PENDING";
   }
   return data.role as RoleName;
 }

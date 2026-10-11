@@ -1,8 +1,9 @@
 import * as React from "react";
-import { setTokenProvider } from "@/services/api";
+import { setTokenProvider, setUnauthorizedHandler } from "@/services/api";
 import type { RoleName, Permission } from "@/types";
 import { hasPermission } from "@/lib/utils";
 import { authService } from "@/services";
+import { supabase } from "@/lib/supabase";
 
 type AuthSession = {
   access_token: string;
@@ -32,12 +33,14 @@ interface AuthContextType {
   permissions: Permission[];
   loading: boolean;
   initialized: boolean;
+  /** True when a Google sign-in is waiting for admin approval. */
+  pendingApproval: boolean;
   login: (
     email: string,
     password: string
   ) => Promise<{
     error: Error | null;
-    data: { needsEmailConfirmation?: boolean; role?: string; permissions?: string[] } | null;
+    data: { needsEmailConfirmation?: boolean; role?: string | null; permissions?: string[]; pending?: boolean } | null;
   }>;
   register: (
     email: string,
@@ -50,6 +53,10 @@ interface AuthContextType {
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
   refreshSession: () => Promise<void>;
+  /** Starts the Google OAuth redirect for member sign-in. */
+  signInWithGoogle: () => Promise<{ error: Error | null }>;
+  /** Completes a Google sign-in after the OAuth redirect returns. */
+  completeGoogleSignIn: () => Promise<{ error: Error | null; pending: boolean }>;
 }
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
@@ -118,31 +125,39 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [permissions, setPermissions] = React.useState<Permission[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [initialized, setInitialized] = React.useState(false);
+  const [pendingApproval, setPendingApproval] = React.useState(false);
+  const logoutRef = React.useRef<(() => Promise<void>) | null>(null) as React.MutableRefObject<
+    (() => Promise<void>) | null
+  >;
+  const didInitialize = React.useRef(false);
 
-  const loadProfileAndRole = React.useCallback(async (token: string) => {
-    try {
-      const result = await authService.getMe();
-      setProfile(result.profile);
-      setRole(result.role ? (result.role as RoleName) : null);
-      setPermissions(result.permissions as Permission[]);
-    } catch {
-      setProfile(null);
-      setRole(null);
-      setPermissions([]);
-    }
-  }, []);
+  const loadProfileAndRole = React.useCallback(
+    async (token: string) => {
+      try {
+        const result = await authService.getMe();
+        setProfile(result.profile);
+        setRole(result.role ? (result.role as RoleName) : null);
+        setPermissions(result.permissions as Permission[]);
+      } catch {
+        // A transient failure must NOT demote a signed-in user to null, or the
+        // admin guard will bounce them to /unauthorized. Keep current state;
+        // the 401 handler in api.ts already covers real auth expiry.
+      }
+    },
+    []
+  );
 
   const isDevelopment = React.useMemo(
     () => import.meta.env.VITE_APP_ENV === "development",
     []
   );
 
-  const refreshAccessToken = React.useCallback(async () => {
-    if (!session?.refresh_token) return false;
+  const refreshAccessToken = React.useCallback(async (): Promise<AuthSession | null> => {
+    if (!session?.refresh_token) return null;
 
     try {
       const result = await authService.refreshToken(session.refresh_token);
-      if (!result?.access_token) return false;
+      if (!result?.access_token) return null;
 
       const newSession: AuthSession = {
         access_token: result.access_token,
@@ -153,11 +168,89 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setSession(newSession);
       setTokenProvider(async () => newSession.access_token);
       storeSession(newSession, user);
-      return true;
+      return newSession;
     } catch {
-      return false;
+      return null;
     }
   }, [session, user]);
+
+  const refreshAccessTokenRef = React.useRef(refreshAccessToken);
+  refreshAccessTokenRef.current = refreshAccessToken;
+
+  /**
+   * Completes a Google (OAuth) sign-in after the redirect returns tokens to the
+   * browser Supabase client. Exchanges them with the worker for app session
+   * state, and creates the profile on first sign-in.
+   */
+  const completeGoogleSignIn = React.useCallback(async () => {
+    try {
+      const { data } = await supabase.auth.getSession();
+      const googleSession = data?.session;
+
+      if (!googleSession?.access_token) {
+        return { error: null, pending: false };
+      }
+
+      const result = await authService.oauthSession({
+        access_token: googleSession.access_token,
+        refresh_token: googleSession.refresh_token,
+        expires_at: googleSession.expires_at,
+      });
+
+      const normalizedSession: AuthSession = {
+        access_token: result.session.access_token,
+        refresh_token: result.session.refresh_token || googleSession.refresh_token,
+        expires_at: result.session.expires_at,
+      };
+
+      const isPending = result.pending || !result.role;
+
+      setTokenProvider(async () => normalizedSession.access_token);
+      setSession(normalizedSession);
+      setUser(result.user);
+      setProfile(result.profile);
+      setPermissions(result.permissions as Permission[]);
+      setRole(isPending ? null : (result.role as RoleName));
+      setPendingApproval(isPending);
+      storeSession(normalizedSession, result.user);
+
+      // Clear the browser client's session so a later page load does not
+      // re-process the same OAuth callback.
+      await supabase.auth.signOut({ scope: "local" });
+
+      return { error: null, pending: isPending };
+    } catch (err: any) {
+      return { error: err, pending: false };
+    }
+  }, []);
+
+  const signInWithGoogle = React.useCallback(async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/login`,
+        },
+      });
+      return { error: error ? new Error(error.message) : null };
+    } catch (err: any) {
+      return { error: err };
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (isDevelopment) return;
+
+    setUnauthorizedHandler(async () => {
+      const refreshed = await refreshAccessTokenRef.current();
+      if (!refreshed && logoutRef.current) {
+        await logoutRef.current();
+      }
+      return refreshed !== null;
+    });
+
+    return () => setUnauthorizedHandler(null);
+  }, [isDevelopment]);
 
   const initializeFromStorage = React.useCallback(async () => {
     const { session: storedSession, user: storedUser } = getStoredSession();
@@ -174,23 +267,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setProfile(null);
           setRole(null);
           setPermissions([]);
+          setPendingApproval(false);
           setInitialized(true);
           return;
         }
-        activeSession = session ?? storedSession;
+        activeSession = refreshed;
       }
 
       setTokenProvider(async () => activeSession.access_token);
       setSession(activeSession);
       setUser(storedUser);
+      setPendingApproval(false);
       await loadProfileAndRole(activeSession.access_token);
+    } else {
+      // No app session stored — this may be a Google OAuth redirect returning.
+      await completeGoogleSignIn();
     }
 
     setInitialized(true);
-  }, [isDevelopment, refreshAccessToken, loadProfileAndRole, session]);
+  }, [refreshAccessToken, loadProfileAndRole, completeGoogleSignIn]);
 
   React.useEffect(() => {
-    const mounted = true;
+    if (didInitialize.current) return;
+    didInitialize.current = true;
 
     const initialize = async () => {
       if (isDevelopment) {
@@ -222,7 +321,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     initialize();
-  }, [isDevelopment, initializeFromStorage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const login = async (email: string, password: string) => {
     setLoading(true);
@@ -248,13 +348,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setSession(normalizedSession);
       setUser(authUser);
       setProfile(authProfile);
-      setRole(authRole as RoleName);
+      setRole(authRole ? (authRole as RoleName) : null);
       setPermissions(authPermissions as Permission[]);
+      setPendingApproval(!authRole);
       storeSession(normalizedSession, authUser);
 
       return {
         error: null,
-        data: { needsEmailConfirmation: false, role: authRole, permissions: authPermissions },
+        data: {
+          needsEmailConfirmation: false,
+          role: authRole ?? null,
+          permissions: authPermissions,
+          pending: !authRole,
+        },
       };
     } catch (err: any) {
       return { error: err, data: null };
@@ -298,10 +404,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setProfile(null);
       setRole(null);
       setPermissions([]);
+      setPendingApproval(false);
       storeSession(null, null);
       setLoading(false);
     }
   };
+
+  logoutRef.current = logout;
 
   const resetPassword = async (email: string) => {
     setLoading(true);
@@ -316,10 +425,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const refreshSession = async () => {
-    if (!session?.refresh_token) return;
-    await refreshAccessToken();
-    if (session) {
-      await loadProfileAndRole(session.access_token);
+    const refreshed = await refreshAccessToken();
+    const activeSession = refreshed ?? session;
+    if (activeSession) {
+      await loadProfileAndRole(activeSession.access_token);
     }
   };
 
@@ -346,12 +455,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     permissions,
     loading,
     initialized,
+    pendingApproval,
     login,
     register,
     logout,
     resetPassword,
     refreshSession,
     updateProfile,
+    signInWithGoogle,
+    completeGoogleSignIn,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

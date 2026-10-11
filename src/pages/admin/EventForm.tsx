@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { FileUploader } from "@/components/ui/FileUploader";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useToast } from "@/components/ui/Toast";
-import { apiGet, apiPost, apiPut, apiGet as rawApiGet } from "@/services/api";
+import { apiGet, apiPost, apiPut, apiGet as rawApiGet, API_BASE } from "@/services/api";
 import type { Event, EventCategory, ApiResponse } from "@/types";
 import { ArrowLeft, Save, Upload } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -142,9 +142,7 @@ export default function AdminEventForm() {
       formData.append("bucket", "event-images");
 
       const token = session?.access_token;
-      const uploadRes = await fetch(
-        `${import.meta.env.VITE_API_URL || "/api"}/upload`,
-        {
+      const uploadRes = await fetch(`${API_BASE}/upload`, {
           method: "POST",
           headers: token ? { Authorization: `Bearer ${token}` } : {},
           body: formData,

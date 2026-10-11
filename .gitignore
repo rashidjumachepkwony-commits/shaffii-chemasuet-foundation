@@ -12,6 +12,11 @@ node_modules/
 .env.production
 .env*.local
 
+# Wrangler local secrets — NEVER commit these
+.dev.vars
+**/.dev.vars
+*.dev.vars
+
 # Supabase
 supabase/.cache/
 .supabase/

@@ -5,14 +5,15 @@ account_id = "0123627158662d9787fbcaed50687469"
 
 [vars]
 ENVIRONMENT = "production"
+SUPABASE_URL = "https://qkmmjlbqiqskvxisywrk.supabase.co"
 
 [env.development]
 name = "shafie-chemasuet-foundation-worker-dev"
-vars = { ENVIRONMENT = "development" }
+vars = { ENVIRONMENT = "development", SUPABASE_URL = "https://qkmmjlbqiqskvxisywrk.supabase.co" }
 
 [env.production]
 name = "shafie-chemasuet-foundation-worker"
-vars = { ENVIRONMENT = "production" }
+vars = { ENVIRONMENT = "production", SUPABASE_URL = "https://qkmmjlbqiqskvxisywrk.supabase.co" }
 
 [assets]
 directory = "../dist"

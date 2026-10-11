@@ -1,47 +1,48 @@
 import { useNavigate } from "react-router-dom";
+import * as React from "react";
 import { useForm } from "@/hooks/useForm";
 import { resetPasswordSchema } from "@/lib/validations";
 import { FormField } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/Toast";
-import { Lock } from "lucide-react";
-import { z } from "zod";
+import { authService } from "@/services";
+import { Link } from "react-router-dom";
+import { Lock, AlertTriangle } from "lucide-react";
 
-const resetPasswordSchemaExtended = z
-  .object({
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .max(128, "Password is too long")
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-      ),
-    confirm_password: z.string().min(1, "Please confirm your password"),
-  })
-  .refine((data) => data.password === data.confirm_password, {
-    path: ["confirm_password"],
-    message: "Passwords do not match",
-  });
+function getRecoveryToken(): string | null {
+  const hash = window.location.hash.replace(/^#/, "");
+  const params = new URLSearchParams(hash);
+  const token = params.get("access_token");
+  return token;
+}
 
 export default function ResetPassword() {
-  const { updateProfile } = useAuth();
   const { error: showError, success: showSuccess } = useToast();
   const navigate = useNavigate();
+  const [recoveryToken, setRecoveryToken] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    setRecoveryToken(getRecoveryToken());
+  }, []);
 
   const form = useForm({
     initialValues: { password: "", confirm_password: "" },
-    validationSchema: resetPasswordSchemaExtended,
+    validationSchema: resetPasswordSchema,
     onSubmit: async (values) => {
-      const { error } = await updateProfile({ password: values.password });
-      if (error) {
-        showError(error.message || "Failed to reset password.");
+      if (!recoveryToken) {
+        showError("Invalid or expired reset link. Please request a new one.");
         return;
       }
-      showSuccess("Password reset successfully.");
-      navigate("/login");
+
+      try {
+        await authService.confirmResetPassword(recoveryToken, values.password);
+        showSuccess("Password reset successfully. You can now sign in.");
+        window.history.replaceState(null, "", "/reset-password");
+        navigate("/login", { replace: true });
+      } catch (err: any) {
+        showError(err.message || "Failed to reset password.");
+      }
     },
   });
 
@@ -58,6 +59,15 @@ export default function ResetPassword() {
           <p className="mt-2 text-sm text-neutral-600">
             Enter a new password for your account.
           </p>
+          {!recoveryToken && (
+            <div className="mt-4 flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-left text-sm text-amber-800">
+              <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+              <p>
+                This page needs a valid password reset link. Open the "Reset
+                Password" email we sent you and click the link inside.
+              </p>
+            </div>
+          )}
         </div>
 
         <form onSubmit={form.handleSubmit} noValidate>
