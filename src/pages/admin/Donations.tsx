@@ -1,13 +1,21 @@
 import * as React from "react";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { Pagination } from "@/components/ui/Pagination";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
-import { apiGet, apiDelete } from "@/services/api";
+import { apiGet, apiPatch, apiDelete } from "@/services/api";
 import type { Donation, PaginatedResponse } from "@/types";
 import { Search, Banknote, Trash2 } from "lucide-react";
+
+const donationStatusOptions = [
+  { value: "pending", label: "Pending" },
+  { value: "completed", label: "Completed" },
+  { value: "failed", label: "Failed" },
+  { value: "refunded", label: "Refunded" },
+];
 
 export default function AdminDonations() {
   const { success, error: showError } = useToast();
@@ -18,6 +26,7 @@ export default function AdminDonations() {
   const [totalItems, setTotalItems] = React.useState(0);
   const [search, setSearch] = React.useState("");
   const [deleteTarget, setDeleteTarget] = React.useState<Donation | null>(null);
+  const [updating, setUpdating] = React.useState<string | null>(null);
 
   const loadDonations = React.useCallback(async () => {
     setLoading(true);
@@ -50,6 +59,21 @@ export default function AdminDonations() {
       showError(err.message || "Failed to delete donation");
     } finally {
       setDeleteTarget(null);
+    }
+  };
+
+  const handleStatusChange = async (donation: Donation, status: string) => {
+    setUpdating(donation.id);
+    try {
+      await apiPatch(`/admin/donations/${donation.id}`, { status });
+      setDonations((prev) =>
+        prev.map((d) => (d.id === donation.id ? { ...d, status } : d))
+      );
+      success("Status updated");
+    } catch (err: any) {
+      showError(err.message || "Failed to update status");
+    } finally {
+      setUpdating(null);
     }
   };
 
@@ -87,8 +111,8 @@ export default function AdminDonations() {
                   <th className="px-4 py-3 text-left">Donor</th>
                   <th className="px-4 py-3 text-left">Email</th>
                   <th className="px-4 py-3 text-right">Amount</th>
-                  <th className="px-4 py-3 text-left">Method</th>
-                  <th className="px-4 py-3 text-left">Status</th>
+                    <th className="px-4 py-3 text-left">Method</th>
+                    <th className="px-4 py-3 text-left">Status</th>
                     <th className="px-4 py-3 text-left">Date</th>
                     <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
@@ -102,7 +126,18 @@ export default function AdminDonations() {
                       KSh {(d.amount || 0).toLocaleString()}
                     </td>
                     <td className="px-4 py-3">{d.payment_method || "-"}</td>
-                    <td className="px-4 py-3">{d.status}</td>
+                    <td className="px-4 py-3 min-w-[150px]">
+                      <Select
+                        value={d.status}
+                        onChange={(e) => handleStatusChange(d, e.target.value)}
+                        disabled={updating === d.id}
+                        className="w-full"
+                      >
+                        {donationStatusOptions.map((s) => (
+                          <option key={s.value} value={s.value}>{s.label}</option>
+                        ))}
+                      </Select>
+                    </td>
                     <td className="px-4 py-3">
                       {new Date(d.created_at).toLocaleDateString()}
                     </td>

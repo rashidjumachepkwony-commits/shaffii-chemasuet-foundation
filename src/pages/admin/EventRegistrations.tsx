@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -275,21 +275,23 @@ export default function AdminEventRegistrations() {
                       {new Date(reg.created_at).toLocaleDateString()}
                     </td>
                       <td className="px-4 py-3 text-right">
-                        <Link
-                          to={`/admin/events/${id}/registrations/${reg.id}`}
-                          className="rounded-xl p-1 text-neutral-600 hover:bg-neutral-100"
-                          title="View details"
-                        >
-                          <Search className="h-4 w-4" />
-                        </Link>
                         {reg.status !== "CANCELLED" && (
-                          <button
-                            onClick={() => setDeleteTarget(reg)}
-                            className="rounded-xl p-1 text-red-600 hover:bg-red-50"
-                            title="Delete"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
+                          <>
+                            <button
+                              onClick={() => setCancelTarget(reg)}
+                              className="rounded-xl p-1 text-neutral-600 hover:bg-neutral-100"
+                              title="Cancel registration"
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => setDeleteTarget(reg)}
+                              className="rounded-xl p-1 text-red-600 hover:bg-red-50"
+                              title="Delete"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </>
                         )}
                       </td>
                   </tr>
@@ -319,6 +321,15 @@ export default function AdminEventRegistrations() {
         message={`Cancel registration ${cancelTarget?.registration_reference}?`}
         destructive
         confirmLabel="Cancel Registration"
+      />
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete Registration"
+        message={`Are you sure you want to delete registration ${deleteTarget?.registration_reference}? This action cannot be undone.`}
+        confirmLabel="Delete"
+        destructive
       />
     </div>
   );
