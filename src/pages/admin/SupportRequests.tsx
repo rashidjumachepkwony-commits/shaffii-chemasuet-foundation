@@ -30,7 +30,7 @@ type SupportRequest = {
   people_needing_support: string | null;
   additional_information: string | null;
   preferred_contact_method: string | null;
-  status: "New" | "Under Review" | "Approved" | "InProgress" | "Completed" | "Rejected" | "Closed";
+  status: "New" | "Under Review" | "Approved" | "In Progress" | "Completed" | "Rejected" | "Closed";
   internal_notes: string | null;
   created_at: string;
   updated_at: string;
@@ -40,7 +40,7 @@ const statusOptions = [
   { value: "New", label: "New" },
   { value: "Under Review", label: "Under Review" },
   { value: "Approved", label: "Approved" },
-  { value: "InProgress", label: "In Progress" },
+  { value: "In Progress", label: "In Progress" },
   { value: "Completed", label: "Completed" },
   { value: "Rejected", label: "Rejected" },
   { value: "Closed", label: "Closed" },
@@ -229,7 +229,7 @@ export default function AdminSupportRequests() {
   const getUrgencyColor = (u: string) => urgencyColors[u] || "bg-neutral-100 text-neutral-800";
 
   const getStatusStyle = (s: SupportRequest["status"]) => {
-    const key = s === "Under Review" ? "UnderReview" : s === "InProgress" ? "InProgress" : s;
+    const key = s === "Under Review" ? "UnderReview" : s === "In Progress" ? "InProgress" : s;
     return statusColors[key] || "bg-neutral-100 text-neutral-800";
   };
 
