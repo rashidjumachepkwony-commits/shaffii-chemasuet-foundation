@@ -22,6 +22,9 @@ export default function AdminGallery() {
   const [totalItems, setTotalItems] = React.useState(0);
   const [search, setSearch] = React.useState("");
   const [showUpload, setShowUpload] = React.useState(false);
+  const [editingItem, setEditingItem] = React.useState<GalleryItem | null>(null);
+  const [editDraft, setEditDraft] = React.useState({ caption: "", category: "", alt_text: "" });
+  const [updating, setUpdating] = React.useState<string | null>(null);
   const { success, error: showError } = useToast();
   const { session } = useAuth();
 
@@ -54,6 +57,31 @@ export default function AdminGallery() {
       success("Image deleted");
     } catch (err: any) {
       showError(err.message || "Failed to delete");
+    }
+  };
+
+  const handleEdit = (item: GalleryItem) => {
+    setEditingItem(item);
+    setEditDraft({
+      caption: item.caption || "",
+      category: item.category || "",
+      alt_text: item.alt_text || "",
+    });
+  };
+
+  const handleSave = async (item: GalleryItem) => {
+    setUpdating(item.id);
+    try {
+      await apiPatch(`/admin/gallery/${item.id}`, editDraft);
+      setItems((prev) =>
+        prev.map((g) => (g.id === item.id ? { ...g, ...editDraft } : g))
+      );
+      setEditingItem(null);
+      success("Image details updated");
+    } catch (err: any) {
+      showError(err.message || "Failed to update image");
+    } finally {
+      setUpdating(null);
     }
   };
 
@@ -180,20 +208,78 @@ export default function AdminGallery() {
                   alt={item.alt_text || item.caption || ""}
                   className="h-48 w-full object-cover"
                 />
-                <div className="p-3">
-                  {item.caption && (
-                    <p className="text-sm text-neutral-700 line-clamp-2">{item.caption}</p>
-                  )}
-                  <div className="mt-2 flex justify-end gap-2">
-                    <button
-                      onClick={() => handleDelete(item)}
-                      className="rounded-xl p-1 text-red-600 hover:bg-red-50"
-                      title="Delete"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
+              <div className="p-3">
+                   {editingItem?.id === item.id ? (
+                     <div className="space-y-2">
+                       <Input
+                         placeholder="Caption"
+                         value={editDraft.caption}
+                         onChange={(e) => setEditDraft({ ...editDraft, caption: e.target.value })}
+                         className="h-8 text-sm"
+                       />
+                       <Input
+                         placeholder="Category"
+                         value={editDraft.category}
+                         onChange={(e) => setEditDraft({ ...editDraft, category: e.target.value })}
+                         className="h-8 text-sm"
+                       />
+                       <Input
+                         placeholder="Alt text"
+                         value={editDraft.alt_text}
+                         onChange={(e) => setEditDraft({ ...editDraft, alt_text: e.target.value })}
+                         className="h-8 text-sm"
+                       />
+                       <div className="flex justify-end gap-1">
+                         <button
+                           onClick={() => setEditingItem(null)}
+                           className="rounded-xl p-1 text-neutral-600 hover:bg-neutral-100"
+                           title="Cancel"
+                         >
+                           <X className="h-4 w-4" />
+                         </button>
+                         <button
+                           onClick={() => handleSave(item)}
+                           disabled={updating === item.id}
+                           className="rounded-xl p-1 text-foundation-700 hover:bg-neutral-100"
+                           title="Save"
+                         >
+                           <Save className="h-4 w-4" />
+                         </button>
+                       </div>
+                     </div>
+                   ) : (
+                     <>
+                       {(item.caption || item.category || item.alt_text) ? (
+                         <div className="space-y-1">
+                           {item.caption && (
+                             <p className="text-sm text-neutral-700 line-clamp-2">{item.caption}</p>
+                           )}
+                           {item.category && (
+                             <p className="text-xs text-neutral-500">#{item.category}</p>
+                           )}
+                         </div>
+                       ) : (
+                         <p className="text-sm text-neutral-400">No caption</p>
+                       )}
+                       <div className="mt-2 flex justify-end gap-2">
+                         <button
+                           onClick={() => handleEdit(item)}
+                           className="rounded-xl p-1 text-neutral-600 hover:bg-neutral-100"
+                           title="Edit"
+                         >
+                           <Edit className="h-4 w-4" />
+                         </button>
+                         <button
+                           onClick={() => handleDelete(item)}
+                           className="rounded-xl p-1 text-red-600 hover:bg-red-50"
+                           title="Delete"
+                         >
+                           <Trash2 className="h-4 w-4" />
+                         </button>
+                       </div>
+                     </>
+                   )}
+                   </div>
               </Card>
             ))}
           </div>
