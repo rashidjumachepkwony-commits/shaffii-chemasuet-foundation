@@ -3,19 +3,21 @@ import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Pagination } from "@/components/ui/Pagination";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
-import { apiGet } from "@/services/api";
+import { apiGet, apiDelete } from "@/services/api";
 import type { Donation, PaginatedResponse } from "@/types";
-import { Search, Banknote } from "lucide-react";
+import { Search, Banknote, Trash2 } from "lucide-react";
 
 export default function AdminDonations() {
-  const { error: showError } = useToast();
+  const { success, error: showError } = useToast();
   const [donations, setDonations] = React.useState<Donation[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [page, setPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [totalItems, setTotalItems] = React.useState(0);
   const [search, setSearch] = React.useState("");
+  const [deleteTarget, setDeleteTarget] = React.useState<Donation | null>(null);
 
   const loadDonations = React.useCallback(async () => {
     setLoading(true);
@@ -36,6 +38,20 @@ export default function AdminDonations() {
   React.useEffect(() => {
     loadDonations();
   }, [loadDonations]);
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await apiDelete(`/admin/donations/${deleteTarget.id}`);
+      setDonations((prev) => prev.filter((d) => d.id !== deleteTarget.id));
+      setTotalItems((prev) => Math.max(prev - 1, 0));
+      success("Donation deleted");
+    } catch (err: any) {
+      showError(err.message || "Failed to delete donation");
+    } finally {
+      setDeleteTarget(null);
+    }
+  };
 
   const totalAmount = donations.reduce((sum, d) => sum + (d.amount || 0), 0);
 
@@ -73,8 +89,9 @@ export default function AdminDonations() {
                   <th className="px-4 py-3 text-right">Amount</th>
                   <th className="px-4 py-3 text-left">Method</th>
                   <th className="px-4 py-3 text-left">Status</th>
-                  <th className="px-4 py-3 text-left">Date</th>
-                </tr>
+                    <th className="px-4 py-3 text-left">Date</th>
+                    <th className="px-4 py-3 text-right">Actions</th>
+                  </tr>
               </thead>
               <tbody>
                 {donations.map((d) => (
@@ -89,6 +106,15 @@ export default function AdminDonations() {
                     <td className="px-4 py-3">
                       {new Date(d.created_at).toLocaleDateString()}
                     </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        onClick={() => setDeleteTarget(d)}
+                        className="rounded-xl p-1 text-red-600 hover:bg-red-50"
+                        title="Delete"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -97,6 +123,16 @@ export default function AdminDonations() {
           <Pagination currentPage={page} totalPages={totalPages} totalItems={totalItems} pageSize={15} onPageChange={setPage} />
         </>
       )}
+
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete Donation"
+        message={`Are you sure you want to delete the donation of KSh ${deleteTarget?.amount?.toLocaleString()}? This action cannot be undone.`}
+        confirmLabel="Delete"
+        destructive
+      />
     </div>
   );
 }

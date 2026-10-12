@@ -4,10 +4,11 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Pagination } from "@/components/ui/Pagination";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
-import { apiGet, apiPatch } from "@/services/api";
+import { apiGet, apiPatch, apiDelete } from "@/services/api";
 import type { PaginatedResponse } from "@/types";
-import { Search, Eye, RefreshCw, User, Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Search, Eye, RefreshCw, User, Phone, Mail, MapPin, Clock, Save, CheckCircle, Trash2, Edit3 } from "lucide-react";
 
 type SupportRequest = {
   id: string;
@@ -62,19 +63,15 @@ const statusColors: Record<string, string> = {
 };
 
 const supportTypeFilterOptions = [
-  "Education support",
-  "Food support",
-  "Medical assistance",
-  "Financial assistance",
-  "Emergency assistance",
-  "Family/community support",
-  "Youth support",
-  "Elderly support",
-  "Disability-related support",
-  "Housing/shelter assistance",
-  "Business/livelihood support",
-  "Other",
+  "Education support", "Food support", "Medical assistance",
+  "Financial assistance", "Emergency assistance", "Family/community support",
+  "Youth support", "Elderly support", "Disability-related support",
+  "Housing/shelter assistance", "Business/livelihood support", "Other",
 ];
+
+const supportTypeOptions = supportTypeFilterOptions;
+
+const contactMethodOptions = ["Phone call", "SMS", "WhatsApp", "Email"];
 
 export default function AdminSupportRequests() {
   const { success, error: showError } = useToast();
@@ -88,8 +85,11 @@ export default function AdminSupportRequests() {
   const [typeFilter, setTypeFilter] = React.useState("");
   const [countyFilter, setCountyFilter] = React.useState("");
   const [selected, setSelected] = React.useState<SupportRequest | null>(null);
-  const [updating, setUpdating] = React.useState<"status" | "notes" | null>(null);
+  const [draft, setDraft] = React.useState<Partial<SupportRequest>>({});
+  const [saving, setSaving] = React.useState(false);
+  const [updating, setUpdating] = React.useState<"status" | "notes" | "approve" | null>(null);
   const [notesValue, setNotesValue] = React.useState("");
+  const [deleteTarget, setDeleteTarget] = React.useState<SupportRequest | null>(null);
 
   const loadRequests = React.useCallback(async () => {
     setLoading(true);
@@ -119,6 +119,41 @@ export default function AdminSupportRequests() {
     loadRequests();
   }, [loadRequests]);
 
+  const handleView = (req: SupportRequest) => {
+    setSelected(req);
+    setDraft({ ...req });
+    setNotesValue(req.internal_notes || "");
+  };
+
+  const closeModal = () => {
+    setSelected(null);
+    setDraft({});
+    setNotesValue("");
+  };
+
+  const handleFieldChange = (key: keyof SupportRequest, value: string) => {
+    setDraft((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = async () => {
+    if (!selected) return;
+    setSaving(true);
+    try {
+      await apiPatch(`/admin/support/${selected.id}`, draft);
+      const merged = { ...selected, ...draft };
+      setSelected(merged);
+      setRequests((prev) =>
+        prev.map((r) => (r.id === selected.id ? merged : r))
+      );
+      setDraft(merged);
+      success("Request updated successfully");
+    } catch (err: any) {
+      showError(err.message || "Failed to update request");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleStatusChange = async (req: SupportRequest, status: string) => {
     setUpdating("status");
     try {
@@ -134,6 +169,24 @@ export default function AdminSupportRequests() {
       success("Status updated");
     } catch (err: any) {
       showError(err.message || "Failed to update status");
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  const handleApprove = async () => {
+    if (!selected) return;
+    setUpdating("approve");
+    try {
+      await apiPatch(`/admin/support/${selected.id}/status`, { status: "Approved" });
+      const updated = { ...selected, status: "Approved" as SupportRequest["status"] };
+      setSelected(updated);
+      setRequests((prev) =>
+        prev.map((r) => (r.id === selected.id ? { ...r, status: "Approved" as SupportRequest["status"] } : r))
+      );
+      success("Support request accepted and marked as Approved");
+    } catch (err: any) {
+      showError(err.message || "Failed to accept request");
     } finally {
       setUpdating(null);
     }
@@ -156,14 +209,21 @@ export default function AdminSupportRequests() {
     }
   };
 
-  const handleView = (req: SupportRequest) => {
-    setSelected(req);
-    setNotesValue(req.internal_notes || "");
-  };
-
-  const closeModal = () => {
-    setSelected(null);
-    setNotesValue("");
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await apiDelete(`/admin/support/${deleteTarget.id}`);
+      setRequests((prev) => prev.filter((r) => r.id !== deleteTarget.id));
+      setTotalItems((prev) => Math.max(prev - 1, 0));
+      success("Support request deleted");
+      if (selected?.id === deleteTarget.id) {
+        closeModal();
+      }
+    } catch (err: any) {
+      showError(err.message || "Failed to delete request");
+    } finally {
+      setDeleteTarget(null);
+    }
   };
 
   const getUrgencyColor = (u: string) => urgencyColors[u] || "bg-neutral-100 text-neutral-800";
@@ -285,6 +345,13 @@ export default function AdminSupportRequests() {
                             <Eye className="h-4 w-4 inline mr-1" />
                             View
                           </button>
+                          <button
+                            onClick={() => setDeleteTarget(req)}
+                            className="text-sm px-3 py-1 rounded-lg text-red-600 hover:bg-red-50"
+                            title="Delete"
+                          >
+                            <Trash2 className="h-4 w-4 inline" />
+                          </button>
                         </td>
                       </tr>
                     ))
@@ -305,129 +372,239 @@ export default function AdminSupportRequests() {
         </>
       ) : (
         <Card className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Request Details</h2>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-mono text-neutral-500">{selected.reference_number}</span>
+              {selected.status !== "Approved" && selected.status !== "Completed" && selected.status !== "Closed" && (
+                <button
+                  onClick={handleApprove}
+                  disabled={updating === "approve"}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-green-600 text-white text-xs font-medium hover:bg-green-700 disabled:opacity-60"
+                  title="Accept / Approve"
+                >
+                  <CheckCircle className="h-3 w-3" />
+                  {updating === "approve" ? "Accepting..." : "Accept"}
+                </button>
+              )}
+              <button
+                onClick={() => setDeleteTarget(selected)}
+                className="inline-flex items-center justify-center p-1.5 rounded-xl text-red-600 hover:bg-red-50"
+                title="Delete"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold">Request Details</h2>
               <div>
-                <label className="text-sm text-neutral-500">Reference</label>
-                <p className="font-mono">{selected.reference_number}</p>
+                <label className="block text-sm font-medium mb-1">Reference</label>
+                <p className="font-mono text-sm text-neutral-600">{selected.reference_number}</p>
               </div>
               <div>
-                <label className="text-sm text-neutral-500">Full Name</label>
-                <p className="flex items-center gap-2">
+                <label className="block text-sm font-medium mb-1">Full Name</label>
+                <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-neutral-400" />
-                  {selected.full_name}
-                </p>
-              </div>
-              <div>
-                <label className="text-sm text-neutral-500">ID Number</label>
-                <p>{selected.id_number}</p>
-              </div>
-              <div>
-                <label className="text-sm text-neutral-500">Phone Numbers</label>
-                <p className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-neutral-400" />
-                  {selected.phone_number}
-                </p>
-                {selected.alternative_phone && (
-                  <p className="flex items-center gap-2 mt-1">
-                    <Phone className="h-4 w-4 text-neutral-400" />
-                    {selected.alternative_phone}
-                  </p>
-                )}
-              </div>
-              {selected.email && (
-                <div>
-                  <label className="text-sm text-neutral-500">Email</label>
-                  <p className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-neutral-400" />
-                    {selected.email}
-                  </p>
+                  <Input
+                    value={draft.full_name ?? ""}
+                    onChange={(e) => handleFieldChange("full_name", e.target.value)}
+                    className="flex-1"
+                  />
                 </div>
-              )}
+              </div>
               <div>
-                <label className="text-sm text-neutral-500">Location</label>
-                <p className="flex items-center gap-2">
+                <label className="block text-sm font-medium mb-1">ID Number</label>
+                <Input
+                  value={draft.id_number ?? ""}
+                  onChange={(e) => handleFieldChange("id_number", e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Phone Numbers</label>
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-neutral-400" />
+                  <Input
+                    value={draft.phone_number ?? ""}
+                    onChange={(e) => handleFieldChange("phone_number", e.target.value)}
+                  />
+                </div>
+                <Input
+                  className="mt-2"
+                  value={draft.alternative_phone ?? ""}
+                  onChange={(e) => handleFieldChange("alternative_phone", e.target.value)}
+                  placeholder="Alternative phone (optional)"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Email</label>
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-neutral-400" />
+                  <Input
+                    value={draft.email ?? ""}
+                    onChange={(e) => handleFieldChange("email", e.target.value)}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Location</label>
+                <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-neutral-400" />
-                  {selected.county}, {selected.sub_county}, {selected.ward}
-                </p>
-                <p className="text-sm text-neutral-600 mt-1">{selected.current_location}</p>
+                  <Input
+                    value={draft.county ?? ""}
+                    onChange={(e) => handleFieldChange("county", e.target.value)}
+                    placeholder="County"
+                  />
+                </div>
+                <Input
+                  className="mt-2"
+                  value={draft.sub_county ?? ""}
+                  onChange={(e) => handleFieldChange("sub_county", e.target.value)}
+                  placeholder="Sub-county"
+                />
+                <Input
+                  className="mt-2"
+                  value={draft.ward ?? ""}
+                  onChange={(e) => handleFieldChange("ward", e.target.value)}
+                  placeholder="Ward"
+                />
+                <Input
+                  className="mt-2"
+                  value={draft.location ?? ""}
+                  onChange={(e) => handleFieldChange("location", e.target.value)}
+                  placeholder="Location"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Current Physical Location</label>
+                <Input
+                  value={draft.current_location ?? ""}
+                  onChange={(e) => handleFieldChange("current_location", e.target.value)}
+                />
               </div>
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold">Support Details</h2>
               <div>
-                <label className="text-sm text-neutral-500">Type of Support</label>
-                <p>{selected.support_type}</p>
-              </div>
-              <div>
-                <label className="text-sm text-neutral-500">Urgency</label>
-                <span
-                  className={`inline-flex px-2 py-1 rounded-full text-sm font-medium ${getUrgencyColor(selected.urgency)}`}
+                <label className="block text-sm font-medium mb-1">Type of Support</label>
+                <Select
+                  value={draft.support_type ?? ""}
+                  onChange={(e) => handleFieldChange("support_type", e.target.value)}
                 >
-                  {selected.urgency}
-                </span>
+                  <option value="" disabled>Select support type</option>
+                  {supportTypeOptions.map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </Select>
               </div>
               <div>
-                <label className="text-sm text-neutral-500">People Needing Support</label>
-                <p>{selected.people_needing_support || "—"}</p>
+                <label className="block text-sm font-medium mb-1">Urgency</label>
+                <Select
+                  value={draft.urgency ?? "Normal"}
+                  onChange={(e) => handleFieldChange("urgency", e.target.value)}
+                >
+                  {["Emergency", "Urgent", "Normal"].map((u) => (
+                    <option key={u} value={u}>{u}</option>
+                  ))}
+                </Select>
               </div>
               <div>
-                <label className="text-sm text-neutral-500">Preferred Contact</label>
-                <p>{selected.preferred_contact_method || "—"}</p>
+                <label className="block text-sm font-medium mb-1">People Needing Support</label>
+                <Input
+                  value={draft.people_needing_support ?? ""}
+                  onChange={(e) => handleFieldChange("people_needing_support", e.target.value)}
+                  placeholder="e.g. 4"
+                />
               </div>
               <div>
-                <label className="text-sm text-neutral-500">Status</label>
-                <select
+                <label className="block text-sm font-medium mb-1">Preferred Contact Method</label>
+                <Select
+                  value={draft.preferred_contact_method ?? ""}
+                  onChange={(e) => handleFieldChange("preferred_contact_method", e.target.value)}
+                >
+                  <option value="" disabled>Select method</option>
+                  {contactMethodOptions.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </Select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Status</label>
+                <Select
                   value={selected.status}
                   onChange={(e) => handleStatusChange(selected, e.target.value)}
                   disabled={updating === "status"}
-                  className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm"
                 >
                   {statusOptions.map((s) => (
                     <option key={s.value} value={s.value}>{s.label}</option>
                   ))}
-                </select>
+                </Select>
               </div>
               <div>
-                <label className="text-sm text-neutral-500">Description of Support Needed</label>
-                <p className="mt-1 text-neutral-800">{selected.support_description}</p>
-              </div>
-              {selected.additional_information && (
-                <div>
-                  <label className="text-sm text-neutral-500">Additional Information</label>
-                  <p className="mt-1">{selected.additional_information}</p>
-                </div>
-              )}
-              <div>
-                <label className="text-sm text-neutral-500">Internal Notes</label>
+                <label className="block text-sm font-medium mb-1">Description of Support Needed</label>
                 <textarea
-                  value={notesValue}
-                  onChange={(e) => setNotesValue(e.target.value)}
-                  placeholder="Add internal notes..."
-                  className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm resize-y min-h-[80px]"
+                  rows={4}
+                  value={draft.support_description ?? ""}
+                  onChange={(e) => handleFieldChange("support_description", e.target.value)}
+                  className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm resize-y"
+                  placeholder="Explain clearly what assistance is needed..."
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Additional Information</label>
+                <textarea
+                  rows={3}
+                  value={draft.additional_information ?? ""}
+                  onChange={(e) => handleFieldChange("additional_information", e.target.value)}
+                  className="w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm resize-y"
+                  placeholder="Any other information..."
+                />
+              </div>
+              <div className="flex items-center justify-between pt-2">
                 <button
                   onClick={handleNotesSave}
                   disabled={updating === "notes"}
-                  className="mt-2 px-4 py-2 text-sm rounded-xl bg-foundation-700 text-white hover:bg-foundation-800"
+                  className="px-4 py-2 text-sm rounded-xl bg-neutral-100 hover:bg-neutral-200"
                 >
                   {updating === "notes" ? "Saving..." : "Save Notes"}
                 </button>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-neutral-400">
-                <Clock className="h-3 w-3" />
-                <span>Created: {new Date(selected.created_at).toLocaleString()}</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-neutral-400">
-                <RefreshCw className="h-3 w-3" />
-                <span>Updated: {new Date(selected.updated_at).toLocaleString()}</span>
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-foundation-700 text-white text-sm font-medium hover:bg-foundation-800 disabled:opacity-60"
+                >
+                  <Save className="h-4 w-4" />
+                  {saving ? "Saving..." : "Save Changes"}
+                </button>
               </div>
             </div>
           </div>
+
+          <div className="flex items-center gap-2 text-xs text-neutral-400 mt-6">
+            <Clock className="h-3 w-3" />
+            <span>Created: {new Date(selected.created_at).toLocaleString()}</span>
+            <RefreshCw className="h-3 w-3" />
+            <span>Updated: {new Date(selected.updated_at).toLocaleString()}</span>
+            {selected.internal_notes && (
+              <>
+                <Edit3 className="h-3 w-3" />
+                <span>Has internal notes</span>
+              </>
+            )}
+          </div>
         </Card>
       )}
+
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete Support Request"
+        message={`Are you sure you want to delete request ${deleteTarget?.reference_number}? This action cannot be undone.`}
+        confirmLabel="Delete"
+        destructive
+      />
     </div>
   );
 }

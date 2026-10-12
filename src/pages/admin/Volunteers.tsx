@@ -5,10 +5,11 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Pagination } from "@/components/ui/Pagination";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
-import { apiGet, apiPatch } from "@/services/api";
+import { apiGet, apiPatch, apiDelete } from "@/services/api";
 import type { Volunteer, PaginatedResponse } from "@/types";
-import { Search, User, Mail, Phone } from "lucide-react";
+import { Search, User, Mail, Phone, Trash2 } from "lucide-react";
 
 const statusOptions = [
   { value: "NEW", label: "New" },
@@ -28,6 +29,7 @@ export default function AdminVolunteers() {
   const [search, setSearch] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState("");
   const [updating, setUpdating] = React.useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = React.useState<Volunteer | null>(null);
 
   const loadVolunteers = React.useCallback(async () => {
     setLoading(true);
@@ -61,6 +63,20 @@ export default function AdminVolunteers() {
       showError(err.message || "Failed to update status");
     } finally {
       setUpdating(null);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await apiDelete(`/admin/volunteers/${deleteTarget.id}`);
+      setVolunteers((prev) => prev.filter((v) => v.id !== deleteTarget.id));
+      setTotalItems((prev) => Math.max(prev - 1, 0));
+      success("Volunteer deleted");
+    } catch (err: any) {
+      showError(err.message || "Failed to delete volunteer");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -100,7 +116,8 @@ export default function AdminVolunteers() {
                   <th className="px-4 py-3 text-left">Phone</th>
                   <th className="px-4 py-3 text-left">Interest</th>
                   <th className="px-4 py-3 text-left">Status</th>
-                  <th className="px-4 py-3 text-left">Applied</th>
+                    <th className="px-4 py-3 text-left">Applied</th>
+                    <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -123,6 +140,15 @@ export default function AdminVolunteers() {
                       </Select>
                     </td>
                     <td className="px-4 py-3">{new Date(v.created_at).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        onClick={() => setDeleteTarget(v)}
+                        className="rounded-xl p-1 text-red-600 hover:bg-red-50"
+                        title="Delete"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -131,6 +157,16 @@ export default function AdminVolunteers() {
           <Pagination currentPage={page} totalPages={totalPages} totalItems={totalItems} pageSize={15} onPageChange={setPage} />
         </>
       )}
+
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete Volunteer"
+        message={`Are you sure you want to delete "${deleteTarget?.full_name}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        destructive
+      />
     </div>
   );
 }

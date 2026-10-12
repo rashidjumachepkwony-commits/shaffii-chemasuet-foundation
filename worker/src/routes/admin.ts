@@ -10,7 +10,7 @@ import {
   paginatedResponse,
   extractPaginationParams,
 } from "../utils/response";
-import { eventSchema } from "../validation";
+import { eventSchema, volunteerSchema } from "../validation";
 import auditLogsRouter from "./auditLogs";
 
 const app = new Hono<{
@@ -314,6 +314,25 @@ app.put("/events/:id", async (c) => {
   });
 });
 
+app.patch("/events/:id", async (c) => {
+  return requirePermission("events.update", c, async () => {
+    const body = await c.req.json();
+    const valid = eventSchema.partial().safeParse(body);
+    if (!valid.success) return badRequest(c, valid.error.errors[0]?.message || "Validation failed");
+    const supabase = c.get("supabase");
+    const updates: Record<string, unknown> = {};
+    for (const key of Object.keys(valid.data)) {
+      if (key in body) updates[key] = (valid.data as Record<string, unknown>)[key];
+    }
+    updates.updated_by = c.get("user")?.id;
+    updates.updated_at = new Date().toISOString();
+    const { data, error } = await supabase.from("events").update(updates).eq("id", c.req.param("id")).select().single();
+    if (error) return serverError(c, error.message);
+    await logAudit(c, "EVENT_UPDATED", "events", data.id, undefined);
+    return ok(c, data);
+  });
+});
+
 app.delete("/events/:id", async (c) => {
   return requirePermission("events.delete", c, async () => {
     const supabase = c.get("supabase");
@@ -350,6 +369,20 @@ app.patch("/events/:eventId/registrations/:regId", async (c) => {
     if (error) return serverError(c, error.message);
     await logAudit(c, "ATTENDANCE_CHANGED", "event_registrations", data.id, oldData, { status: body.status });
     return ok(c, data);
+  });
+});
+
+app.delete("/events/:eventId/registrations/:regId", async (c) => {
+  return requirePermission("registrations.manage", c, async () => {
+    const supabase = c.get("supabase");
+    const { error } = await supabase
+      .from("event_registrations")
+      .delete()
+      .eq("id", c.req.param("regId"))
+      .eq("event_id", c.req.param("eventId"));
+    if (error) return serverError(c, error.message);
+    await logAudit(c, "REGISTRATION_DELETED", "event_registrations", c.req.param("regId"));
+    return ok(c, { success: true });
   });
 });
 
@@ -482,6 +515,19 @@ app.delete("/gallery/:id", async (c) => {
     const { error } = await supabase.from("gallery_items").delete().eq("id", c.req.param("id"));
     if (error) return serverError(c, error.message);
     return ok(c, { success: true });
+  });
+});
+
+app.post("/volunteers", async (c) => {
+  return requirePermission("volunteers.manage", c, async () => {
+    const body = await c.req.json();
+    const valid = volunteerSchema.safeParse(body);
+    if (!valid.success) return badRequest(c, valid.error.errors[0]?.message || "Validation failed");
+    const supabase = c.get("supabase");
+    const { data, error } = await supabase.from("volunteers").insert(valid.data).select().single();
+    if (error) return serverError(c, error.message);
+    await logAudit(c, "VOLUNTEER_CREATED", "volunteers", data.id, undefined, valid.data);
+    return ok(c, data);
   });
 });
 
