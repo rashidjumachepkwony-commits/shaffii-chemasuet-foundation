@@ -65,11 +65,11 @@ export default function RequestSupport() {
     validationSchema: supportRequestSchema,
     onSubmit: async (values) => {
       const res = await apiPost<{ reference_number?: string; id?: string }>(
-        "/support", { method: "POST", body: JSON.stringify(values as SupportRequestInput) }
+        "/support", values
       );
       setReference(res?.reference_number || res?.id || null);
       setSubmitted(true);
-      success("Your support request has been submitted successfully");
+      success("Your support request has been registered successfully. You will receive an SMS confirmation.");
     },
   });
 
@@ -223,7 +223,6 @@ export default function RequestSupport() {
                     />
                   )}
                   {form.errors.county && <p className="mt-1 text-sm text-red-600">{form.errors.county}</p>}
-                  <p className="text-xs text-neutral-500 mt-1">Debug county: {form.values.county || "empty"} | selectedCountry: {selectedCountry}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Sub-County <span className="text-red-600">*</span></label>
@@ -428,8 +427,9 @@ export default function RequestSupport() {
               <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-xl flex items-start gap-3">
                 <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-green-800">Your support request has been submitted successfully!</p>
+                  <p className="text-sm font-medium text-green-800">Thank you! Your support request has been registered successfully.</p>
                   {reference && <p className="mt-1 text-xs text-green-700">Reference: {reference}</p>}
+                  <p className="mt-1 text-xs text-green-700">You will receive an SMS notification shortly confirming your request.</p>
                 </div>
                 <Button variant="outline" size="sm" onClick={resetForm}>Submit Another</Button>
               </div>
