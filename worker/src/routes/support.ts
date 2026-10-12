@@ -2,10 +2,12 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { ok, badRequest, serverError, notFound, paginatedResponse, extractPaginationParams, forbidden, created } from "../utils/response";
 import { supportRequestSchema } from "../validation/support";
-import { requirePermission } from "../middleware/auth";
+import { requirePermission, logAudit } from "../middleware/auth";
 import { log } from "../utils/logger";
 
 const statusSchema = z.enum(["New", "Under Review", "Approved", "In Progress", "Completed", "Rejected", "Closed"]);
+
+const supportUpdateSchema = supportRequestSchema.partial().omit({ country: true });
 
 // Public router - for submitting support requests (no auth required)
 const publicRouter = new Hono<{
@@ -161,6 +163,74 @@ adminRouter.patch("/:id/status", async (c) => {
       }
 
       return ok(c, data);
+    } catch (e: any) {
+      return serverError(c, "Something went wrong.");
+    }
+  });
+});
+
+adminRouter.patch("/:id", async (c) => {
+  return requirePermission("support.manage", c, async () => {
+    try {
+      const supabase = c.get("supabase");
+      const { id } = c.req.param();
+      const body = await c.req.json();
+
+      const parsed = supportUpdateSchema.safeParse(body);
+      if (!parsed.success) {
+        return badRequest(c, parsed.error.errors.map((e) => e.message).join("; "));
+      }
+
+      const { data: existing } = await supabase
+        .from("support_requests")
+        .select("id")
+        .eq("id", id)
+        .single();
+      if (!existing) {
+        return notFound(c, "Support request not found");
+      }
+
+      const { data, error } = await supabase
+        .from("support_requests")
+        .update({
+          ...parsed.data,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) {
+        return serverError(c, "Failed to update support request");
+      }
+
+      await logAudit(c, "SUPPORT_REQUEST_UPDATED", "support_requests", id, undefined, parsed.data);
+
+      return ok(c, data);
+    } catch (e: any) {
+      return serverError(c, "Something went wrong.");
+    }
+  });
+});
+
+adminRouter.delete("/:id", async (c) => {
+  return requirePermission("support.manage", c, async () => {
+    try {
+      const supabase = c.get("supabase");
+      const { id } = c.req.param();
+
+      const { error } = await supabase
+        .from("support_requests")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        return serverError(c, "Failed to delete support request");
+      }
+
+      await logAudit(c, "SUPPORT_REQUEST_DELETED", "support_requests", id);
+
+      return ok(c, { success: true });
     } catch (e: any) {
       return serverError(c, "Something went wrong.");
     }

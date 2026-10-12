@@ -8,13 +8,13 @@ import { Pagination } from "@/components/ui/Pagination";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useToast } from "@/components/ui/Toast";
-import { apiGet, apiPatch, apiPost } from "@/services/api";
+import { apiGet, apiPatch, apiPost, apiDelete } from "@/services/api";
 import {
   eventActivityLabels,
   eventAgeGroupLabels,
 } from "@/lib/eventRegistrationOptions";
 import type { EventRegistration, PaginatedResponse } from "@/types";
-import { Search, Download, CheckCircle, XCircle, RefreshCw, Users } from "lucide-react";
+import { Search, Download, CheckCircle, XCircle, RefreshCw, Users, Trash2 } from "lucide-react";
 
 export default function AdminEventRegistrations() {
   const { id } = useParams<{ id: string }>();
@@ -30,6 +30,7 @@ export default function AdminEventRegistrations() {
   const [statusFilter, setStatusFilter] = React.useState("");
   const [processingId, setProcessingId] = React.useState<string | null>(null);
   const [cancelTarget, setCancelTarget] = React.useState<EventRegistration | null>(null);
+  const [deleteTarget, setDeleteTarget] = React.useState<EventRegistration | null>(null);
 
   const loadRegistrations = React.useCallback(async () => {
     if (!id) return;
@@ -85,6 +86,20 @@ export default function AdminEventRegistrations() {
       showError(err.message || "Failed to cancel registration");
     } finally {
       setCancelTarget(null);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await apiDelete(`/admin/events/${id}/registrations/${deleteTarget.id}`);
+      setRegistrations((prev) => prev.filter((r) => r.id !== deleteTarget.id));
+      setTotalItems((prev) => Math.max(prev - 1, 0));
+      success("Registration deleted");
+    } catch (err: any) {
+      showError(err.message || "Failed to delete registration");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -259,24 +274,24 @@ export default function AdminEventRegistrations() {
                     <td className="px-4 py-3">
                       {new Date(reg.created_at).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-3 text-right">
-                      <Link
-                        to={`/admin/events/${id}/registrations/${reg.id}`}
-                        className="rounded-xl p-1 text-neutral-600 hover:bg-neutral-100"
-                        title="View details"
-                      >
-                        <Search className="h-4 w-4" />
-                      </Link>
-                      {reg.status !== "CANCELLED" && (
-                        <button
-                          onClick={() => setCancelTarget(reg)}
-                          className="rounded-xl p-1 text-red-600 hover:bg-red-50"
-                          title="Cancel registration"
+                      <td className="px-4 py-3 text-right">
+                        <Link
+                          to={`/admin/events/${id}/registrations/${reg.id}`}
+                          className="rounded-xl p-1 text-neutral-600 hover:bg-neutral-100"
+                          title="View details"
                         >
-                          <XCircle className="h-4 w-4" />
-                        </button>
-                      )}
-                    </td>
+                          <Search className="h-4 w-4" />
+                        </Link>
+                        {reg.status !== "CANCELLED" && (
+                          <button
+                            onClick={() => setDeleteTarget(reg)}
+                            className="rounded-xl p-1 text-red-600 hover:bg-red-50"
+                            title="Delete"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
+                      </td>
                   </tr>
                 ))}
               </tbody>
