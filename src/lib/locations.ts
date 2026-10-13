@@ -968,7 +968,7 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
       "Khalaba": ["Khalaba"],
       "Musikoma": ["Musikoma"],
       "East Sang'alo": ["East Sang'alo"],
-      "Marakaru/Tuuti": ["Marakaru/Tuuti"],
+      "Tuuti/Marakaru": ["Tuuti/Marakaru"],
       "West Sang'alo": ["West Sang'alo"],
     },
     Kimilili: {

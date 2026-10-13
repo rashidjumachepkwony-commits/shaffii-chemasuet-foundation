@@ -2198,14 +2198,24 @@ __name(log2, "log");
 // src/middleware/rateLimit.ts
 var rateLimitStore = /* @__PURE__ */ new Map();
 var WINDOW_MS = 60 * 1e3;
-var MAX_REQUESTS = 100;
+var MAX_REQUESTS = 500;
 var AUTH_WINDOW_MS = 15 * 60 * 1e3;
 var AUTH_MAX_REQUESTS = 20;
+var ADMIN_WINDOW_MS = 60 * 1e3;
+var ADMIN_MAX_REQUESTS = 1e3;
 async function rateLimit(context, next) {
   const ip = context.req.header("cf-connecting-ip") || context.req.header("x-forwarded-for") || context.req.header("x-real-ip") || "unknown";
-  const isAuthEndpoint = context.req.path.includes("/login") || context.req.path.includes("/register") || context.req.path.includes("/register") || context.req.path.includes("/reset-password");
-  const maxRequests = isAuthEndpoint ? AUTH_MAX_REQUESTS : MAX_REQUESTS;
-  const windowMs = isAuthEndpoint ? AUTH_WINDOW_MS : WINDOW_MS;
+  const isAuthEndpoint = context.req.path.includes("/login") || context.req.path.includes("/register") || context.req.path.includes("/reset-password");
+  const isAdminEndpoint = context.req.path.startsWith("/api/admin/");
+  let maxRequests = MAX_REQUESTS;
+  let windowMs = WINDOW_MS;
+  if (isAuthEndpoint) {
+    maxRequests = AUTH_MAX_REQUESTS;
+    windowMs = AUTH_WINDOW_MS;
+  } else if (isAdminEndpoint) {
+    maxRequests = ADMIN_MAX_REQUESTS;
+    windowMs = ADMIN_WINDOW_MS;
+  }
   const key = `${ip}:${context.req.path}`;
   const now = Date.now();
   const state = rateLimitStore.get(key);
@@ -23540,7 +23550,7 @@ async function authenticate(context, next) {
     return context.json({ success: false, error: "Invalid or expired token" }, 401);
   }
   const role = await getUserRole(supabase, user.id);
-  const permissions = getPermissionsForRole(role);
+  const permissions = role === "PENDING" ? [] : getPermissionsForRole(role);
   context.set("user", user);
   context.set("role", role);
   context.set("permissions", permissions);
@@ -28215,7 +28225,7 @@ app2.post("/login", async (c) => {
     return unauthorized(c, "Invalid email or password");
   }
   const role = await getUserRole(supabase, data.user.id);
-  const permissions = getPermissionsForRole(role);
+  const permissions = role === "PENDING" ? [] : getPermissionsForRole(role);
   log2("info", { msg: "Login successful", userId: data.user.id, role });
   const { data: profile, error: profileError } = await supabase.from("profiles").select("*").eq("id", data.user.id).single();
   if (profileError && profileError.code !== "PGRST116") {
@@ -28346,7 +28356,7 @@ app2.get("/me", async (c) => {
   }
   const supabase = c.get("supabase");
   const role = await getUserRole(supabase, user.id);
-  const permissions = getPermissionsForRole(role);
+  const permissions = role === "PENDING" ? [] : getPermissionsForRole(role);
   const { data: profile, error: profileError } = await supabase.from("profiles").select("*").eq("id", user.id).single();
   if (profileError && profileError.code !== "PGRST116") {
     console.error("Profile lookup error:", profileError.message);
@@ -28774,6 +28784,24 @@ app4.put("/events/:id", async (c) => {
     return ok(c, data);
   });
 });
+app4.patch("/events/:id", async (c) => {
+  return requirePermission("events.update", c, async () => {
+    const body = await c.req.json();
+    const valid = eventSchema.partial().safeParse(body);
+    if (!valid.success) return badRequest(c, valid.error.errors[0]?.message || "Validation failed");
+    const supabase = c.get("supabase");
+    const updates = {};
+    for (const key of Object.keys(valid.data)) {
+      if (key in body) updates[key] = valid.data[key];
+    }
+    updates.updated_by = c.get("user")?.id;
+    updates.updated_at = (/* @__PURE__ */ new Date()).toISOString();
+    const { data, error } = await supabase.from("events").update(updates).eq("id", c.req.param("id")).select().single();
+    if (error) return serverError(c, error.message);
+    await logAudit(c, "EVENT_UPDATED", "events", data.id, void 0);
+    return ok(c, data);
+  });
+});
 app4.delete("/events/:id", async (c) => {
   return requirePermission("events.delete", c, async () => {
     const supabase = c.get("supabase");
@@ -28806,6 +28834,15 @@ app4.patch("/events/:eventId/registrations/:regId", async (c) => {
     if (error) return serverError(c, error.message);
     await logAudit(c, "ATTENDANCE_CHANGED", "event_registrations", data.id, oldData, { status: body.status });
     return ok(c, data);
+  });
+});
+app4.delete("/events/:eventId/registrations/:regId", async (c) => {
+  return requirePermission("registrations.manage", c, async () => {
+    const supabase = c.get("supabase");
+    const { error } = await supabase.from("event_registrations").delete().eq("id", c.req.param("regId")).eq("event_id", c.req.param("eventId"));
+    if (error) return serverError(c, error.message);
+    await logAudit(c, "REGISTRATION_DELETED", "event_registrations", c.req.param("regId"));
+    return ok(c, { success: true });
   });
 });
 app4.get("/projects", async (c) => {
@@ -28926,6 +28963,18 @@ app4.delete("/gallery/:id", async (c) => {
     const { error } = await supabase.from("gallery_items").delete().eq("id", c.req.param("id"));
     if (error) return serverError(c, error.message);
     return ok(c, { success: true });
+  });
+});
+app4.post("/volunteers", async (c) => {
+  return requirePermission("volunteers.manage", c, async () => {
+    const body = await c.req.json();
+    const valid = volunteerSchema.safeParse(body);
+    if (!valid.success) return badRequest(c, valid.error.errors[0]?.message || "Validation failed");
+    const supabase = c.get("supabase");
+    const { data, error } = await supabase.from("volunteers").insert(valid.data).select().single();
+    if (error) return serverError(c, error.message);
+    await logAudit(c, "VOLUNTEER_CREATED", "volunteers", data.id, void 0, valid.data);
+    return ok(c, data);
   });
 });
 app4.get("/volunteers", async (c) => {
@@ -29350,6 +29399,7 @@ var supportRequestSchema = external_exports.object({
 
 // src/routes/support.ts
 var statusSchema = external_exports.enum(["New", "Under Review", "Approved", "In Progress", "Completed", "Rejected", "Closed"]);
+var supportUpdateSchema = supportRequestSchema.partial().omit({ country: true });
 var publicRouter = new Hono3();
 publicRouter.post("/", async (c) => {
   try {
@@ -29444,6 +29494,50 @@ adminRouter.patch("/:id/status", async (c) => {
         return serverError(c, "Failed to update status");
       }
       return ok(c, data);
+    } catch (e) {
+      return serverError(c, "Something went wrong.");
+    }
+  });
+});
+adminRouter.patch("/:id", async (c) => {
+  return requirePermission("support.manage", c, async () => {
+    try {
+      const supabase = c.get("supabase");
+      const { id } = c.req.param();
+      const body = await c.req.json();
+      const parsed = supportUpdateSchema.safeParse(body);
+      if (!parsed.success) {
+        return badRequest(c, parsed.error.errors.map((e) => e.message).join("; "));
+      }
+      const { data: existing } = await supabase.from("support_requests").select("id").eq("id", id).single();
+      if (!existing) {
+        return notFound(c, "Support request not found");
+      }
+      const { data, error } = await supabase.from("support_requests").update({
+        ...parsed.data,
+        updated_at: (/* @__PURE__ */ new Date()).toISOString()
+      }).eq("id", id).select().single();
+      if (error) {
+        return serverError(c, "Failed to update support request");
+      }
+      await logAudit(c, "SUPPORT_REQUEST_UPDATED", "support_requests", id, void 0, parsed.data);
+      return ok(c, data);
+    } catch (e) {
+      return serverError(c, "Something went wrong.");
+    }
+  });
+});
+adminRouter.delete("/:id", async (c) => {
+  return requirePermission("support.manage", c, async () => {
+    try {
+      const supabase = c.get("supabase");
+      const { id } = c.req.param();
+      const { error } = await supabase.from("support_requests").delete().eq("id", id);
+      if (error) {
+        return serverError(c, "Failed to delete support request");
+      }
+      await logAudit(c, "SUPPORT_REQUEST_DELETED", "support_requests", id);
+      return ok(c, { success: true });
     } catch (e) {
       return serverError(c, "Something went wrong.");
     }
@@ -29737,7 +29831,7 @@ var jsonError = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "jsonError");
 var middleware_miniflare3_json_error_default = jsonError;
 
-// .wrangler/tmp/bundle-OxhUYW/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-7qIMvN/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default,
   middleware_miniflare3_json_error_default
@@ -29769,7 +29863,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-OxhUYW/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-7qIMvN/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;
