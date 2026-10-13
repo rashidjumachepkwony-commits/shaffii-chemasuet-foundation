@@ -3,35 +3,39 @@ export const countries = ["Kenya", "Uganda", "Tanzania", "Rwanda", "Burundi", "S
 export const countyData: Record<string, Record<string, Record<string, string[]>>> = {
   Mombasa: {
     Changamwe: {
-      "Airport": ["Mombasa Airport", "Port Rehani", "Changamwe Kuu"],
-      "Bombululu": ["Bombululu", "Magogoni", "Kizingini"],
+      "Airport": ["Airport", "Changamwe Town", "Port Rehani", "Changamwe Kuu"],
+      "Bombululu": ["Bombululu", "Magogoni", "Kizingini", "Mnazi Mmoja"],
     },
     Jomvu: {
-      "Jomvu": ["Migombani", "Shangrila", "Mombasa Cement", "Mwalimu", "Jomvu Kuu"],
-      "Miritini": ["Miritini", "Kikambani", "Mwasongani"],
+      "Miritini": ["Miritini", "Kikambani", "Mwasongani", "Shangrila"],
+      "Jomvu": ["Jomvu Kuu", "Migombani", "Mombasa Cement", "Mwalimu"],
+      "Kikambani": ["Kikambani", "Mkwajuni", "Mwasongani"],
     },
     Kisauni: {
-      "Mtwapa": ["Mikindani", "Mtwapa Kijiji", "Mvumo", "Msabitini"],
-      "Ruaraka": ["Ruaraka", "Kikuyu", "Mishra"],
-      "Kisauni": ["Kisauni", "Kariokor", "Mji wa Huruma"],
+      "Kisauni": ["Kisauni", "Kariokor", "Mji wa Huruma", "Mishra"],
+      "Ruaraka": ["Ruaraka", "Kikuyu", "Mishra", "Manyatta"],
+      "Mtwapa": ["Mtwapa Kijiji", "Mikindani", "Mvumo", "Msabitini"],
+      "Msabweni": ["Msabweni", "Mvulele", "Mikindani"],
     },
     Likoni: {
-      "Likoni": ["Majengo", "Bofa", "Kipuyu", "Mapenzi"],
+      "Likoni": ["Likoni", "Bofa", "Kipuyu", "Mapenzi", "Majengo"],
       "Uwanja wa Ngiri": ["Uwanja wa Ngiri", "Mikocheni", "Kichwa Kuu"],
     },
     Mvita: {
-      "Mombasa Town West": ["Mnazi Mmoja", "Mlimani", "Mazizini", "Shauri Moyo", "Majengo"],
-      "Mombasa Town East": ["Kisauni", "Miranzi", "Mombasa Golf Club", "Ndogan"],
+      "Mombasa Town West": ["Mombasa Town West", "Mnazi Mmoja", "Mlimani", "Shauri Moyo", "Majengo"],
+      "Mombasa Town East": ["Mombasa Town East", "Miranzi", "Mombasa Golf Club", "Ndogan"],
     },
     Nyali: {
       "Nyali": ["Nyali", "Miran", "Kurawa", "Mjini"],
       "Kisauni": ["Kisauni", "Bombolulu", "Mvutani"],
+      "Kongowea": ["Kongowea", "Mlolongo", "Mikindani"],
     },
   },
   Kwale: {
     Kinango: {
-      "Kinango": ["Kinango", "Mwaheru", "Mkinga Mpembeni", "Mabawa"],
+      "Kinango": ["Kinango", "Mwaheru", "Mkinga Mpembeni"],
       "Kasigau": ["Kasigau", "Mlimani", "Mwasora"],
+      "Mkinga": ["Mkinga", "Mkinga Kuu", "Mwamba"],
     },
     Lungalunga: {
       "Lungalunga": ["Lungalunga", "Mwaele", "Mtaani", "Mweru"],
@@ -44,62 +48,92 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
     Msambweni: {
       "Msambweni": ["Msambweni", "Makalani", "Mijangwani"],
       "Shumba": ["Shumba", "Mkwajuni", "Mkoroshoni"],
+      "Puma": ["Puma", "Mkwajuni", "Mkoroshoni"],
     },
   },
   Kilifi: {
     Ganze: {
-      "Ganze": ["Ganze", "Mkwajuni", "Mshamba"],
-      "Mwarumbu": ["Mwarumbu", "Chumvini", "Matiburi"],
-      "Chakwa": ["Chakwa", "Kikunguni", "Matiburi"],
+      "Mwarumbu": ["Mwarumbu", "Chumvini", "Matiburi", "Ganze"],
+      "Chakwa": ["Chakwa", "Kikunguni", "Ganze"],
+      "Mkwatanu": ["Mkwatanu", "Ganze", "Mkwajuni"],
+      "Bomere": ["Bomere", "Chumvini", "Mkwajuni"],
     },
     Kaloleni: {
-      "Kaloleni": ["Kaloleni", "Maricau", "Mtondia"],
-      "Ribe": ["Ribe", "Kikunguni", "Mlandizi"],
+      "Ribe": ["Ribe", "Kikunguni", "Mlandizi", "Maricau"],
       "Karoni": ["Karoni", "Mshamba", "Mchangaruva"],
+      "Kaloleni": ["Kaloleni", "Maricau", "Mtondia"],
+      "Mtondia": ["Mtondia", "Maricau", "Kaloleni"],
     },
     "Kilifi North": {
-      "Malindi": ["Malindi", "Kakuyuni", "Mijakini", "Malindi Airport"],
       "Kihoto": ["Kihoto", "Ganda", "Mkwajuni"],
+      "Wumingu": ["Wumingu", "Malindi", "Mkwajuni"],
     },
     "Kilifi South": {
-      "Mombasa": ["Mombasa", "Maweni", "Junction"],
-      "Ndavaya": ["Ndavaya", "Mkwajuni", "Mlimani"],
+      "Mombasa": ["Mombasa", "Maweni", "Junction", "Tiwi"],
+      "Ndavaya": ["Ndavaya", "Mkwajuni", "Mlimani", "Mwamba"],
+      "Shauri": ["Shauri", "Mtwapa", "Mkwajuni"],
     },
     Magarini: {
       "Magarini": ["Magarini", "Marafa", "Kikunguni"],
       "Sokoni": ["Sokoni", "Tudor", "Mkwajuni"],
+      "Riwani": ["Riwani", "Marafa", "Kikunguni"],
     },
     Malindi: {
       "Malindi Town": ["Malindi Town", "Kakuyuni", "Mijakini"],
       "Malindi Rural": ["Malindi Rural", "Gandini", "Marafa"],
+      "Malindi": ["Malindi", "Kakuyuni", "Mijakini"],
+      "Mukuruthi": ["Mukuruthi", "Malindi", "Mkwajuni"],
     },
     Rabai: {
       "Rabai": ["Rabai", "Bombolulu", "Kikunguni"],
       "Kisauni": ["Kisauni", "Mkwajuni", "Mlimani"],
+      "Bombolulu": ["Bombolulu", "Rabai", "Mkwajuni"],
     },
   },
   "Tana River": {
     Bura: {
-      "Bura": ["Bura", "Kipumbuni", "Mkwajuni"],
+      "Bura": ["Bura", "Kipasini", "Mkwajuni"],
       "Garissa": ["Garissa", "Mkwajuni", "Mlimani"],
+      "Kipasini": ["Kipasini", "Bura", "Mkwajuni"],
     },
     Galole: {
       "Galole": ["Galole", "Hulugho", "Ijara"],
       "Mikindani": ["Mikindani", "Kifaru", "Mlimani"],
+      "Hulugho": ["Hulugho", "Mkwajuni", "Mlimani"],
+      "Ijara": ["Ijara", "Mkwajuni", "Mlimani"],
     },
     Garsen: {
       "Garsen": ["Garsen", "Witu", "Mkwajuni"],
       "Tharaka": ["Tharaka", "Chyulu", "Mlimani"],
+      "Witu": ["Witu", "Garsen", "Mkwajuni"],
+    },
+    Kibwezi: {
+      "Kibwezi": ["Kibwezi", "Mkwajuni", "Mlimani"],
+    },
+    "Tana Delta": {
+      "Tana Delta": ["Tana Delta", "Mkwajuni", "Mlimani"],
+    },
+    "Tana River": {
+      "Tana River": ["Tana River", "Mkwajuni", "Mlimani"],
+    },
+    "Tana North": {
+      "Tana North": ["Tana North", "Mkwajuni", "Mlimani"],
+    },
+    "Tana West": {
+      "Tana West": ["Tana West", "Mkwajuni", "Mlimani"],
     },
   },
   Lamu: {
     "Lamu East": {
       "Faza": ["Faza", "Pate", "Fumba"],
       "Pate": ["Pate", "Faza", "Shanga"],
+      "Fumba": ["Fumba", "Faza", "Pate"],
     },
     "Lamu West": {
       "Lamu": ["Lamu", "Shela", "Mkokoteni"],
       "Mokowe": ["Mokowe", "Hiriwe", "Kizingini"],
+      "Abae": ["Abae", "Lamu", "Mokowe"],
+      "Witu": ["Witu", "Lamu", "Mokowe"],
     },
   },
   "Taita/Taveta": {
@@ -225,6 +259,7 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
     },
     Sololo: {
       "Sololo": ["Sololo", "Mkwajuni", "Mlimani"],
+      "Moyale": ["Moyale", "Mkwajuni", "Mlimani"],
     },
   },
   Isiolo: {
@@ -244,9 +279,10 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Meru: {
     Buuri: {
-      "Buuri": ["Buuri", "Mkwajuni", "Mlimani"],
+      "Buuri": ["Buuri", "Maua", "Mkwajuni"],
       "Maua": ["Maua", "Mkwajuni", "Mlimani"],
       "Nchogeta": ["Nchogeta", "Mkwajuni", "Mlimani"],
+      "Antu": ["Antu", "Mkwajuni", "Mlimani"],
     },
     "Igembe Central": {
       "Igembe Central": ["Igembe Central", "Mkwajuni", "Mlimani"],
@@ -309,8 +345,7 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Kitui: {
     "Kitui Central": {
-      "Kitui Central": ["Kitui Central", "Mkwajuni", "Mlimani"],
-      "Kangundo": ["Kangundo", "Mkwajuni", "Mlimani"],
+      "Kitui Central": ["Kitui Central", "Kangundo", "Mkwajuni"],
     },
     "Kitui East": {
       "Kitui East": ["Kitui East", "Mkwajuni", "Mlimani"],
@@ -325,7 +360,7 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
       "Kitui West": ["Kitui West", "Mkwajuni", "Mlimani"],
     },
     "Mwingi Central": {
-      "Mwingi Central": ["Mwingi Central", "Mkwajuni", "Mlimani"],
+      "Mwingi Central": ["Mwingi Central", "Mwingi", "Mkwajuni"],
       "Mwingi": ["Mwingi", "Mkwajuni", "Mlimani"],
     },
     "Mwingi North": {
@@ -337,35 +372,30 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Machakos: {
     "Athi River": {
-      "Athi River": ["Athi River", "Mkwajuni", "Mlimani"],
-      "Mlolongo": ["Mlolongo", "Mkwajuni", "Mlimani"],
+      "Athi River": ["Athi River", "Mlolongo", "Mkwajuni"],
     },
     Kangundo: {
-      "Kangundo": ["Kangundo", "Mkwajuni", "Mlimani"],
-      "Meli": ["Meli", "Mkwajuni", "Mlimani"],
+      "Kangundo": ["Kangundo", "Meli", "Mkwajuni"],
     },
     Kathiani: {
       "Kathiani": ["Kathiani", "Mkwajuni", "Mlimani"],
     },
     "Machakos Town": {
-      "Machakos Town": ["Machakos Town", "Mkwajuni", "Mlimani"],
+      "Machakos Town": ["Machakos Town", "Mukuyu", "Mkwajuni"],
       "Mukuyu": ["Mukuyu", "Mkwajuni", "Mlimani"],
     },
     Masinga: {
-      "Masinga": ["Masinga", "Mkwajuni", "Mlimani"],
-      "Mukurain": ["Mukurain", "Mkwajuni", "Mlimani"],
+      "Masinga": ["Masinga", "Mukurain", "Mkwajuni"],
     },
     Matungulu: {
-      "Matungulu": ["Matungulu", "Mkwajuni", "Mlimani"],
-      "Kavunani": ["Kavunani", "Mkwajuni", "Mlimani"],
+      "Matungulu": ["Matungulu", "Kavunani", "Mkwajuni"],
     },
     Mavoko: {
-      "Mavoko": ["Mavoko", "Mkwajuni", "Mlimani"],
+      "Mavoko": ["Mavoko", "Athi River", "Mkwajuni"],
       "Athi River": ["Athi River", "Mkwajuni", "Mlimani"],
     },
     Mwala: {
-      "Mwala": ["Mwala", "Mkwajuni", "Mlimani"],
-      "Kikumba": ["Kikumba", "Mkwajuni", "Mlimani"],
+      "Mwala": ["Mwala", "Kikumba", "Mkwajuni"],
     },
     Yatta: {
       "Yatta": ["Yatta", "Mkwajuni", "Mlimani"],
@@ -373,7 +403,7 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Makueni: {
     Kaiti: {
-      "Kaiti": ["Kaiti", "Mkwajuni", "Mlimani"],
+      "Kaiti": ["Kaiti", "Kilome", "Mkwajuni"],
       "Kilome": ["Kilome", "Mkwajuni", "Mlimani"],
     },
     "Kibwezi East": {
@@ -389,12 +419,10 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
       "Makueni": ["Makueni", "Mkwajuni", "Mlimani"],
     },
     Mbooni: {
-      "Mbooni": ["Mbooni", "Mkwajuni", "Mlimani"],
-      "Mbolai": ["Mbolai", "Mkwajuni", "Mlimani"],
+      "Mbooni": ["Mbooni", "Mbolai", "Mkwajuni"],
     },
     Mukaa: {
-      "Mukaa": ["Mukaa", "Mkwajuni", "Mlimani"],
-      "Mbinguni": ["Mbinguni", "Mkwajuni", "Mlimani"],
+      "Mukaa": ["Mukaa", "Mbinguni", "Mkwajuni"],
     },
     Nzaui: {
       "Nzaui": ["Nzaui", "Mkwajuni", "Mlimani"],
@@ -418,20 +446,18 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
     },
   },
   Nyeri: {
-    Kieni: {
-      "Kieni": ["Kieni", "Mkwajuni", "Mlimani"],
+  Kieni: {
+      "Kieni": ["Kieni", "Nyeri", "Mkwajuni"],
       "Nyeri": ["Nyeri", "Mkwajuni", "Mlimani"],
     },
     "Kieni East": {
       "Kieni East": ["Kieni East", "Mkwajuni", "Mlimani"],
     },
     Mathira: {
-      "Mathira": ["Mathira", "Mkwajuni", "Mlimani"],
-      "Kahatia": ["Kahatia", "Mkwajuni", "Mlimani"],
+      "Mathira": ["Mathira", "Kahatia", "Mkwajuni"],
     },
     Mukurweini: {
-      "Mukurweini": ["Mukurweini", "Mkwajuni", "Mlimani"],
-      "Kinyuji": ["Kinyuji", "Mkwajuni", "Mlimani"],
+      "Mukurweini": ["Mukurweini", "Kinyuji", "Mkwajuni"],
     },
     "Nyeri Town": {
       "Nyeri Town": ["Nyeri Town", "Mkwajuni", "Mlimani"],
@@ -445,7 +471,7 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Kirinyaga: {
     Gichugu: {
-      "Gichugu": ["Gichugu", "Mkwajuni", "Mlimani"],
+      "Gichugu": ["Gichugu", "Kutus", "Mkwajuni"],
       "Kutus": ["Kutus", "Mkwajuni", "Mlimani"],
     },
     "Kirinyaga Central": {
@@ -458,33 +484,27 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
       "Kirinyaga West": ["Kirinyaga West", "Mkwajuni", "Mlimani"],
     },
     Mwea: {
-      "Mwea": ["Mwea", "Mkwajuni", "Mlimani"],
-      "Tebu": ["Tebu", "Mkwajuni", "Mlimani"],
+      "Mwea": ["Mwea", "Tebu", "Mkwajuni"],
     },
   },
   "Murang'a": {
     Gatanga: {
-      "Gatanga": ["Gatanga", "Mkwajuni", "Mlimani"],
-      "Kinyua": ["Kinyua", "Mkwajuni", "Mlimani"],
+      "Gatanga": ["Gatanga", "Kinyua", "Mkwajuni"],
     },
     Kandara: {
-      "Kandara": ["Kandara", "Mkwajuni", "Mlimani"],
-      "Sagana": ["Sagana", "Mkwajuni", "Mlimani"],
+      "Kandara": ["Kandara", "Sagana", "Mkwajuni"],
     },
     Kangema: {
       "Kangema": ["Kangema", "Mkwajuni", "Mlimani"],
     },
     Kigumo: {
-      "Kigumo": ["Kigumo", "Mkwajuni", "Mlimani"],
-      "Tulagi": ["Tulagi", "Mkwajuni", "Mlimani"],
+      "Kigumo": ["Kigumo", "Tulagi", "Mkwajuni"],
     },
     Kiharu: {
-      "Kiharu": ["Kiharu", "Mkwajuni", "Mlimani"],
-      "Mukuyu": ["Mukuyu", "Mkwajuni", "Mlimani"],
+      "Kiharu": ["Kiharu", "Mukuyu", "Mkwajuni"],
     },
     Maragua: {
-      "Maragua": ["Maragua", "Mkwajuni", "Mlimani"],
-      "Madiba": ["Madiba", "Mkwajuni", "Mlimani"],
+      "Maragua": ["Maragua", "Madiba", "Mkwajuni"],
     },
     Mathioya: {
       "Mathioya": ["Mathioya", "Mkwajuni", "Mlimani"],
@@ -492,18 +512,16 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Kiambu: {
     "Gatundu North": {
-      "Gatundu North": ["Gatundu North", "Mkwajuni", "Mlimani"],
-      "Kiganjo": ["Kiganjo", "Mkwajuni", "Mlimani"],
+      "Gatundu North": ["Gatundu North", "Kiganjo", "Mkwajuni"],
     },
     "Gatundu South": {
       "Gatundu South": ["Gatundu South", "Mkwajuni", "Mlimani"],
     },
     Githunguri: {
-      "Githunguri": ["Githunguri", "Mkwajuni", "Mlimani"],
-      "Mukuyu": ["Mukuyu", "Mkwajuni", "Mlimani"],
+      "Githunguri": ["Githunguri", "Mukuyu", "Mkwajuni"],
     },
     Juja: {
-      "Juja": ["Juja", "Mkwajuni", "Mlimani"],
+      "Juja": ["Juja", "Thika", "Mkwajuni"],
       "Thika": ["Thika", "Mkwajuni", "Mlimani"],
     },
     Kabete: {
@@ -516,20 +534,16 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
       "Kiambu Town": ["Kiambu Town", "Mkwajuni", "Mlimani"],
     },
     Kikuyu: {
-      "Kikuyu": ["Kikuyu", "Mkwajuni", "Mlimani"],
-      "Gikambura": ["Gikambura", "Mkwajuni", "Mlimani"],
+      "Kikuyu": ["Kikuyu", "Gikambura", "Mkwajuni"],
     },
     Lari: {
-      "Lari": ["Lari", "Mkwajuni", "Mlimani"],
-      "Kinale": ["Kinale", "Mkwajuni", "Mlimani"],
+      "Lari": ["Lari", "Kinale", "Mkwajuni"],
     },
     Limuru: {
-      "Limuru": ["Limuru", "Mkwajuni", "Mlimani"],
-      "Ndareru": ["Ndareru", "Mkwajuni", "Mlimani"],
+      "Limuru": ["Limuru", "Ndareru", "Mkwajuni"],
     },
     Ruiru: {
-      "Ruiru": ["Ruiru", "Mkwajuni", "Mlimani"],
-      "Mwiki": ["Mwiki", "Mkwajuni", "Mlimani"],
+      "Ruiru": ["Ruiru", "Mwiki", "Mkwajuni"],
     },
     "Thika Town": {
       "Thika Town": ["Thika Town", "Mkwajuni", "Mlimani"],
@@ -537,15 +551,13 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Turkana: {
     Kibish: {
-      "Kibish": ["Kibish", "Mkwajuni", "Mlimani"],
-      "Orpa": ["Orpa", "Mkwajuni", "Mlimani"],
+      "Kibish": ["Kibish", "Orpa", "Mkwajuni"],
     },
     Loima: {
       "Loima": ["Loima", "Mkwajuni", "Mlimani"],
     },
     "Turkana Central": {
-      "Turkana Central": ["Turkana Central", "Mkwajuni", "Mlimani"],
-      "Lokichanna": ["Lokichanna", "Mkwajuni", "Mlimani"],
+      "Turkana Central": ["Turkana Central", "Lokichanna", "Mkwajuni"],
     },
     "Turkana East": {
       "Turkana East": ["Turkana East", "Mkwajuni", "Mlimani"],
@@ -559,81 +571,76 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   "West Pokot": {
     Kacheliba: {
-      "Kacheliba": ["Kacheliba", "Mkwajuni", "Mlimani"],
-      "Kasei": ["Kasei", "Mkwajuni", "Mlimani"],
+      "Kacheliba": ["Kacheliba", "Kasei", "Mkwajuni"],
     },
     Kapenguria: {
-      "Kapenguria": ["Kapenguria", "Mkwajuni", "Mlimani"],
-      "Tuliyapak": ["Tuliyapak", "Mkwajuni", "Mlimani"],
+      "Kapenguria": ["Kapenguria", "Tuliyapak", "Mkwajuni"],
     },
     "Pokot South": {
-      "Pokot South": ["Pokot South", "Mkwajuni", "Mlimani"],
-      "Biyoon": ["Biyoon", "Mkwajuni", "Mlimani"],
+      "Pokot South": ["Pokot South", "Biyoon", "Mkwajuni"],
     },
     Sigor: {
-      "Sigor": ["Sigor", "Mkwajuni", "Mlimani"],
-      "Kipkelion": ["Kipkelion", "Mkwajuni", "Mlimani"],
+      "Sigor": ["Sigor", "Kipkelion", "Mkwajuni"],
     },
     "West Pokot": {
-      "West Pokot": ["West Pokot", "Mkwajuni", "Mlimani"],
-      "Kapenguria": ["Kapenguria", "Mkwajuni", "Mlimani"],
+      "West Pokot": ["West Pokot", "Kapenguria", "Mkwajuni"],
     },
   },
   Samburu: {
     "Samburu East": {
-      "Samburu East": ["Samburu East", "Mkwajuni", "Mlimani"],
+      "Samburu East": ["Samburu East", "Wamba", "Mkwajuni"],
       "Wamba": ["Wamba", "Mkwajuni", "Mlimani"],
     },
     "Samburu North": {
-      "Samburu North": ["Samburu North", "Mkwajuni", "Mlimani"],
+      "Samburu North": ["Samburu North", "Lokich", "Mkwajuni"],
       "Lokich": ["Lokich", "Mkwajuni", "Mlimani"],
     },
     "Samburu West": {
-      "Samburu West": ["Samburu West", "Mkwajuni", "Mlimani"],
+      "Samburu West": ["Samburu West", "Maralal", "Mkwajuni"],
       "Maralal": ["Maralal", "Mkwajuni", "Mlimani"],
     },
   },
   "Trans Nzoia": {
     Cherangany: {
-      "Cherangany": ["Cherangany", "Mkwajuni", "Mlimani"],
-      "Kapteng": ["Kapteng", "Mkwajuni", "Mlimani"],
+      "Cherangany": ["Cherangany", "Kapteng", "Mkwajuni"],
     },
     Endebess: {
-      "Endebess": ["Endebess", "Mkwajuni", "Mlimani"],
-      "Sikhendu": ["Sikhendu", "Mkwajuni", "Mlimani"],
+      "Endebess": ["Endebess", "Sikhendu", "Mkwajuni"],
     },
     Kwanza: {
       "Kwanza": ["Kwanza", "Mkwajuni", "Mlimani"],
     },
     Saboti: {
-      "Saboti": ["Saboti", "Mkwajuni", "Mlimani"],
-      "Tula": ["Tula", "Mkwajuni", "Mlimani"],
+      "Saboti": ["Saboti", "Tula", "Mkwajuni"],
     },
     Kiminini: {
-      "Kiminini": ["Kiminini", "Mkwajuni", "Mlimani"],
-      "Cheptuyek": ["Cheptuyek", "Mkwajuni", "Mlimani"],
+      "Kiminini": ["Kiminini", "Cheptuyek", "Mkwajuni"],
+    },
+    "Trans Nzoia East": {
+      "Trans Nzoia East": ["Trans Nzoia East", "Mkwajuni", "Mlimani"],
+    },
+    "Trans Nzoia West": {
+      "Trans Nzoia West": ["Trans Nzoia West", "Mkwajuni", "Mlimani"],
+    },
+    "Trans Nzoia Central": {
+      "Trans Nzoia Central": ["Trans Nzoia Central", "Mkwajuni", "Mlimani"],
     },
   },
   "Uasin Gishu": {
     Ainabkoi: {
-      "Ainabkoi": ["Ainabkoi", "Mkwajuni", "Mlimani"],
-      "Kapilkilmat": ["Kapilkilmat", "Mkwajuni", "Mlimani"],
+      "Ainabkoi": ["Ainabkoi", "Kapilkilmat", "Mkwajuni"],
     },
     Kapseret: {
-      "Kapseret": ["Kapseret", "Mkwajuni", "Mlimani"],
-      "Kapsabet": ["Kapsabet", "Mkwajuni", "Mlimani"],
+      "Kapseret": ["Kapseret", "Kapsabet", "Mkwajuni"],
     },
     Kesses: {
-      "Kesses": ["Kesses", "Mkwajuni", "Mlimani"],
-      "Kapsabet": ["Kapsabet", "Mkwajuni", "Mlimani"],
+      "Kesses": ["Kesses", "Kapsabet", "Mkwajuni"],
     },
     Moiben: {
-      "Moiben": ["Moiben", "Mkwajuni", "Mlimani"],
-      "Cheptelu": ["Cheptelu", "Mkwajuni", "Mlimani"],
+      "Moiben": ["Moiben", "Cheptelu", "Mkwajuni"],
     },
     Soy: {
-      "Soy": ["Soy", "Mkwajuni", "Mlimani"],
-      "Kaptagaga": ["Kaptagaga", "Mkwajuni", "Mlimani"],
+      "Soy": ["Soy", "Kaptagaga", "Mkwajuni"],
     },
     Turbo: {
       "Turbo": ["Turbo", "Mkwajuni", "Mlimani"],
@@ -647,25 +654,21 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
       "Keiyo South": ["Keiyo South", "Mkwajuni", "Mlimani"],
     },
     "Marakwet East": {
-      "Marakwet East": ["Marakwet East", "Mkwajuni", "Mlimani"],
-      "Kapsaram": ["Kapsaram", "Mkwajuni", "Mlimani"],
+      "Marakwet East": ["Marakwet East", "Kapsaram", "Mkwajuni"],
     },
     "Marakwet West": {
-      "Marakwet West": ["Marakwet West", "Mkwajuni", "Mlimani"],
-      "Tenges": ["Tenges", "Mkwajuni", "Mlimani"],
+      "Marakwet West": ["Marakwet West", "Tenges", "Mkwajuni"],
     },
   },
   Nandi: {
     Aldai: {
-      "Aldai": ["Aldai", "Mkwajuni", "Mlimani"],
-      "Soba": ["Soba", "Mkwajuni", "Mlimani"],
+      "Aldai": ["Aldai", "Soba", "Mkwajuni"],
     },
     Chesumei: {
       "Chesumei": ["Chesumei", "Mkwajuni", "Mlimani"],
     },
     Emgwen: {
-      "Emgwen": ["Emgwen", "Mkwajuni", "Mlimani"],
-      "Kapsabet": ["Kapsabet", "Mkwajuni", "Mlimani"],
+      "Emgwen": ["Emgwen", "Kapsabet", "Mkwajuni"],
     },
     Mosop: {
       "Mosop": ["Mosop", "Mkwajuni", "Mlimani"],
@@ -679,8 +682,7 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Baringo: {
     "Baringo Central": {
-      "Baringo Central": ["Baringo Central", "Mkwajuni", "Mlimani"],
-      "Mogot": ["Mogot", "Mkwajuni", "Mlimani"],
+      "Baringo Central": ["Baringo Central", "Mogot", "Mkwajuni"],
     },
     "Baringo North": {
       "Baringo North": ["Baringo North", "Mkwajuni", "Mlimani"],
@@ -689,12 +691,10 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
       "Baringo South": ["Baringo South", "Mkwajuni", "Mlimani"],
     },
     "Eldama Ravine": {
-      "Eldama Ravine": ["Eldama Ravine", "Mkwajuni", "Mlimani"],
-      "Maralal": ["Maralal", "Mkwajuni", "Mlimani"],
+      "Eldama Ravine": ["Eldama Ravine", "Maralal", "Mkwajuni"],
     },
     Mogotio: {
-      "Mogotio": ["Mogotio", "Mkwajuni", "Mlimani"],
-      "Kipsaram": ["Kipsaram", "Mkwajuni", "Mlimani"],
+      "Mogotio": ["Mogotio", "Kipsaram", "Mkwajuni"],
     },
     Tiaty: {
       "Tiaty": ["Tiaty", "Mkwajuni", "Mlimani"],
@@ -702,7 +702,7 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Laikipia: {
     "Laikipia Central": {
-      "Laikipia Central": ["Laikipia Central", "Mkwajuni", "Mlimani"],
+      "Laikipia Central": ["Laikipia Central", "Nanyuki", "Mkwajuni"],
       "Nanyuki": ["Nanyuki", "Mkwajuni", "Mlimani"],
     },
     "Laikipia East": {
@@ -717,12 +717,10 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Nakuru: {
     Bahati: {
-      "Bahati": ["Bahati", "Mkwajuni", "Mlimani"],
-      "Lanet": ["Lanet", "Mkwajuni", "Mlimani"],
+      "Bahati": ["Bahati", "Lanet", "Mkwajuni"],
     },
     Gilgil: {
-      "Gilgil": ["Gilgil", "Mkwajuni", "Mlimani"],
-      "Malewa": ["Malewa", "Mkwajuni", "Mlimani"],
+      "Gilgil": ["Gilgil", "Malewa", "Mkwajuni"],
     },
     "Kuresoi North": {
       "Kuresoi North": ["Kuresoi North", "Mkwajuni", "Mlimani"],
@@ -731,22 +729,21 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
       "Kuresoi South": ["Kuresoi South", "Mkwajuni", "Mlimani"],
     },
     Molo: {
-      "Molo": ["Molo", "Mkwajuni", "Mlimani"],
+      "Molo": ["Molo", "Elburgon", "Mkwajuni"],
       "Elburgon": ["Elburgon", "Mkwajuni", "Mlimani"],
     },
     Naivasha: {
-      "Naivasha": ["Naivasha", "Mkwajuni", "Mlimani"],
+      "Naivasha": ["Naivasha", "Mai Mahiu", "Mkwajuni"],
       "Mai Mahiu": ["Mai Mahiu", "Mkwajuni", "Mlimani"],
     },
-    "Nakuru Town East": {
-      "Nakuru Town East": ["Nakuru Town East", "Mkwajuni", "Mlimani"],
+    "Nakuru East": {
+      "Nakuru East": ["Nakuru East", "Mkwajuni", "Mlimani"],
     },
-    "Nakuru Town West": {
-      "Nakuru Town West": ["Nakuru Town West", "Mkwajuni", "Mlimani"],
+    "Nakuru West": {
+      "Nakuru West": ["Nakuru West", "Mkwajuni", "Mlimani"],
     },
     Njoro: {
-      "Njoro": ["Njoro", "Mkwajuni", "Mlimani"],
-      "Kapthuku": ["Kapthuku", "Mkwajuni", "Mlimani"],
+      "Njoro": ["Njoro", "Kapthuku", "Mkwajuni"],
     },
     Rongai: {
       "Rongai": ["Rongai", "Mkwajuni", "Mlimani"],
@@ -760,19 +757,16 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
       "Emurua Dikirr": ["Emurua Dikirr", "Mkwajuni", "Mlimani"],
     },
     Kilgoris: {
-      "Kilgoris": ["Kilgoris", "Mkwajuni", "Mlimani"],
-      "Lolshogian": ["Lolshogian", "Mkwajuni", "Mlimani"],
+      "Kilgoris": ["Kilgoris", "Lolshogian", "Mkwajuni"],
     },
     "Narok East": {
       "Narok East": ["Narok East", "Mkwajuni", "Mlimani"],
     },
     "Narok North": {
-      "Narok North": ["Narok North", "Mkwajuni", "Mlimani"],
-      "Osupek": ["Osupek", "Mkwajuni", "Mlimani"],
+      "Narok North": ["Narok North", "Osupek", "Mkwajuni"],
     },
     "Narok South": {
-      "Narok South": ["Narok South", "Mkwajuni", "Mlimani"],
-      "Esok": ["Esok", "Mkwajuni", "Mlimani"],
+      "Narok South": ["Narok South", "Esok", "Mkwajuni"],
     },
     "Narok West": {
       "Narok West": ["Narok West", "Mkwajuni", "Mlimani"],
@@ -780,11 +774,11 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Kajiado: {
     Isinya: {
-      "Isinya": ["Isinya", "Mkwajuni", "Mlimani"],
+      "Isinya": ["Isinya", "Kitengela", "Mkwajuni"],
       "Kitengela": ["Kitengela", "Mkwajuni", "Mlimani"],
     },
     "Kajiado Central": {
-      "Kajiado Central": ["Kajiado Central", "Mkwajuni", "Mlimani"],
+      "Kajiado Central": ["Kajiado Central", "Kajiado", "Mkwajuni"],
       "Kajiado": ["Kajiado", "Mkwajuni", "Mlimani"],
     },
     "Kajiado East": {
@@ -800,7 +794,7 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
       "Kajiado West": ["Kajiado West", "Mkwajuni", "Mlimani"],
     },
     Loitokitok: {
-      "Loitokitok": ["Loitokitok", "Mkwajuni", "Mlimani"],
+      "Loitokitok": ["Loitokitok", "Rongai", "Mkwajuni"],
       "Rongai": ["Rongai", "Mkwajuni", "Mlimani"],
     },
     Mashuuru: {
@@ -809,53 +803,53 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Kericho: {
     Ainamoi: {
-      "Ainamoi": ["Ainamoi", "Mkwajuni", "Mlimani"],
-      "Cheptiret": ["Cheptiret", "Mkwajuni", "Mlimani"],
+      "Ainamoi": ["Ainamoi", "Cheptiret", "Mkwajuni"],
     },
     Belgut: {
       "Belgut": ["Belgut", "Mkwajuni", "Mlimani"],
     },
     Bureti: {
-      "Bureti": ["Bureti", "Mkwajuni", "Mlimani"],
+      "Bureti": ["Bureti", "Londiani", "Mkwajuni"],
       "Londiani": ["Londiani", "Mkwajuni", "Mlimani"],
     },
     "Kipkelion East": {
-      "Kipkelion East": ["Kipkelion East", "Mkwajuni", "Mlimani"],
+      "Kipkelion East": ["Kipkelion East", "Kipkelion", "Mkwajuni"],
       "Kipkelion": ["Kipkelion", "Mkwajuni", "Mlimani"],
     },
     "Kipkelion West": {
       "Kipkelion West": ["Kipkelion West", "Mkwajuni", "Mlimani"],
     },
     Sigowet: {
-      "Sigowet": ["Sigowet", "Mkwajuni", "Mlimani"],
-      "Kapsabet": ["Kapsabet", "Mkwajuni", "Mlimani"],
+      "Sigowet": ["Sigowet", "Kapsabet", "Mkwajuni"],
     },
   },
   Bomet: {
     "Bomet Central": {
-      "Bomet Central": ["Bomet Central", "Mkwajuni", "Mlimani"],
+      "Bomet Central": ["Bomet Central", "Bomet", "Mkwajuni"],
       "Bomet": ["Bomet", "Mkwajuni", "Mlimani"],
     },
     "Bomet East": {
-      "Bomet East": ["Bomet East", "Mkwajuni", "Mlimani"],
+      "Bomet East": ["Bomet East", "Kembu", "Mkwajuni"],
       "Kembu": ["Kembu", "Mkwajuni", "Mlimani"],
     },
     Chepalungu: {
       "Chepalungu": ["Chepalungu", "Mkwajuni", "Mlimani"],
     },
     Konoin: {
-      "Konoin": ["Konoin", "Mkwajuni", "Mlimani"],
+      "Konoin": ["Konoin", "Leboo", "Mkwajuni"],
       "Leboo": ["Leboo", "Mkwajuni", "Mlimani"],
     },
     Sotik: {
-      "Sotik": ["Sotik", "Mkwajuni", "Mlimani"],
+      "Sotik": ["Sotik", "Kaplumbety", "Mkwajuni"],
       "Kaplumbety": ["Kaplumbety", "Mkwajuni", "Mlimani"],
+    },
+    "Sotik Sub-County": {
+      "Sotik Sub-County": ["Sotik Sub-County", "Mkwajuni", "Mlimani"],
     },
   },
   Kakamega: {
     Butere: {
-      "Butere": ["Butere", "Mkwajuni", "Mlimani"],
-      "Khwale": ["Khwale", "Mkwajuni", "Mlimani"],
+      "Butere": ["Butere", "Khwale", "Mkwajuni"],
     },
     Khwisero: {
       "Khwisero": ["Khwisero", "Mkwajuni", "Mlimani"],
@@ -864,116 +858,124 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
       "Likuyani": ["Likuyani", "Mkwajuni", "Mlimani"],
     },
     Lugari: {
-      "Lugari": ["Lugari", "Mkwajuni", "Mlimani"],
-      "Chepchugui": ["Chepchugui", "Mkwajuni", "Mlimani"],
+      "Lugari": ["Lugari", "Chepchugui", "Mkwajuni"],
     },
     Malava: {
       "Malava": ["Malava", "Mkwajuni", "Mlimani"],
     },
     "Mumias East": {
-      "Mumias East": ["Mumias East", "Mkwajuni", "Mlimani"],
+      "Mumias East": ["Mumias East", "Mumias", "Mkwajuni"],
       "Mumias": ["Mumias", "Mkwajuni", "Mlimani"],
     },
     "Mumias West": {
-      "Mumias West": ["Mumias West", "Mkwajuni", "Mlimani"],
+      "Mumias West": ["Mumias West", "Shinyalu", "Mkwajuni"],
       "Shinyalu": ["Shinyalu", "Mkwajuni", "Mlimani"],
     },
     Navakholo: {
-      "Navakholo": ["Navakhoho", "Mkwajuni", "Mlimani"],
+      "Navakholo": ["Navakholo", "Navakhoho", "Kakamega", "Mkwajuni"],
+      "Navakhoho": ["Navakhoho", "Mkwajuni", "Mlimani"],
       "Kakamega": ["Kakamega", "Mkwajuni", "Mlimani"],
     },
     Lurambi: {
       "Lurambi": ["Lurambi", "Mkwajuni", "Mlimani"],
     },
     Ikolomani: {
-      "Ikolomani": ["Ikolomani", "Mkwajuni", "Mlimani"],
-      "Kisumu": ["Kisumu", "Mkwajuni", "Mlimani"],
+      "Ikolomani": ["Ikolomani", "Kisumu", "Mkwajuni"],
     },
     Matungu: {
-      "Matungu": ["Matungu", "Mkwajuni", "Mlimani"],
+      "Matungu": ["Matungu", "Kakoneni", "Mkwajuni"],
       "Kakoneni": ["Kakoneni", "Mkwajuni", "Mlimani"],
     },
     Shinyalu: {
-      "Shinyalu": ["Shinyalu", "Mkwajuni", "Mlimani"],
-      "Kibwezi": ["Kibwezi", "Mkwajuni", "Mlimani"],
+      "Shinyalu": ["Shinyalu", "Kibwezi", "Mkwajuni"],
     },
   },
   Vihiga: {
     Emuhaya: {
-      "Emuhaya": ["Emuhaya", "Mkwajuni", "Mlimani"],
-      "Vihiga": ["Vihiga", "Mkwajuni", "Mlimani"],
+      "Emuhaya": ["Emuhaya", "Vihiga", "Mkwajuni"],
     },
     Hamisi: {
       "Hamisi": ["Hamisi", "Mkwajuni", "Mlimani"],
     },
     Luanda: {
-      "Luanda": ["Luanda", "Mkwajuni", "Mlimani"],
+      "Luanda": ["Luanda", "Mbale", "Mkwajuni"],
       "Mbale": ["Mbale", "Mkwajuni", "Mlimani"],
     },
     Sabatia: {
       "Sabatia": ["Sabatia", "Mkwajuni", "Mlimani"],
     },
     Vihiga: {
-      "Vihiga": ["Vihiga", "Mkwajuni", "Mlimani"],
+      "Vihiga": ["Vihiga", "Maji", "Mkwajuni"],
       "Maji": ["Maji", "Mkwajuni", "Mlimani"],
     },
   },
   Bungoma: {
     Bumula: {
-      "Bumula": ["Bumula", "Mkwajuni", "Mlimani"],
+      "Bumula": ["Bumula", "Cheptais", "Mkwajuni"],
+      "Cheptais": ["Cheptais", "Mkwajuni", "Mlimani"],
     },
     Kabuchai: {
-      "Kabuchai": ["Kabuchai", "Mkwajuni", "Mlimani"],
-      "Bukembe": ["Bukemu", "Mkwajuni", "Mlimani"],
+      "Kabuchai": ["Kabuchai", "Bukembe", "Mkwajuni"],
+      "Bukembe": ["Bukembe", "Mkwajuni", "Mlimani"],
     },
     Kanduyi: {
-      "Kanduyi": ["Kanduyi", "Mkwajuni", "Mlimani"],
+      "Kanduyi": ["Kanduyi", "Bungoma", "Mkwajuni"],
       "Bungoma": ["Bungoma", "Mkwajuni", "Mlimani"],
     },
     Kimilili: {
-      "Kimilili": ["Kimilili", "Mkwajuni", "Mlimani"],
+      "Kimilili": ["Kimilili", "Kapsokoy", "Mkwajuni"],
       "Kapsokoy": ["Kapsokoy", "Mkwajuni", "Mlimani"],
     },
     "Mt Elgon": {
-      "Mt Elgon": ["Mt Elgon", "Mkwajuni", "Mlimani"],
-      "Kapkenyi": ["Kapkunyi", "Mkwajuni", "Mlimani"],
+      "Mt Elgon": ["Mt Elgon", "Kapenguria", "Kapkunyi", "Mkwajuni"],
+      "Kapkunyi": ["Kapkunyi", "Mkwajuni", "Mlimani"],
+      "Kapenguria": ["Kapenguria", "Mkwajuni", "Mlimani"],
     },
     Sirisia: {
-      "Sirisia": ["Sirisia", "Mkwajuni", "Mlimani"],
+      "Sirisia": ["Sirisia", "Lelmoru", "Mkwajuni"],
       "Lelmoru": ["Lelmoru", "Mkwajuni", "Mlimani"],
     },
     Tongaren: {
       "Tongaren": ["Tongaren", "Mkwajuni", "Mlimani"],
     },
     "Webuye East": {
-      "Webuye East": ["Webuye East", "Mkwajuni", "Mlimani"],
+      "Webuye East": ["Webuye East", "Webuye", "Mkwajuni"],
       "Webuye": ["Webuye", "Mkwajuni", "Mlimani"],
     },
     "Webuye West": {
       "Webuye West": ["Webuye West", "Mkwajuni", "Mlimani"],
     },
+    "Bungoma North": {
+      "Bungoma North": ["Bungoma North", "Mkwajuni", "Mlimani"],
+    },
+    "Bungoma East": {
+      "Bungoma East": ["Bungoma East", "Mkwajuni", "Mlimani"],
+    },
+    "Bungoma West": {
+      "Bungoma West": ["Bungoma West", "Mkwajuni", "Mlimani"],
+    },
   },
   Busia: {
     Budalangi: {
-      "Budalangi": ["Budalangi", "Mkwajuni", "Mlimani"],
+      "Budalangi": ["Budalangi", "Port", "Mkwajuni"],
       "Port": ["Port", "Mkwajuni", "Mlimani"],
     },
     Butula: {
       "Butula": ["Butula", "Mkwajuni", "Mlimani"],
     },
     Funyula: {
-      "Funyula": ["Funyula", "Mkwajuni", "Mlimani"],
+      "Funyula": ["Funyula", "Musanda", "Mkwajuni"],
       "Musanda": ["Musanda", "Mkwajuni", "Mlimani"],
     },
     Matayos: {
-      "Matayos": ["Matayos", "Mkwajuni", "Mlimani"],
+      "Matayos": ["Matayos", "Leganga", "Mkwajuni"],
       "Leganga": ["Leganga", "Mkwajuni", "Mlimani"],
     },
     Nambale: {
       "Nambale": ["Nambale", "Mkwajuni", "Mlimani"],
     },
     "Teso North": {
-      "Teso North": ["Teso North", "Mkwajuni", "Mlimani"],
+      "Teso North": ["Teso North", "Amusus", "Mkwajuni"],
       "Amusus": ["Amusus", "Mkwajuni", "Mlimani"],
     },
     "Teso South": {
@@ -982,62 +984,62 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Siaya: {
     "Alego Usonga": {
-      "Alego Usonga": ["Alego Usonga", "Mkwajuni", "Mlimani"],
+      "Alego Usonga": ["Alego Usonga", "Ukwala", "Mkwajuni"],
       "Ukwala": ["Ukwala", "Mkwajuni", "Mlimani"],
     },
     Bondo: {
-      "Bondo": ["Bondo", "Mkwajuni", "Mlimani"],
-      "Sokoni": ["Sokoni", "Mkwajuni", "Mlimani"],
+      "Bondo": ["Bondo", "Sokoni", "Mkwajuni"],
     },
     Gem: {
-      "Gem": ["Gem", "Mkwajuni", "Mlimani"],
+      "Gem": ["Gem", "Wundo", "Mkwajuni"],
       "Wundo": ["Wundo", "Mkwajuni", "Mlimani"],
     },
     Rarieda: {
-      "Rarieda": ["Rarieda", "Mkwajuni", "Mlimani"],
+      "Rarieda": ["Rarieda", "Muhoroni", "Mkwajuni"],
       "Muhoroni": ["Muhoroni", "Mkwajuni", "Mlimani"],
     },
     Ugenya: {
-      "Ugenya": ["Ugenya", "Mkwajuni", "Mlimani"],
+      "Ugenya": ["Ugenya", "Uyuu", "Mkwajuni"],
       "Uyuu": ["Uyuu", "Mkwajuni", "Mlimani"],
     },
     Ugunja: {
       "Ugunja": ["Ugunja", "Mkwajuni", "Mlimani"],
     },
+    "Siaya Town": {
+      "Siaya Town": ["Siaya Town", "Mkwajuni", "Mlimani"],
+    },
   },
   Kisumu: {
     "Kisumu Central": {
       "Kisumu Central": ["Kisumu Central", "Mkwajuni", "Mlimani"],
-      "Kisumu": ["Kisumu", "Mkwajuni", "Mlimani"],
     },
     "Kisumu East": {
       "Kisumu East": ["Kisumu East", "Mkwajuni", "Mlimani"],
-      "Kisumu": ["Kisumu", "Mkwajuni", "Mlimani"],
     },
     "Kisumu West": {
       "Kisumu West": ["Kisumu West", "Mkwajuni", "Mlimani"],
     },
     Muhoroni: {
-      "Muhoroni": ["Muhoroni", "Mkwajuni", "Mlimani"],
-      "Kibos": ["Kibos", "Mkwajuni", "Mlimani"],
+      "Muhoroni": ["Muhoroni", "Kibos", "Mkwajuni"],
     },
     Nyakach: {
       "Nyakach": ["Nyakach", "Mkwajuni", "Mlimani"],
     },
     Nyando: {
-      "Nyando": ["Nyando", "Mkwajuni", "Mlimani"],
-      "Kisumu": ["Kisumu", "Mkwajuni", "Mlimani"],
+      "Nyando": ["Nyando", "Kisumu", "Mkwajuni"],
     },
     Seme: {
       "Seme": ["Seme", "Mkwajuni", "Mlimani"],
     },
   },
   "Homa Bay": {
-    "Hombasa Town": {
-      "Hombasa Town": ["Hombasa Town", "Mkwajuni", "Mlimani"],
+    "Homabay Town": {
+      "Homabay Town": ["Homabay Town", "Mkwajuni", "Mlimani"],
     },
     Karachuonyo: {
       "Karachuonyo": ["Karachuonyo", "Mkwajuni", "Mlimani"],
+      "Mlimani": ["Mlimani", "Mkwajuni", "Mlimani"],
+      "Mkwajuni": ["Mkwajuni", "Mlimani", "Homa Bay"],
     },
     "Kasipul": {
       "Kasipul": ["Kasipul", "Mkwajuni", "Mlimani"],
@@ -1063,7 +1065,7 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Migori: {
     Awendo: {
-      "Awendo": ["Awendo", "Mkwajuni", "Mlimani"],
+      "Awendo": ["Awendo", "Sare", "Mkwajuni"],
       "Sare": ["Sare", "Mkwajuni", "Mlimani"],
     },
     "Kuria East": {
@@ -1076,7 +1078,7 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
       "Mabera": ["Mabera", "Mkwajuni", "Mlimani"],
     },
     Nyatike: {
-      "Nyatike": ["Nyatike", "Mkwajuni", "Mlimani"],
+      "Nyatike": ["Nyatike", "Muhoroni", "Mkwajuni"],
       "Muhoroni": ["Muhoroni", "Mkwajuni", "Mlimani"],
     },
     Rongo: {
@@ -1094,11 +1096,11 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Kisii: {
     Bobasi: {
-      "Bobasi": ["Bobasi", "Mkwajuni", "Mlimani"],
+      "Bobasi": ["Bobasi", "Masimbi", "Mkwajuni"],
       "Masimbi": ["Masimbi", "Mkwajuni", "Mlimani"],
     },
     "Bomachoge Borabu": {
-      "Bomachoge Borabu": ["Bomachoge Borabu", "Mkwajuni", "Mlimani"],
+      "Bomachoge Borabu": ["Bomachoge Borabu", "Borabu", "Mkwajuni"],
       "Borabu": ["Borabu", "Mkwajuni", "Mlimani"],
     },
     "Bomachoge Chache": {
@@ -1120,7 +1122,7 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
       "Nyaribari Masaba": ["Nyaribari Masaba", "Mkwajuni", "Mlimani"],
     },
     "South Mugirango": {
-      "South Mugirango": ["South Mugirango", "Mkwajuni", "Mlimani"],
+      "South Mugirango": ["South Mugirango", "Kisii", "Mkwajuni"],
       "Kisii": ["Kisii", "Mkwajuni", "Mlimani"],
     },
   },
@@ -1143,72 +1145,71 @@ export const countyData: Record<string, Record<string, Record<string, string[]>>
   },
   Nairobi: {
     "Dagoretti North": {
-      "Dagoretti North": ["Dagoretti North", "Mkwajuni", "Mlimani"],
+      "Dagoretti North": ["Dagoretti North", "Uthiru", "Mkwajuni"],
       "Uthiru": ["Uthiru", "Mkwajuni", "Mlimani"],
     },
     "Dagoretti South": {
-      "Dagoretti South": ["Dagoretti South", "Mkwajuni", "Mlimani"],
+      "Dagoretti South": ["Dagoretti South", "Kawangware", "Mkwajuni"],
       "Kawangware": ["Kawangware", "Mkwajuni", "Mlimani"],
     },
     "Embakasi Central": {
-      "Embakasi Central": ["Embakasi Central", "Mkwajuni", "Mlimani"],
+      "Embakasi Central": ["Embakasi Central", "Kayole", "Mkwajuni"],
       "Kayole": ["Kayole", "Mkwajuni", "Mlimani"],
     },
     "Embakasi East": {
       "Embakasi East": ["Embakasi East", "Mkwajuni", "Mlimani"],
     },
     "Embakasi North": {
-      "Embakasi North": ["Embakasi North", "Mkwajuni", "Mlimani"],
+      "Embakasi North": ["Embakasi North", "Kileleshwa", "Mkwajuni"],
       "Kileleshwa": ["Kileleshwa", "Mkwajuni", "Mlimani"],
     },
     "Embakasi South": {
       "Embakasi South": ["Embakasi South", "Mkwajuni", "Mlimani"],
     },
     "Embakasi West": {
-      "Embakasi West": ["Embakasi West", "Mkwajuni", "Mlimani"],
+      "Embakasi West": ["Embakasi West", "Mukuru", "Mkwajuni"],
       "Mukuru": ["Mukuru", "Mkwajuni", "Mlimani"],
     },
     Kamukunji: {
-      "Kamukunji": ["Kamukunji", "Mkwajuni", "Mlimani"],
+      "Kamukunji": ["Kamukunji", "Pumwani", "Mkwajuni"],
       "Pumwani": ["Pumwani", "Mkwajuni", "Mlimani"],
     },
     Kasarani: {
-      "Kasarani": ["Kasarani", "Mkwajuni", "Mlimani"],
+      "Kasarani": ["Kasarani", "Hurlingham", "Mkwajuni"],
       "Hurlingham": ["Hurlingham", "Mkwajuni", "Mlimani"],
     },
     Kibra: {
-      "Kibra": ["Kibra", "Mkwajuni", "Mlimani"],
+      "Kibra": ["Kibra", "Laini Sopa", "Mkwajuni"],
       "Laini Sopa": ["Laini Sopa", "Mkwajuni", "Mlimani"],
     },
     Langata: {
-      "Langata": ["Langata", "Mkwajuni", "Mlimani"],
+      "Langata": ["Langata", "Nairobi West", "Mkwajuni"],
       "Nairobi West": ["Nairobi West", "Mkwajuni", "Mlimani"],
     },
     Makadara: {
-      "Makadara": ["Makadara", "Mkwajuni", "Mlimani"],
+      "Makadara": ["Makadara", "Mombasa", "Mkwajuni"],
       "Mombasa": ["Mombasa", "Mkwajuni", "Mlimani"],
     },
     Mathare: {
-      "Mathare": ["Mathare", "Mkwajuni", "Mlimani"],
+      "Mathare": ["Mathare", "Kariandusi", "Mkwajuni"],
       "Kariandusi": ["Kariandusi", "Mkwajuni", "Mlimani"],
     },
     Njiru: {
-      "Njiru": ["Njiru", "Mkwajuni", "Mlimani"],
+      "Njiru": ["Njiru", "Githurai", "Mkwajuni"],
       "Githurai": ["Githurai", "Mkwajuni", "Mlimani"],
     },
     Roysambu: {
-      "Roysambu": ["Roysambu", "Mkwajuni", "Mlimani"],
-      "Kasarani": ["Kasarani", "Mkwajuni", "Mlimani"],
+      "Roysambu": ["Roysambu", "Kasarani", "Mkwajuni"],
     },
     Ruaraka: {
       "Ruaraka": ["Ruaraka", "Mkwajuni", "Mlimani"],
     },
     Starehe: {
-      "Starehe": ["Starehe", "Mkwajuni", "Mlimani"],
+      "Starehe": ["Starehe", "Nairobi Central", "Mkwajuni"],
       "Nairobi Central": ["Nairobi Central", "Mkwajuni", "Mlimani"],
     },
     "Westlands": {
-      "Westlands": ["Westlands", "Mkwajuni", "Mlimani"],
+      "Westlands": ["Westlands", "Kabete", "Mkwajuni"],
       "Kabete": ["Kabete", "Mkwajuni", "Mlimani"],
     },
   },
@@ -1227,5 +1228,9 @@ export function getWards(county: string, subCounty: string): string[] {
 }
 
 export function getLocations(county: string, subCounty: string, ward: string): string[] {
-  return countyData[county]?.[subCounty]?.[ward] || [];
+  const locations = countyData[county]?.[subCounty]?.[ward] || [];
+  const filtered = locations.filter(
+    (loc) => loc !== "Mkwajuni" && loc !== "Mlimani"
+  );
+  return filtered.length ? filtered : [ward];
 }

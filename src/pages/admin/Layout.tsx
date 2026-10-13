@@ -16,6 +16,7 @@ import {
   Shovel,
   Menu,
   X,
+  Home,
 } from "lucide-react";
 import * as React from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -100,6 +101,13 @@ export default function AdminLayout() {
         </div>
 
         <div className="p-4 border-t border-neutral-800">
+          <Link
+            to="/"
+            className="flex w-full items-center gap-3 rounded-xl mx-2 mb-2 px-3 py-2 text-sm font-medium text-neutral-300 hover:bg-neutral-800 hover:text-white"
+          >
+            <Home className="h-4 w-4" />
+            Back to Home
+          </Link>
           <button
             onClick={handleLogout}
             className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-neutral-300 hover:bg-neutral-800 hover:text-white"
@@ -123,7 +131,13 @@ export default function AdminLayout() {
             <Link to="/admin" className="flex items-center gap-2">
               <span className="font-display text-lg font-bold text-neutral-900">Admin</span>
             </Link>
-            <div className="w-10" />
+            <Link
+              to="/"
+              className="rounded-lg p-2 text-neutral-700 hover:bg-neutral-100"
+              aria-label="Back to home"
+            >
+              <Home className="h-6 w-6" />
+            </Link>
           </div>
         </header>
 
