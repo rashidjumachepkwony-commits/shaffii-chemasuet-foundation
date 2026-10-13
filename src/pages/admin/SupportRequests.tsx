@@ -77,6 +77,7 @@ export default function AdminSupportRequests() {
   const { success, error: showError } = useToast();
   const [requests, setRequests] = React.useState<SupportRequest[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [totalItems, setTotalItems] = React.useState(0);
@@ -93,6 +94,7 @@ export default function AdminSupportRequests() {
 
   const loadRequests = React.useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await apiGet<PaginatedResponse<SupportRequest>>(
         "/admin/support",
@@ -109,11 +111,11 @@ export default function AdminSupportRequests() {
       setTotalPages(res.meta?.totalPages || 1);
       setTotalItems(res.meta?.total || 0);
     } catch (err: any) {
-      showError(err.message || "Failed to load requests");
+      setError(err.message || "Failed to load requests");
     } finally {
       setLoading(false);
     }
-  }, [page, search, statusFilter, typeFilter, countyFilter, showError]);
+  }, [page, search, statusFilter, typeFilter, countyFilter]);
 
   React.useEffect(() => {
     loadRequests();
@@ -286,6 +288,8 @@ export default function AdminSupportRequests() {
             <div className="flex justify-center py-12">
               <LoadingSpinner label="Loading..." />
             </div>
+          ) : error ? (
+            <div className="rounded-xl bg-red-50 p-4 text-red-700">{error}</div>
           ) : (
             <Card className="overflow-x-auto">
               <table className="w-full text-sm">

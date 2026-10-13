@@ -1,7 +1,6 @@
 import * as React from "react";
-import { ApiError, apiGet } from "@/services/api";
-import type { SiteSetting } from "@/types";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { ApiError, apiGet, extractData } from "@/services/api";
+import type { ApiResponse, SiteSetting } from "@/types";
 
 interface SettingsContextType {
   settings: Record<string, SiteSetting>;
@@ -26,9 +25,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   const fetchSettings = React.useCallback(async () => {
     try {
-      const data = await apiGet<SiteSetting[]>("/public/settings");
+      const response = await apiGet<ApiResponse<SiteSetting[]>>("/public/settings");
+      const settingsArray = extractData(response);
       const map: Record<string, SiteSetting> = {};
-      data.forEach((s) => {
+      settingsArray.forEach((s) => {
         map[s.key] = s;
       });
       setSettings(map);
@@ -54,7 +54,21 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   );
 
   React.useEffect(() => {
-    fetchSettings();
+    let cancelled = false;
+    fetchSettings().finally(() => {
+      if (!cancelled) {
+        setLoading(false);
+      }
+    });
+    const timeout = setTimeout(() => {
+      if (!cancelled) {
+        setLoading(false);
+      }
+    }, 10000);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
   }, [fetchSettings]);
 
   const value = {
@@ -63,14 +77,6 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     refetch: fetchSettings,
     getSetting,
   };
-
-  if (loading && Object.keys(settings).length === 0) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <LoadingSpinner size="lg" label="Loading..." />
-      </div>
-    );
-  }
 
   return (
     <SettingsContext.Provider value={value}>

@@ -3,15 +3,14 @@ import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Pagination } from "@/components/ui/Pagination";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { useToast } from "@/components/ui/Toast";
 import { apiGet } from "@/services/api";
 import type { AuditLog, PaginatedResponse } from "@/types";
 import { Search, FileText, User, Calendar } from "lucide-react";
 
 export default function AdminAuditLogs() {
-  const { error: showError } = useToast();
   const [logs, setLogs] = React.useState<AuditLog[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [totalItems, setTotalItems] = React.useState(0);
@@ -19,6 +18,7 @@ export default function AdminAuditLogs() {
 
   const loadLogs = React.useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await apiGet<PaginatedResponse<AuditLog>>("/admin/audit-logs", {
         page, limit: 20, search: search || undefined,
@@ -27,11 +27,11 @@ export default function AdminAuditLogs() {
       setTotalPages(res.meta?.totalPages || 1);
       setTotalItems(res.meta?.total || 0);
     } catch (err: any) {
-      showError(err.message || "Failed to load audit logs");
+      setError(err.message || "Failed to load audit logs");
     } finally {
       setLoading(false);
     }
-  }, [page, search, showError]);
+  }, [page, search]);
 
   React.useEffect(() => {
     loadLogs();
@@ -53,6 +53,8 @@ export default function AdminAuditLogs() {
 
       {loading ? (
         <LoadingSpinner label="Loading..." />
+      ) : error ? (
+        <div className="rounded-xl bg-red-50 p-4 text-red-700">{error}</div>
       ) : logs.length === 0 ? (
         <Card variant="elevated" className="p-12 text-center">
           <FileText className="mx-auto h-12 w-12 text-neutral-300 mb-3" />

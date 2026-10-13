@@ -39,6 +39,7 @@ export default function AdminUsers() {
   const { success, error: showError } = useToast();
   const [users, setUsers] = React.useState<UserWithRole[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(1);
   const [limit] = React.useState(15);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -52,6 +53,7 @@ export default function AdminUsers() {
 
   const loadUsers = React.useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await apiGet<PaginatedResponse<UserWithRole>>("/admin/users", {
         page,
@@ -62,11 +64,11 @@ export default function AdminUsers() {
       setTotalPages(res.meta?.totalPages || 1);
       setTotalItems(res.meta?.total || 0);
     } catch (err: any) {
-      showError(err.message || "Failed to load users");
+      setError(err.message || "Failed to load users");
     } finally {
       setLoading(false);
     }
-  }, [page, limit, search, showError]);
+  }, [page, limit, search]);
 
   React.useEffect(() => {
     loadUsers();
@@ -180,6 +182,8 @@ export default function AdminUsers() {
 
       {loading ? (
         <LoadingSpinner label="Loading users..." />
+      ) : error ? (
+        <div className="rounded-xl bg-red-50 p-4 text-red-700">{error}</div>
       ) : users.length === 0 ? (
         <Card variant="elevated" className="p-12 text-center">
           <User className="mx-auto h-12 w-12 text-neutral-300 mb-3" />

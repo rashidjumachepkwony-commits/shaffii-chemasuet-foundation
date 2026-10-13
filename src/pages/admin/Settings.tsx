@@ -50,10 +50,12 @@ export default function AdminSettings() {
   const { success, error: showError } = useToast();
   const [settings, setSettings] = React.useState<Record<string, SiteSetting>>({});
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
   const [saving, setSaving] = React.useState(false);
 
   const loadSettings = React.useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const data = await adminService.getSettings();
       const map: Record<string, SiteSetting> = {};
@@ -62,11 +64,11 @@ export default function AdminSettings() {
       });
       setSettings(map);
     } catch (err: any) {
-      showError(err.message || "Failed to load settings");
+      setError(err.message || "Failed to load settings");
     } finally {
       setLoading(false);
     }
-  }, [showError]);
+  }, []);
 
   React.useEffect(() => {
     loadSettings();
@@ -95,6 +97,10 @@ export default function AdminSettings() {
 
   if (loading) {
     return <LoadingSpinner label="Loading settings..." />;
+  }
+
+  if (error) {
+    return <div className="rounded-xl bg-red-50 p-4 text-red-700">{error}</div>;
   }
 
   return (

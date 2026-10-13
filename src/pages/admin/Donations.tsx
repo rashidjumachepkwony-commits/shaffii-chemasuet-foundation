@@ -21,6 +21,7 @@ export default function AdminDonations() {
   const { success, error: showError } = useToast();
   const [donations, setDonations] = React.useState<Donation[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [totalItems, setTotalItems] = React.useState(0);
@@ -30,6 +31,7 @@ export default function AdminDonations() {
 
   const loadDonations = React.useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await apiGet<PaginatedResponse<Donation>>("/admin/donations", {
         page, limit: 15, search: search || undefined,
@@ -38,11 +40,11 @@ export default function AdminDonations() {
       setTotalPages(res.meta?.totalPages || 1);
       setTotalItems(res.meta?.total || 0);
     } catch (err: any) {
-      showError(err.message || "Failed to load donations");
+      setError(err.message || "Failed to load donations");
     } finally {
       setLoading(false);
     }
-  }, [page, search, showError]);
+  }, [page, search]);
 
   React.useEffect(() => {
     loadDonations();
@@ -97,6 +99,8 @@ export default function AdminDonations() {
 
       {loading ? (
         <LoadingSpinner label="Loading..." />
+      ) : error ? (
+        <div className="rounded-xl bg-red-50 p-4 text-red-700">{error}</div>
       ) : donations.length === 0 ? (
         <Card variant="elevated" className="p-12 text-center">
           <Banknote className="mx-auto h-12 w-12 text-neutral-300 mb-3" />

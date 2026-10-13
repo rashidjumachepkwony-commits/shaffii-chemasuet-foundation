@@ -23,6 +23,7 @@ export default function AdminVolunteers() {
   const { success, error: showError } = useToast();
   const [volunteers, setVolunteers] = React.useState<Volunteer[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [totalItems, setTotalItems] = React.useState(0);
@@ -33,6 +34,7 @@ export default function AdminVolunteers() {
 
   const loadVolunteers = React.useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await apiGet<PaginatedResponse<Volunteer>>("/admin/volunteers", {
         page, limit: 15, search: search || undefined, status: statusFilter || undefined,
@@ -41,11 +43,11 @@ export default function AdminVolunteers() {
       setTotalPages(res.meta?.totalPages || 1);
       setTotalItems(res.meta?.total || 0);
     } catch (err: any) {
-      showError(err.message || "Failed to load volunteers");
+      setError(err.message || "Failed to load volunteers");
     } finally {
       setLoading(false);
     }
-  }, [page, search, statusFilter, showError]);
+  }, [page, search, statusFilter]);
 
   React.useEffect(() => {
     loadVolunteers();
@@ -103,6 +105,8 @@ export default function AdminVolunteers() {
 
       {loading ? (
         <LoadingSpinner label="Loading..." />
+      ) : error ? (
+        <div className="rounded-xl bg-red-50 p-4 text-red-700">{error}</div>
       ) : volunteers.length === 0 ? (
         <p className="text-neutral-500">No volunteers found.</p>
       ) : (

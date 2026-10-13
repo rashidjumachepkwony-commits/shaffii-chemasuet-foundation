@@ -23,6 +23,7 @@ export default function AdminEventForm() {
   const { success, error: showError } = useToast();
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = React.useState<string | null>(null);
   const [categories, setCategories] = React.useState<EventCategory[]>([]);
   const [uploading, setUploading] = React.useState(false);
   const [uploadedImageUrl, setUploadedImageUrl] = React.useState<string>("");
@@ -41,22 +42,22 @@ export default function AdminEventForm() {
     };
     loadCategories();
 
-    if (isEdit && id) {
-      const loadEvent = async () => {
-        try {
-          const data = await apiGet<ApiResponse<Event>>(`/admin/events/${id}`);
-          setEvent(data.data || null);
-        } catch (err: any) {
-          showError(err.message || "Failed to load event");
-        } finally {
-          setLoading(false);
-        }
-      };
-      loadEvent();
-    } else {
-      setLoading(false);
-    }
-  }, [id, isEdit, showError]);
+        if (isEdit && id) {
+        const loadEvent = async () => {
+          try {
+            const data = await apiGet<ApiResponse<Event>>(`/admin/events/${id}`);
+            setEvent(data.data || null);
+          } catch (err: any) {
+            setError(err.message || "Failed to load event");
+          } finally {
+            setLoading(false);
+          }
+        };
+        loadEvent();
+      } else {
+        setLoading(false);
+      }
+    }, [id, isEdit]);
 
   React.useEffect(() => {
     if (event && !loading) {
@@ -167,6 +168,10 @@ export default function AdminEventForm() {
 
   if (loading) {
     return <LoadingSpinner label="Loading event..." />;
+  }
+
+  if (error) {
+    return <div className="rounded-xl bg-red-50 p-4 text-red-700">{error}</div>;
   }
 
   return (

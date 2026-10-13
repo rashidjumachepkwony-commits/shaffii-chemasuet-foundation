@@ -34,6 +34,7 @@ export default function AdminContentSections() {
   const { success, error: showError } = useToast();
   const [sections, setSections] = React.useState<ContentSection[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(1);
   const [limit] = React.useState(15);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -45,7 +46,8 @@ export default function AdminContentSections() {
   const [formData, setFormData] = React.useState<Partial<ContentSection>>({});
 
   const loadSections = React.useCallback(async () => {
-    setLoading(true);
+       setLoading(true);
+    setError(null);
     try {
       const res = await contentSectionsService.list({
         page,
@@ -56,11 +58,11 @@ export default function AdminContentSections() {
       setTotalPages(res.meta?.totalPages || 1);
       setTotalItems(res.meta?.total || 0);
     } catch (err: any) {
-      showError(err.message || "Failed to load content sections");
+      setError(err.message || "Failed to load content sections");
     } finally {
       setLoading(false);
     }
-  }, [page, limit, search, showError]);
+  }, [page, limit, search]);
 
   React.useEffect(() => {
     loadSections();
@@ -334,6 +336,8 @@ export default function AdminContentSections() {
 
       {loading ? (
         <LoadingSpinner label="Loading content sections..." />
+      ) : error ? (
+        <div className="rounded-xl bg-red-50 p-4 text-red-700">{error}</div>
       ) : sections.length === 0 ? (
         <Card variant="elevated" className="p-12 text-center">
           <p className="text-neutral-500">No content sections found.</p>

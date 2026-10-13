@@ -9,10 +9,13 @@ interface RateLimitState {
 const rateLimitStore = new Map<string, RateLimitState>();
 
 const WINDOW_MS = 60 * 1000;
-const MAX_REQUESTS = 100;
+const MAX_REQUESTS = 500;
 
 const AUTH_WINDOW_MS = 15 * 60 * 1000;
 const AUTH_MAX_REQUESTS = 20;
+
+const ADMIN_WINDOW_MS = 60 * 1000;
+const ADMIN_MAX_REQUESTS = 1000;
 
 export async function rateLimit(context: Context, next: () => Promise<void>) {
   const ip = context.req.header("cf-connecting-ip") ||
@@ -23,11 +26,20 @@ export async function rateLimit(context: Context, next: () => Promise<void>) {
   const isAuthEndpoint =
     context.req.path.includes("/login") ||
     context.req.path.includes("/register") ||
-    context.req.path.includes("/register") ||
     context.req.path.includes("/reset-password");
 
-  const maxRequests = isAuthEndpoint ? AUTH_MAX_REQUESTS : MAX_REQUESTS;
-  const windowMs = isAuthEndpoint ? AUTH_WINDOW_MS : WINDOW_MS;
+  const isAdminEndpoint = context.req.path.startsWith("/api/admin/");
+
+  let maxRequests = MAX_REQUESTS;
+  let windowMs = WINDOW_MS;
+
+  if (isAuthEndpoint) {
+    maxRequests = AUTH_MAX_REQUESTS;
+    windowMs = AUTH_WINDOW_MS;
+  } else if (isAdminEndpoint) {
+    maxRequests = ADMIN_MAX_REQUESTS;
+    windowMs = ADMIN_WINDOW_MS;
+  }
 
   const key = `${ip}:${context.req.path}`;
   const now = Date.now();
