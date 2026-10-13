@@ -38,7 +38,7 @@ export async function authenticate(context: Context, next: () => Promise<void>) 
   }
 
   const role = await getUserRole(supabase, user.id);
-  const permissions = getPermissionsForRole(role);
+  const permissions = role === "PENDING" ? [] : getPermissionsForRole(role);
 
   context.set("user", user);
   context.set("role", role);

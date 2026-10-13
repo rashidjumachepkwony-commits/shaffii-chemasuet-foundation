@@ -99,6 +99,6 @@ export async function authenticateToken(
     return null;
   }
   const role = await getUserRole(supabase, user.id);
-  const permissions = getPermissionsForRole(role);
+  const permissions = role === "PENDING" ? [] : getPermissionsForRole(role);
   return { user, role, permissions };
 }

@@ -58,7 +58,7 @@ app.post("/login", async (c) => {
   }
 
   const role = await getUserRole(supabase, data.user.id);
-  const permissions = getPermissionsForRole(role);
+  const permissions = role === "PENDING" ? [] : getPermissionsForRole(role);
 
   log("info", { msg: "Login successful", userId: data.user.id, role });
 
@@ -250,7 +250,7 @@ app.get("/me", async (c) => {
 
   const supabase = c.get("supabase");
   const role = await getUserRole(supabase, user.id);
-  const permissions = getPermissionsForRole(role);
+  const permissions = role === "PENDING" ? [] : getPermissionsForRole(role);
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")

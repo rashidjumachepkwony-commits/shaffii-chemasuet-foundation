@@ -17,6 +17,7 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function AdminGallery() {
   const [items, setItems] = React.useState<GalleryItem[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [totalItems, setTotalItems] = React.useState(0);
@@ -30,6 +31,7 @@ export default function AdminGallery() {
 
   const loadItems = React.useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await apiGet<PaginatedResponse<GalleryItem>>("/admin/gallery", {
         page, limit: 20, search: search || undefined,
@@ -38,11 +40,11 @@ export default function AdminGallery() {
       setTotalPages(res.meta?.totalPages || 1);
       setTotalItems(res.meta?.total || 0);
     } catch (err: any) {
-      showError(err.message || "Failed to load gallery");
+      setError(err.message || "Failed to load gallery");
     } finally {
       setLoading(false);
     }
-  }, [page, search, showError]);
+  }, [page, search]);
 
   React.useEffect(() => {
     loadItems();
@@ -196,6 +198,8 @@ export default function AdminGallery() {
 
       {loading ? (
         <LoadingSpinner label="Loading..." />
+      ) : error ? (
+        <div className="rounded-xl bg-red-50 p-4 text-red-700">{error}</div>
       ) : items.length === 0 ? (
         <p className="text-neutral-500">No gallery images found.</p>
       ) : (

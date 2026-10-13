@@ -26,6 +26,7 @@ const newsValidation = {
 export default function AdminNews() {
   const [news, setNews] = React.useState<News[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [totalItems, setTotalItems] = React.useState(0);
@@ -36,6 +37,7 @@ export default function AdminNews() {
 
   const loadNews = React.useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await apiGet<PaginatedResponse<News>>("/admin/news", {
         page, limit: 15, search: search || undefined,
@@ -44,11 +46,11 @@ export default function AdminNews() {
       setTotalPages(res.meta?.totalPages || 1);
       setTotalItems(res.meta?.total || 0);
     } catch (err: any) {
-      showError(err.message || "Failed to load news");
+      setError(err.message || "Failed to load news");
     } finally {
       setLoading(false);
     }
-  }, [page, search, showError]);
+  }, [page, search]);
 
   React.useEffect(() => {
     loadNews();
@@ -173,6 +175,8 @@ export default function AdminNews() {
 
       {loading ? (
         <LoadingSpinner label="Loading..." />
+      ) : error ? (
+        <div className="rounded-xl bg-red-50 p-4 text-red-700">{error}</div>
       ) : news.length === 0 ? (
         <p className="text-neutral-500">No news articles found.</p>
       ) : (
