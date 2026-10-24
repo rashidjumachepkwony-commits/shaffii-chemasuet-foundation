@@ -493,7 +493,9 @@ app.post("/gallery", async (c) => {
   return requirePermission("gallery.manage", c, async () => {
     const body = await c.req.json();
     const supabase = c.get("supabase");
-    const { data, error } = await supabase.from("gallery_items").insert({ ...body, uploaded_by: c.get("user")?.id }).select().single();
+    const user = c.get("user");
+    const isDevBypass = user?.id === "00000000-0000-0000-0000-000000000000";
+    const { data, error } = await supabase.from("gallery_items").insert({ ...body, uploaded_by: isDevBypass ? null : user?.id }).select().single();
     if (error) return serverError(c, error.message);
     return ok(c, data);
   });

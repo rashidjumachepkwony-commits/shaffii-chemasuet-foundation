@@ -1,32 +1,48 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import { useState, useEffect, useRef } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { SectionWrapper } from "@/components/ui/ErrorBoundary";
 import { galleryService } from "@/services/index";
 import type { GalleryItem } from "@/types";
+import { ChevronLeft, ChevronRight, Play, Pause, X } from "lucide-react";
 
 export default function Gallery() {
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [lightboxOpen, setLightboxOpen] = React.useState(false);
-  const [lightboxSrc, setLightboxSrc] = React.useState<string | null>(null);
-  const [lightboxAlt, setLightboxAlt] = React.useState<string>("");
-  const [lightboxCaption, setLightboxCaption] = React.useState<string>("");
+  const [lightboxIndex, setLightboxIndex] = React.useState<number>(-1);
+  const [isPlaying, setIsPlaying] = React.useState(false);
 
-  const openLightbox = (src: string, alt: string, caption: string) => {
-    setLightboxSrc(src);
-    setLightboxAlt(alt);
-    setLightboxCaption(caption);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const itemsCountRef = useRef(0);
+  itemsCountRef.current = items.length;
+
+  const openLightbox = React.useCallback((index: number) => {
+    setLightboxIndex(index);
     setLightboxOpen(true);
-  };
+    setIsPlaying(true);
+  }, []);
 
-  const closeLightbox = () => {
+  const closeLightbox = React.useCallback(() => {
     setLightboxOpen(false);
-    setLightboxSrc(null);
-  };
+    setLightboxIndex(-1);
+    setIsPlaying(false);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
+
+  const goToPrev = React.useCallback(() => {
+    setLightboxIndex((prev) => (prev > 0 ? prev - 1 : itemsCountRef.current - 1));
+  }, []);
+
+  const goToNext = React.useCallback(() => {
+    setLightboxIndex((prev) => (prev + 1) % itemsCountRef.current);
+  }, []);
+
+  const togglePlay = React.useCallback(() => setIsPlaying((prev) => !prev), []);
 
   useEffect(() => {
     const loadGallery = async () => {
@@ -35,8 +51,8 @@ export default function Gallery() {
       try {
         const res = await galleryService.list();
         setItems(res.data || []);
-      } catch (err: any) {
-        setError(err.message || "Failed to load gallery");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Failed to load gallery");
       } finally {
         setLoading(false);
       }
@@ -45,18 +61,40 @@ export default function Gallery() {
   }, []);
 
   useEffect(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (isPlaying && lightboxOpen && items.length > 1) {
+      intervalRef.current = setInterval(() => {
+        setLightboxIndex((prev) => (prev + 1) % items.length);
+      }, 4000);
+    }
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [isPlaying, lightboxOpen, items.length]);
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") goToPrev();
+      if (e.key === "ArrowRight") goToNext();
+      if (e.key === " ") {
+        e.preventDefault();
+        togglePlay();
+      }
     };
-    if (lightboxOpen) {
-      document.addEventListener("keydown", handleKey);
-      document.body.style.overflow = "hidden";
-    }
+    document.addEventListener("keydown", handleKey);
+    document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", handleKey);
       document.body.style.overflow = "";
     };
-  }, [lightboxOpen]);
+  }, [lightboxOpen, closeLightbox, goToPrev, goToNext, togglePlay]);
+
+  const currentItem = lightboxOpen && lightboxIndex >= 0 ? items[lightboxIndex] : null;
 
   return (
     <SectionWrapper spacing="lg">
@@ -85,10 +123,10 @@ export default function Gallery() {
       ) : (
         <>
           <div className="columns-1 gap-4 space-y-4 sm:columns-2 lg:columns-3 xl:columns-4">
-            {items.map((item) => (
+            {items.map((item, index) => (
               <button
                 key={item.id}
-                onClick={() => openLightbox(item.image_url, item.alt_text || item.caption || "", item.caption || "")}
+                onClick={() => openLightbox(index)}
                 className="group relative block w-full"
               >
                 <img
@@ -108,35 +146,75 @@ export default function Gallery() {
         </>
       )}
 
-      {lightboxOpen && lightboxSrc && (
+      {lightboxOpen && currentItem && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/95"
           onClick={closeLightbox}
           role="dialog"
           aria-modal="true"
-          aria-label="Image gallery"
+          aria-label="Image gallery slideshow"
         >
-          <div className="relative max-w-[90vw] max-h-[90vh]">
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 text-white text-sm">
+            <span className="font-mono">
+              {lightboxIndex + 1} / {items.length}
+            </span>
+          </div>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              goToPrev();
+            }}
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 transition-colors"
+            aria-label="Previous image"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              togglePlay();
+            }}
+            className="absolute top-6 right-20 z-10 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 transition-colors"
+            aria-label={isPlaying ? "Pause slideshow" : "Play slideshow"}
+          >
+            {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+          </button>
+
+          <button
+            onClick={closeLightbox}
+            className="absolute top-6 right-6 z-10 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 transition-colors"
+            aria-label="Close"
+          >
+            <X className="h-6 w-6" />
+          </button>
+
+          <div
+            className="relative max-w-[90vw] max-h-[80vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
             <img
-              src={lightboxSrc}
-              alt={lightboxAlt}
-              className="max-w-full max-h-[80vh] object-contain"
-              onClick={(e) => e.stopPropagation()}
+              src={currentItem.image_url}
+              alt={currentItem.alt_text || currentItem.caption || ""}
+              className="max-w-full max-h-[70vh] object-contain"
             />
-            {lightboxCaption && (
-              <div className="mt-4 text-center text-white text-sm max-w-2xl mx-auto">
-                {lightboxCaption}
+            {currentItem.caption && (
+              <div className="mt-4 text-center text-sm text-white max-w-2xl">
+                {currentItem.caption}
               </div>
             )}
           </div>
+
           <button
-            onClick={closeLightbox}
-            className="absolute top-6 right-6 text-white hover:text-gold-400 transition-colors p-2"
-            aria-label="Close"
+            onClick={(e) => {
+              e.stopPropagation();
+              goToNext();
+            }}
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 transition-colors"
+            aria-label="Next image"
           >
-            <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <ChevronRight className="h-6 w-6" />
           </button>
         </div>
       )}
