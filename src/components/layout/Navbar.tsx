@@ -63,18 +63,17 @@ export function Navbar() {
           </div>
         </Link>
 
-        <div className="hidden items-center justify-center gap-1.5 lg:flex">
+        <div className="hidden items-center justify-center gap-3 lg:flex">
           {navigation.map((item) => (
             <NavLink
               key={item.name}
               to={item.href}
               className={({ isActive }) =>
                 cn(
-                  "px-4 py-2.5 text-sm font-medium text-neutral-700 rounded-xl transition-all duration-200",
-                  "hover:bg-neutral-50 hover:text-foundation-700",
+                  "inline-flex items-center justify-center rounded-lg bg-[#D9A10B] px-[22px] py-3 text-[15px] font-semibold text-black no-underline transition-colors duration-200",
+                  "hover:bg-[#BD8D08]",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gold-400",
-                  isActive &&
-                    "bg-gold-50 text-foundation-700 shadow-sm"
+                  isActive && "bg-[#BD8D08]"
                 )
               }
             >
@@ -156,10 +155,10 @@ export function Navbar() {
               onClick={() => setMenuOpen(false)}
               className={({ isActive }) =>
                 cn(
-                  "rounded-xl px-4 py-3 text-sm font-medium",
-                  isActive
-                    ? "bg-gold-50 text-foundation-700"
-                    : "text-neutral-700 hover:bg-neutral-50 hover:text-foundation-700"
+                  "inline-flex w-full items-center justify-center rounded-lg bg-[#D9A10B] px-[22px] py-3 text-[15px] font-semibold text-black no-underline transition-colors duration-200",
+                  "hover:bg-[#BD8D08]",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gold-400",
+                  isActive && "bg-[#BD8D08]"
                 )
               }
             >
