@@ -134,6 +134,10 @@ export default function Gallery() {
 
   const togglePlay = React.useCallback(() => setIsPlaying((prev) => !prev), []);
 
+  const currentItem = lightboxOpen && lightboxIndex >= 0 ? items[lightboxIndex] : null;
+  const videos = items.filter(isVideoItem);
+  const images = items.filter(item => !isVideoItem(item));
+
   useEffect(() => {
     const loadGallery = async () => {
       setLoading(true);
@@ -183,10 +187,6 @@ export default function Gallery() {
       document.body.style.overflow = "";
     };
   }, [lightboxOpen, closeLightbox, goToPrev, goToNext, togglePlay]);
-
-  const currentItem = lightboxOpen && lightboxIndex >= 0 ? items[lightboxIndex] : null;
-  const videos = items.filter(isVideoItem);
-  const images = items.filter(item => !isVideoItem(item));
 
   return (
     <SectionWrapper spacing="lg">

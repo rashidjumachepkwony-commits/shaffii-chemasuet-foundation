@@ -1,9 +1,9 @@
 # Dependencies
 node_modules/
 
-# Build output (committed for Cloudflare Pages)
-# dist/
-# worker/dist/
+# Build output
+dist/
+worker/dist/
 
 # Environment
 .env
