@@ -155,6 +155,7 @@ export interface Event {
   short_description: string | null;
   full_description: string | null;
   featured_image: string | null;
+  featured_video: string | null;
   category_id: UUID | null;
   category: EventCategory | null;
   event_date: string;
@@ -240,6 +241,7 @@ export interface News {
   excerpt: string | null;
   content: string | null;
   featured_image: string | null;
+  video_url: string | null;
   category: string | null;
   author: string | null;
   published_date: string | null;
@@ -257,6 +259,7 @@ export interface GalleryItem {
   caption: string | null;
   category: string | null;
   alt_text: string | null;
+  media_type: "image" | "video";
   sort_order: number;
   uploaded_by: UUID | null;
   created_at: string;

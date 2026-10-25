@@ -76,6 +76,7 @@ export const eventSchema = z.object({
   short_description: z.string().max(500).optional(),
   full_description: z.string().optional(),
   featured_image: z.string().url().optional(),
+  featured_video: z.string().url().optional(),
   category_id: uuidSchema.optional(),
   event_date: z.string().min(1),
   start_time: z.string().min(1),
@@ -109,9 +110,21 @@ export const allowedFileTypes = [
   "image/webp",
 ] as const;
 
+export const allowedVideoTypes = [
+  "video/mp4",
+  "video/webm",
+  "video/quicktime",
+  "video/x-msvideo",
+  "video/x-ms-wmv",
+] as const;
+
+export const allowedImageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
+export const allowedVideoExtensions = [".mp4", ".webm", ".mov", ".avi", ".wmv"];
+
 export const fileUploadSchema = z.object({
   bucket: z.enum(["event-images", "project-images", "news-images", "gallery-images", "site-assets"]),
   file: z.any(),
+  media_type: z.enum(["image", "video"]).optional(),
   caption: z.string().max(200).optional(),
   category: z.string().max(100).optional(),
   alt_text: z.string().max(200).optional(),

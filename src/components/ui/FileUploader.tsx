@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { FileText, Trash2, X } from "lucide-react";
+import { FileText, X } from "lucide-react";
 
 export interface FileUploaderProps {
   onFilesSelected: (files: File[]) => void;
@@ -15,6 +15,7 @@ export interface FileUploaderProps {
   id?: string;
   label?: string;
   hint?: string;
+  mediaType?: "image" | "video";
 }
 
 export function FileUploader({
@@ -30,6 +31,7 @@ export function FileUploader({
   id = "file-upload",
   label = "Upload a file",
   hint,
+  mediaType = "image",
 }: FileUploaderProps) {
   const [isDragOver, setIsDragOver] = React.useState(false);
   const hiddenFileInputRef = React.useRef<HTMLInputElement>(null);
@@ -76,18 +78,28 @@ export function FileUploader({
     <div className="space-y-2">
       {currentPreview ? (
         <div className="relative inline-block">
-          <img
-            src={currentPreview}
-            alt={currentAlt || "uploaded preview"}
-            className="h-32 w-32 rounded-xl object-cover"
-          />
+          {mediaType === "video" ? (
+            <video
+              src={currentPreview}
+              className="h-32 w-32 rounded-xl object-cover"
+              controls
+              muted
+              preload="metadata"
+            />
+          ) : (
+            <img
+              src={currentPreview}
+              alt={currentAlt || "uploaded preview"}
+              className="h-32 w-32 rounded-xl object-cover"
+            />
+          )}
           {onRemove && (
             <button
               type="button"
               onClick={onRemove}
               disabled={uploading}
               className="absolute -top-2 -right-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
-              aria-label="Remove image"
+              aria-label={mediaType === "video" ? "Remove video" : "Remove image"}
             >
               <X className="h-3 w-3" />
             </button>

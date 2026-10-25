@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { ok, badRequest, serverError } from "../utils/response";
-import { allowedFileTypes } from "../validation";
+import { allowedFileTypes, allowedVideoTypes, allowedImageExtensions, allowedVideoExtensions } from "../validation";
 import { requirePermission } from "../middleware/auth";
 
 const app = new Hono<{
@@ -8,8 +8,8 @@ const app = new Hono<{
   Variables: { user: any; supabase: any; role: string; permissions: string[] };
 }>();
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const MAX_VIDEO_SIZE = 50 * 1024 * 1024;
 
 app.post("/", async (c) => {
   const supabase = c.get("supabase");
@@ -23,6 +23,7 @@ app.post("/", async (c) => {
     const body = await c.req.parseBody();
     const file = body.file as File;
     const bucket = (body.bucket as string) || "event-images";
+    const requestedMediaType = (body.media_type as string) || "auto";
 
     const validBuckets = ["event-images", "project-images", "news-images", "gallery-images", "site-assets"];
     if (!validBuckets.includes(bucket)) {
@@ -33,19 +34,30 @@ app.post("/", async (c) => {
       return badRequest(c, "No file provided");
     }
 
-    if (file.size > MAX_FILE_SIZE) {
-      return badRequest(c, "File size exceeds 5MB limit");
+    const isVideo = allowedVideoTypes.includes(file.type as any);
+    const isImage = allowedFileTypes.includes(file.type as any);
+
+    if (!isImage && !isVideo) {
+      return badRequest(c, "Invalid file type. Only images (JPG, PNG, GIF, WebP) and videos (MP4, WebM, MOV, AVI, WMV) are allowed");
     }
 
-    if (!allowedFileTypes.includes(file.type as any)) {
-      return badRequest(c, "Invalid file type. Only images (JPG, PNG, GIF, WebP) are allowed");
+    let mediaType: "image" | "video";
+    if (requestedMediaType === "video" || isVideo) {
+      mediaType = "video";
+    } else {
+      mediaType = "image";
     }
 
-    const ext = ALLOWED_EXTENSIONS.find((e) =>
-      file.name.toLowerCase().endsWith(e)
-    );
+    const maxSize = mediaType === "video" ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+
+    if (file.size > maxSize) {
+      return badRequest(c, `File size exceeds ${mediaType === "video" ? "50MB" : "5MB"} limit`);
+    }
+
+    const allowedExts = mediaType === "video" ? allowedVideoExtensions : allowedImageExtensions;
+    const ext = allowedExts.find((e) => file.name.toLowerCase().endsWith(e));
     if (!ext) {
-      return badRequest(c, "Invalid file extension");
+      return badRequest(c, `Invalid file extension for ${mediaType}`);
     }
 
     const fileName = `${crypto.randomUUID()}${ext}`;
@@ -69,6 +81,7 @@ app.post("/", async (c) => {
       url: publicData?.publicUrl || uploadData?.path,
       path: uploadData?.path,
       bucket,
+      media_type: mediaType,
     });
   } catch (err: any) {
     return serverError(c, err.message);

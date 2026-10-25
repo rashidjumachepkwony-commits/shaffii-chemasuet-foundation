@@ -5,23 +5,14 @@ import { Input } from "@/components/ui/Input";
 import { Pagination } from "@/components/ui/Pagination";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useToast } from "@/components/ui/Toast";
-import { apiGet, apiPost, apiPut, apiDelete } from "@/services/api";
+import { apiGet, apiPost, apiPut, apiDelete, API_BASE } from "@/services/api";
 import type { News, PaginatedResponse } from "@/types";
 import { Plus, Search, Edit, Trash2, Save } from "lucide-react";
 import { useForm } from "@/hooks/useForm";
 import { FormField } from "@/components/ui/Form";
-import { Input as InputCmp } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-
-const newsSchema = useForm.length > 0 ? null : null;
-
-const newsValidation = {
-  title: (v: string) => (!v ? "Title is required" : v.length > 200 ? "Title too long" : null),
-  slug: (v: string) => (!v ? "Slug is required" : null),
-  excerpt: (v: string) => (v && v.length > 500 ? "Excerpt too long" : null),
-  category: (v: string) => (v && v.length > 100 ? "Category too long" : null),
-  author: (v: string) => (v && v.length > 100 ? "Author too long" : null),
-} as const;
+import { FileUploader } from "@/components/ui/FileUploader";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminNews() {
   const [news, setNews] = React.useState<News[]>([]);
@@ -33,7 +24,10 @@ export default function AdminNews() {
   const [search, setSearch] = React.useState("");
   const [editingNews, setEditingNews] = React.useState<News | null>(null);
   const [showForm, setShowForm] = React.useState(false);
+  const [uploadingVideo, setUploadingVideo] = React.useState(false);
+  const [uploadedVideoUrl, setUploadedVideoUrl] = React.useState<string>("");
   const { success, error: showError } = useToast();
+  const { session } = useAuth();
 
   const loadNews = React.useCallback(async () => {
     setLoading(true);
@@ -89,6 +83,7 @@ export default function AdminNews() {
       try {
         const payload = {
           ...values,
+          video_url: uploadedVideoUrl,
           status: values.status,
           published_date: values.published_date || null,
         };
@@ -120,28 +115,44 @@ export default function AdminNews() {
         status: editingNews.status as any || "DRAFT",
         published_date: editingNews.published_date?.split("T")[0] || "",
       });
+      setUploadedVideoUrl(editingNews.video_url || "");
+    } else {
+      setUploadedVideoUrl("");
     }
   }, [editingNews]);
 
-  const validateForm = (): Record<string, string> => {
-    const errors: Record<string, string> = {};
-    if (!form.values.title) errors.title = "Title is required";
-    else if (form.values.title.length > 200) errors.title = "Title too long";
-    if (!form.values.slug) errors.slug = "Slug is required";
-    if (form.values.excerpt && form.values.excerpt.length > 500) errors.excerpt = "Excerpt too long";
-    if (form.values.category && form.values.category.length > 100) errors.category = "Category too long";
-    if (form.values.author && form.values.author.length > 100) errors.author = "Author too long";
-    return errors;
-  };
+  const handleVideoUpload = async (files: File[]) => {
+    if (files.length === 0) return;
+    const file = files[0];
+    setUploadingVideo(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("bucket", "news-images");
+      formData.append("media_type", "video");
 
-  const handleSubmit = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const errors = validateForm();
-    if (Object.keys(errors).length > 0) {
-      form.setFieldValue("_errors", errors);
-      return;
+      const token = session?.access_token;
+      const uploadRes = await fetch(`${API_BASE}/upload`, {
+          method: "POST",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          body: formData,
+        }
+      );
+
+      if (!uploadRes.ok) {
+        const err = await uploadRes.json();
+        throw new Error(err.error || "Upload failed");
+      }
+
+      const result = await uploadRes.json();
+      setUploadedVideoUrl(result.data.url);
+      form.setFieldValue("video_url", result.data.url);
+      success("Video uploaded successfully");
+    } catch (err: any) {
+      showError(err.message || "Failed to upload video");
+    } finally {
+      setUploadingVideo(false);
     }
-    await form.handleSubmit(e);
   };
 
   if (showForm) {
@@ -152,7 +163,11 @@ export default function AdminNews() {
         onCancel={() => {
           setShowForm(false);
           setEditingNews(null);
+          setUploadedVideoUrl("");
         }}
+        handleVideoUpload={handleVideoUpload}
+        uploadingVideo={uploadingVideo}
+        uploadedVideoUrl={uploadedVideoUrl}
       />
     );
   }
@@ -221,10 +236,16 @@ function NewsForm({
   form,
   editingNews,
   onCancel,
+  handleVideoUpload,
+  uploadingVideo,
+  uploadedVideoUrl,
 }: {
   form: ReturnType<typeof useForm<any>>;
   editingNews: News | null;
   onCancel: () => void;
+  handleVideoUpload: (files: File[]) => Promise<void>;
+  uploadingVideo: boolean;
+  uploadedVideoUrl: string;
 }) {
   return (
     <div className="space-y-6">
@@ -259,11 +280,25 @@ function NewsForm({
             value={form.values.excerpt as string}
             onChange={(e) => form.handleChange("excerpt", e.target.value)} />
         </FormField>
-        <FormField label="Content" name="content">
+<FormField label="Content" name="content">
           <Textarea placeholder="Full article content" rows={8}
             value={form.values.content as string}
             onChange={(e) => form.handleChange("content", e.target.value)} />
         </FormField>
+
+        <FormField label="Video URL (Optional)" name="video_url">
+          <FileUploader
+            onFilesSelected={handleVideoUpload}
+            uploading={uploadingVideo}
+            currentPreview={uploadedVideoUrl || null}
+            mediaType="video"
+            accept="video/*"
+            maxSize={50 * 1024 * 1024}
+            label="Upload article video"
+            hint="MP4, WebM, MOV up to 50MB"
+          />
+        </FormField>
+
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <FormField label="Category" name="category">
             <Input placeholder="e.g. Announcements"

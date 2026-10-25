@@ -1,5 +1,5 @@
 import * as React from "react";
-const { useState, useEffect } = React;
+const { useState } = React;
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useForm } from "@/hooks/useForm";
 import { eventSchema } from "@/lib/validations";
@@ -11,9 +11,9 @@ import { Button } from "@/components/ui/Button";
 import { FileUploader } from "@/components/ui/FileUploader";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useToast } from "@/components/ui/Toast";
-import { apiGet, apiPost, apiPut, apiGet as rawApiGet, API_BASE } from "@/services/api";
+import { apiGet, apiPost, apiPut, API_BASE } from "@/services/api";
 import type { Event, EventCategory, ApiResponse } from "@/types";
-import { ArrowLeft, Save, Upload } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminEventForm() {
@@ -27,6 +27,7 @@ export default function AdminEventForm() {
   const [categories, setCategories] = React.useState<EventCategory[]>([]);
   const [uploading, setUploading] = React.useState(false);
   const [uploadedImageUrl, setUploadedImageUrl] = React.useState<string>("");
+  const [uploadedVideoUrl, setUploadedVideoUrl] = React.useState<string>("");
   const { session } = useAuth();
 
   const [event, setEvent] = React.useState<Event | null>(null);
@@ -81,6 +82,7 @@ export default function AdminEventForm() {
         status: event.status,
       });
       setUploadedImageUrl(event.featured_image || "");
+      setUploadedVideoUrl(event.featured_video || "");
     }
   }, [event, loading]);
 
@@ -110,6 +112,7 @@ export default function AdminEventForm() {
         const payload = {
           ...values,
           featured_image: uploadedImageUrl,
+          featured_video: uploadedVideoUrl,
           capacity: values.capacity || null,
           start_time: `${values.event_date}T${values.start_time}`,
           end_time: `${values.event_date}T${values.end_time}`,
@@ -166,6 +169,40 @@ export default function AdminEventForm() {
     }
   };
 
+  const handleVideoUpload = async (files: File[]) => {
+    if (files.length === 0) return;
+    const file = files[0];
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("bucket", "event-images");
+      formData.append("media_type", "video");
+
+      const token = session?.access_token;
+      const uploadRes = await fetch(`${API_BASE}/upload`, {
+          method: "POST",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          body: formData,
+        }
+      );
+
+      if (!uploadRes.ok) {
+        const err = await uploadRes.json();
+        throw new Error(err.error || "Upload failed");
+      }
+
+      const result = await uploadRes.json();
+      setUploadedVideoUrl(result.data.url);
+      form.setFieldValue("featured_video", result.data.url);
+      success("Video uploaded successfully");
+    } catch (err: any) {
+      showError(err.message || "Failed to upload video");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   if (loading) {
     return <LoadingSpinner label="Loading event..." />;
   }
@@ -209,6 +246,19 @@ export default function AdminEventForm() {
             maxSize={5 * 1024 * 1024}
             label="Upload event image"
             hint="PNG, JPG up to 5MB"
+          />
+        </FormField>
+
+        <FormField label="Featured Video (Optional)" name="featured_video">
+          <FileUploader
+            onFilesSelected={handleVideoUpload}
+            uploading={uploading}
+            currentPreview={uploadedVideoUrl || null}
+            mediaType="video"
+            accept="video/*"
+            maxSize={50 * 1024 * 1024}
+            label="Upload event video"
+            hint="MP4, WebM, MOV up to 50MB"
           />
         </FormField>
 

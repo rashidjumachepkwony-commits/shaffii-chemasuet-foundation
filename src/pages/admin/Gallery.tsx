@@ -6,13 +6,25 @@ import { Pagination } from "@/components/ui/Pagination";
 import { FileUploader } from "@/components/ui/FileUploader";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useToast } from "@/components/ui/Toast";
-import { apiGet, apiPost, apiPatch, apiDelete, API_BASE } from "@/services/api";
-import type { GalleryItem, PaginatedResponse, ApiResponse } from "@/types";
-import { Plus, Search, Trash2, Save, Image, Upload, Edit, X } from "lucide-react";
+import { apiGet, apiPatch, apiDelete, API_BASE } from "@/services/api";
+import type { GalleryItem, PaginatedResponse } from "@/types";
+import { Plus, Search, Trash2, Save, Edit, X } from "lucide-react";
 import { useForm } from "@/hooks/useForm";
 import { FormField } from "@/components/ui/Form";
-import { Textarea } from "@/components/ui/Textarea";
 import { useAuth } from "@/contexts/AuthContext";
+import { Select } from "@/components/ui/Select";
+
+const VIDEO_EXTENSIONS = [".mp4", ".webm", ".mov", ".avi", ".wmv", ".mkv", ".flv"];
+
+function inferMediaType(url: string): "image" | "video" {
+  const lower = url.toLowerCase();
+  for (const ext of VIDEO_EXTENSIONS) {
+    if (lower.endsWith(ext) || lower.includes(ext + "?")) {
+      return "video";
+    }
+  }
+  return "image";
+}
 
 export default function AdminGallery() {
   const [items, setItems] = React.useState<GalleryItem[]>([]);
@@ -88,11 +100,11 @@ export default function AdminGallery() {
   };
 
   const uploadForm = useForm({
-    initialValues: { caption: "", category: "", alt_text: "", file: null as File | null },
+    initialValues: { caption: "", category: "", alt_text: "", file: null as File | null, media_type: "auto" as "auto" | "image" | "video" },
     validationSchema: null as any,
     onSubmit: async (values) => {
       if (!values.file) {
-        showError("Please select an image to upload");
+        showError("Please select a file to upload");
         return;
       }
       try {
@@ -102,6 +114,9 @@ export default function AdminGallery() {
         formData.append("caption", values.caption);
         formData.append("category", values.category);
         formData.append("alt_text", values.alt_text);
+        if (values.media_type !== "auto") {
+          formData.append("media_type", values.media_type);
+        }
 
         const token = session?.access_token;
         const res = await fetch(`${API_BASE}/upload`, {
@@ -116,7 +131,7 @@ export default function AdminGallery() {
           throw new Error(err.error || "Upload failed");
         }
 
-        success("Image uploaded successfully");
+        success("File uploaded successfully");
         setShowUpload(false);
         loadItems();
       } catch (err: any) {
@@ -130,7 +145,7 @@ export default function AdminGallery() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="font-display text-2xl font-bold text-neutral-900">
-            Upload Image
+            Upload Media
           </h1>
           <Button variant="ghost" onClick={() => setShowUpload(false)}>
             <Save className="mr-2 h-4 w-4" />
@@ -139,18 +154,29 @@ export default function AdminGallery() {
         </div>
 
         <form onSubmit={uploadForm.handleSubmit} className="space-y-6">
-          <FormField label="Image File" name="file" required>
+          <FormField label="Media File" name="file" required>
             <FileUploader
               onFilesSelected={(files) => uploadForm.setFieldValue("file", files[0])}
-              accept="image/*"
-              maxSize={5 * 1024 * 1024}
+              accept="image/*,video/*"
+              maxSize={50 * 1024 * 1024}
               maxFiles={1}
             />
           </FormField>
 
+          <FormField label="Media Type" name="media_type">
+            <Select
+              value={uploadForm.values.media_type as string}
+              onChange={(e) => uploadForm.setFieldValue("media_type", e.target.value as "auto" | "image" | "video")}
+            >
+              <option value="auto">Auto-detect</option>
+              <option value="image">Image</option>
+              <option value="video">Video</option>
+            </Select>
+          </FormField>
+
           <FormField label="Caption" name="caption">
             <Input
-              placeholder="Image caption"
+              placeholder="Media caption"
               value={uploadForm.values.caption as string}
               onChange={(e) => uploadForm.handleChange("caption", e.target.value)}
             />
@@ -202,17 +228,30 @@ export default function AdminGallery() {
         <div className="rounded-xl bg-red-50 p-4 text-red-700">{error}</div>
       ) : items.length === 0 ? (
         <p className="text-neutral-500">No gallery images found.</p>
-      ) : (
+) : (
         <>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {items.map((item) => (
-              <Card key={item.id} variant="elevated" padding="none" className="overflow-hidden">
-                <img
-                  src={item.image_url}
-                  alt={item.alt_text || item.caption || ""}
-                  className="h-48 w-full object-cover"
-                />
-              <div className="p-3">
+            {items.map((item) => {
+              const isVideo = item.media_type === "video" || inferMediaType(item.image_url) === "video";
+              return (
+                <Card key={item.id} variant="elevated" padding="none" className="overflow-hidden">
+                  {isVideo ? (
+                    <video
+                      src={item.image_url}
+                      poster={item.thumbnail_url || undefined}
+                      className="h-48 w-full object-cover"
+                      muted
+                      controls
+                      preload="metadata"
+                    />
+                  ) : (
+                    <img
+                      src={item.image_url}
+                      alt={item.alt_text || item.caption || ""}
+                      className="h-48 w-full object-cover"
+                    />
+                  )}
+                  <div className="p-3">
                    {editingItem?.id === item.id ? (
                      <div className="space-y-2">
                        <Input
@@ -284,8 +323,9 @@ export default function AdminGallery() {
                      </>
                    )}
                    </div>
-              </Card>
-            ))}
+</Card>
+              )
+            })}
           </div>
           <Pagination currentPage={page} totalPages={totalPages} totalItems={totalItems} pageSize={20} onPageChange={setPage} />
         </>

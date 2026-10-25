@@ -69,6 +69,7 @@ app.use("/api/*", secureHeaders({
     defaultSrc: ["'self'"],
     styleSrc: ["'self'", "'unsafe-inline'"],
     imgSrc: ["'self'", "data:", "https:", "blob:"],
+    mediaSrc: ["'self'", "https:"],
     scriptSrc: ["'self'", "'unsafe-inline'"],
     connectSrc: ["'self'", "https:", "wss:"],
     frameAncestors: ["'none'"],
