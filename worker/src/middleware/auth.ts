@@ -7,11 +7,14 @@ export async function authenticate(context: Context, next: () => Promise<void>) 
   const authHeader = context.req.header("authorization");
   const isDevelopment = (context.env as any)?.ENVIRONMENT === "development";
 
-  if (!authHeader?.startsWith("Bearer ")) {
+   if (!authHeader?.startsWith("Bearer ")) {
     if (isDevelopment) {
       context.set("user", { id: "00000000-0000-0000-0000-000000000000", email: "dev@example.com", role: "SUPER_ADMIN" });
       context.set("role", "SUPER_ADMIN");
       context.set("permissions", ["*"]);
+      if (!context.get("supabase")) {
+        context.set("supabase", createSupabaseServerClient(context));
+      }
       await next();
       return;
     }
@@ -31,6 +34,7 @@ export async function authenticate(context: Context, next: () => Promise<void>) 
       context.set("user", { id: "00000000-0000-0000-0000-000000000000", email: "dev@example.com", role: "SUPER_ADMIN" });
       context.set("role", "SUPER_ADMIN");
       context.set("permissions", ["*"]);
+      context.set("supabase", supabase);
       await next();
       return;
     }

@@ -285,7 +285,13 @@ app.post("/events", async (c) => {
     const valid = eventSchema.safeParse(body);
     if (!valid.success) return badRequest(c, valid.error.errors[0]?.message || "Validation failed");
     const supabase = c.get("supabase");
-    const { data, error } = await supabase.from("events").insert({ ...valid.data, created_by: c.get("user")?.id, updated_by: c.get("user")?.id }).select().single();
+    const userId = c.get("user")?.id;
+    const isDevUser = userId === "00000000-0000-0000-0000-000000000000";
+    const { data, error } = await supabase.from("events").insert({
+      ...valid.data,
+      created_by: isDevUser ? null : userId,
+      updated_by: isDevUser ? null : userId,
+    }).select().single();
     if (error) return serverError(c, error.message);
     await logAudit(c, "EVENT_CREATED", "events", data.id, undefined);
     return ok(c, data);
@@ -307,7 +313,9 @@ app.put("/events/:id", async (c) => {
     const valid = eventSchema.safeParse(body);
     if (!valid.success) return badRequest(c, valid.error.errors[0]?.message || "Validation failed");
     const supabase = c.get("supabase");
-    const { data, error } = await supabase.from("events").update({ ...valid.data, updated_by: c.get("user")?.id, updated_at: new Date().toISOString() }).eq("id", c.req.param("id")).select().single();
+    const userId = c.get("user")?.id;
+    const isDevUser = userId === "00000000-0000-0000-0000-000000000000";
+    const { data, error } = await supabase.from("events").update({ ...valid.data, updated_by: isDevUser ? null : userId, updated_at: new Date().toISOString() }).eq("id", c.req.param("id")).select().single();
     if (error) return serverError(c, error.message);
     await logAudit(c, "EVENT_UPDATED", "events", data.id, undefined);
     return ok(c, data);
@@ -324,7 +332,9 @@ app.patch("/events/:id", async (c) => {
     for (const key of Object.keys(valid.data)) {
       if (key in body) updates[key] = (valid.data as Record<string, unknown>)[key];
     }
-    updates.updated_by = c.get("user")?.id;
+    const userId = c.get("user")?.id;
+    const isDevUser = userId === "00000000-0000-0000-0000-000000000000";
+    updates.updated_by = isDevUser ? null : userId;
     updates.updated_at = new Date().toISOString();
     const { data, error } = await supabase.from("events").update(updates).eq("id", c.req.param("id")).select().single();
     if (error) return serverError(c, error.message);
