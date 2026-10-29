@@ -55,6 +55,11 @@ export const eventsService = {
     activity_other?: string;
     county: string;
     locality?: string;
+    sub_county?: string;
+    ward?: string;
+    location?: string;
+    sub_location?: string;
+    id_number?: string;
     attendee_count?: number;
     notes?: string;
   }): Promise<{ registration_reference: string; id: string }> {

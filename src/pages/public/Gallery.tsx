@@ -18,7 +18,8 @@ function inferMediaType(url: string): "image" | "video" {
   return "image";
 }
 
-function isVideoItem(item: GalleryItem): boolean {
+function isVideoItem(item: GalleryItem | null): boolean {
+  if (!item) return false;
   return item.media_type === "video" || inferMediaType(item.image_url) === "video";
 }
 

@@ -36,6 +36,11 @@ export const eventRegistrationSchema = z.object({
   activity_other: z.string().max(100).optional(),
   county: z.enum(kenyaCounties),
   locality: z.string().max(120).optional(),
+  sub_county: z.string().max(120).optional(),
+  ward: z.string().max(120).optional(),
+  location: z.string().max(120).optional(),
+  sub_location: z.string().max(120).optional(),
+  id_number: z.string().max(50).optional(),
   attendee_count: z
     .coerce.number()
     .min(1, "At least 1 attendee required")

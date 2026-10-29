@@ -196,6 +196,11 @@ export interface EventRegistration {
   activity_other: string | null;
   county: string | null;
   locality: string | null;
+  sub_county: string | null;
+  ward: string | null;
+  location: string | null;
+  sub_location: string | null;
+  id_number: string | null;
   attendee_count: number;
   notes: string | null;
   status: RegistrationStatus;

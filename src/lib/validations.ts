@@ -101,6 +101,14 @@ export const eventRegistrationSchema = z.object({
     "Please choose a county"
   ),
   locality: z.string().max(120, "Location details are too long").optional(),
+  sub_county: z.string().max(120, "Sub-county is too long").optional(),
+  ward: z.string().max(120, "Ward is too long").optional(),
+  location: z.string().max(120, "Location is too long").optional(),
+  sub_location: z.string().max(120, "Sub-location is too long").optional(),
+  id_number: z
+    .string()
+    .max(50, "ID number is too long")
+    .optional(),
   attendee_count: z
     .number()
     .min(1, "You must register at least 1 attendee")

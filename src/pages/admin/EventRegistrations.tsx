@@ -109,12 +109,16 @@ export default function AdminEventRegistrations() {
       "Name",
       "Email",
       "Phone",
+      "ID Number",
       "Organization",
       "Attendees",
       "Age Group",
       "Activity Interest",
       "County",
-      "Locality",
+      "Sub County",
+      "Ward",
+      "Location",
+      "Sub Location",
       "Other Activity",
       "Support Needs",
       "Status",
@@ -125,6 +129,7 @@ export default function AdminEventRegistrations() {
       r.full_name,
       r.email,
       r.phone || "",
+      r.id_number || "",
       r.organization || "",
       r.attendee_count,
       r.age_group
@@ -134,6 +139,10 @@ export default function AdminEventRegistrations() {
         ? eventActivityLabels[r.activity_interest as keyof typeof eventActivityLabels] || r.activity_interest
         : "",
       r.county || "",
+      r.sub_county || "",
+      r.ward || "",
+      r.location || "",
+      r.sub_location || "",
       r.locality || "",
       r.activity_other || "",
       r.notes || "",
@@ -223,6 +232,7 @@ export default function AdminEventRegistrations() {
                   <th className="px-4 py-3 text-left font-semibold">Name</th>
                   <th className="px-4 py-3 text-left font-semibold">Email</th>
                   <th className="px-4 py-3 text-left font-semibold">Phone</th>
+                  <th className="px-4 py-3 text-left font-semibold">ID Number</th>
                   <th className="px-4 py-3 text-left font-semibold">Attendees</th>
                   <th className="px-4 py-3 text-left font-semibold">Participant Details</th>
                   <th className="px-4 py-3 text-left font-semibold">Status</th>
@@ -239,6 +249,7 @@ export default function AdminEventRegistrations() {
                     <td className="px-4 py-3">{reg.full_name}</td>
                     <td className="px-4 py-3">{reg.email}</td>
                     <td className="px-4 py-3">{reg.phone || "-"}</td>
+                    <td className="px-4 py-3">{reg.id_number || "-"}</td>
                     <td className="px-4 py-3">{reg.attendee_count}</td>
                     <td className="px-4 py-3">
                       <div>
@@ -253,7 +264,9 @@ export default function AdminEventRegistrations() {
                         {reg.activity_other ? `: ${reg.activity_other}` : ""}
                       </div>
                       <div className="text-neutral-500">
-                        {[reg.locality, reg.county].filter(Boolean).join(", ") || "Location not provided"}
+                        {[reg.county, reg.sub_county, reg.ward, reg.location, reg.sub_location, reg.locality]
+                          .filter(Boolean)
+                          .join(", ") || "Location not provided"}
                       </div>
                     </td>
                     <td className="px-4 py-3">

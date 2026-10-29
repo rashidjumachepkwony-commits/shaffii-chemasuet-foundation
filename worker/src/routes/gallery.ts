@@ -47,7 +47,7 @@ app.get("/", async (c) => {
     return serverError(c, error.message);
   }
 
-  const itemsWithMediaType = (data || []).map((item) => ({
+  const itemsWithMediaType = (data || []).map((item: any) => ({
     ...item,
     media_type: item.media_type || inferMediaType(item.image_url),
   }));

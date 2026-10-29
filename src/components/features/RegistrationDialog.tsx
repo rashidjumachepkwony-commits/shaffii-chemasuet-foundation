@@ -16,6 +16,7 @@ import {
   eventAgeGroupValues,
   kenyaCounties,
 } from "@/lib/eventRegistrationOptions";
+import { getCounties, getSubCounties, getWards, getLocations } from "@/lib/locations";
 import { User, Mail, Phone, Building, Users, MapPin } from "lucide-react";
 
 interface RegistrationDialogProps {
@@ -47,15 +48,20 @@ export function RegistrationDialog({
       age_group: "",
       activity_interest: "",
       activity_other: "",
-      county: "",
+      county: "Busia",
       locality: "",
+      sub_county: "",
+      ward: "",
+      location: "",
+      sub_location: "",
+      id_number: "",
       attendee_count: 1,
       notes: "",
     },
     validationSchema: eventRegistrationSchema,
     onSubmit: async (values) => {
       try {
-        const result = await eventsService.register(eventId, {
+         const result = await eventsService.register(eventId, {
           full_name: values.full_name,
           email: values.email,
           phone: values.phone,
@@ -65,6 +71,11 @@ export function RegistrationDialog({
           activity_other: values.activity_other || undefined,
           county: values.county,
           locality: values.locality || undefined,
+          sub_county: values.sub_county || undefined,
+          ward: values.ward || undefined,
+          location: values.location || undefined,
+          sub_location: values.sub_location || undefined,
+          id_number: values.id_number || undefined,
           attendee_count: values.attendee_count,
           notes: values.notes || undefined,
         });
@@ -86,8 +97,13 @@ export function RegistrationDialog({
         age_group: "",
         activity_interest: "",
         activity_other: "",
-        county: "",
+        county: "Busia",
         locality: "",
+        sub_county: "",
+        ward: "",
+        location: "",
+        sub_location: "",
+        id_number: "",
         attendee_count: 1,
         notes: "",
       });
@@ -303,6 +319,111 @@ export function RegistrationDialog({
             />
           </FormField>
         )}
+
+        <FormField
+          label="ID Number"
+          name="id_number"
+          error={form.errors.id_number}
+          helpText="National ID or voter ID (for verification)"
+        >
+          <Input
+            type="text"
+            placeholder="e.g. 12345678"
+            value={form.values.id_number as string}
+            onChange={(e) => form.handleChange("id_number", e.target.value)}
+            onBlur={() => form.handleBlur("id_number")}
+            aria-invalid={!!form.errors.id_number}
+          />
+        </FormField>
+
+        <FormField
+          label="Sub County"
+          name="sub_county"
+          error={form.errors.sub_county}
+          required
+        >
+          <Select
+            key={`subcounty-${form.values.county}`}
+            value={form.values.sub_county as string}
+            onChange={(e) => {
+              form.handleChange("sub_county", e.target.value);
+              form.setFieldValue("ward", "");
+              form.setFieldValue("location", "");
+              form.setFieldValue("sub_location", "");
+            }}
+            onBlur={() => form.handleBlur("sub_county")}
+            aria-invalid={!!form.errors.sub_county}
+          >
+            <option value="" disabled>Select sub-county</option>
+            {getSubCounties(form.values.county as string).map((sub) => (
+              <option key={sub} value={sub}>{sub}</option>
+            ))}
+          </Select>
+        </FormField>
+
+        <FormField
+          label="Ward"
+          name="ward"
+          error={form.errors.ward}
+          required
+        >
+          <Select
+            key={`ward-${form.values.sub_county}`}
+            value={form.values.ward as string}
+            onChange={(e) => {
+              form.handleChange("ward", e.target.value);
+              form.setFieldValue("location", "");
+              form.setFieldValue("sub_location", "");
+            }}
+            onBlur={() => form.handleBlur("ward")}
+            aria-invalid={!!form.errors.ward}
+          >
+            <option value="" disabled>Select ward</option>
+            {getWards(form.values.county as string, form.values.sub_county as string).map((ward) => (
+              <option key={ward} value={ward}>{ward}</option>
+            ))}
+          </Select>
+        </FormField>
+
+        <FormField
+          label="Location"
+          name="location"
+          error={form.errors.location}
+          required
+        >
+          <Select
+            key={`location-${form.values.ward}`}
+            value={form.values.location as string}
+            onChange={(e) => {
+              form.handleChange("location", e.target.value);
+              form.setFieldValue("sub_location", "");
+            }}
+            onBlur={() => form.handleBlur("location")}
+            aria-invalid={!!form.errors.location}
+          >
+            <option value="" disabled>Select location</option>
+            {getLocations(form.values.county as string, form.values.sub_county as string, form.values.ward as string).map((loc) => (
+              <option key={loc} value={loc}>{loc}</option>
+            ))}
+          </Select>
+        </FormField>
+
+        <FormField
+          label="Sub Location"
+          name="sub_location"
+          error={form.errors.sub_location}
+          helpText="Optional: more specific sub-location"
+        >
+          <Input
+            type="text"
+            placeholder="e.g. Market Centre"
+            value={form.values.sub_location as string}
+            onChange={(e) => form.handleChange("sub_location", e.target.value)}
+            onBlur={() => form.handleBlur("sub_location")}
+            aria-invalid={!!form.errors.sub_location}
+            icon={<MapPin className="h-4 w-4 text-neutral-400" />}
+          />
+        </FormField>
 
         <FormField
           label="Town, sub-county, or ward (Optional)"
