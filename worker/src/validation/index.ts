@@ -90,7 +90,7 @@ export const eventSchema = z.object({
   location: z.string().max(200).optional(),
   organizer: z.string().max(200).optional(),
   contact_information: z.string().max(200).optional(),
-  registration_deadline: z.string().optional(),
+  registration_deadline: z.string().nullable().optional(),
   capacity: z.coerce.number().min(1).max(100000).optional(),
   registration_enabled: z.boolean().default(true),
   published: z.boolean().default(false),

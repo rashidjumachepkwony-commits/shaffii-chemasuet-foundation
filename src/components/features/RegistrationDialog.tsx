@@ -168,6 +168,15 @@ export function RegistrationDialog({
           Help us plan a welcoming event for every generation. Tell us who is
           joining, what interests them, and where you are travelling from.
         </p>
+        <div className="mb-5 rounded-xl bg-blue-50 px-4 py-3 text-sm">
+          <p className="font-medium text-blue-900">Need help registering?</p>
+          <p className="mt-1 text-blue-700">
+            Call or WhatsApp us: <strong>+254 769 020 852</strong>
+          </p>
+          <p className="text-blue-700">
+            Email: <strong>events@shafiechemasuet.org</strong>
+          </p>
+        </div>
         <FormField
           label="Full Name"
           name="full_name"

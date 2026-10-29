@@ -187,7 +187,7 @@ export const eventSchema = z.object({
   location: z.string().max(200, "Location is too long").optional(),
   organizer: z.string().max(200, "Organizer is too long").optional(),
   contact_information: z.string().max(200, "Contact information is too long").optional(),
-  registration_deadline: z.string().optional(),
+  registration_deadline: z.string().nullable().optional(),
   capacity: z
     .number()
     .min(1, "Capacity must be at least 1")
