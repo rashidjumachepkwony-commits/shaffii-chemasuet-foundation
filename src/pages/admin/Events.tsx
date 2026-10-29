@@ -10,7 +10,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
 import { apiGet, apiPatch, apiDelete } from "@/services/api";
 import type { Event, PaginatedResponse, ApiResponse } from "@/types";
-import { Plus, Search, Edit, Trash2, Calendar, Eye } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Calendar, Eye, Users } from "lucide-react";
 
 export default function AdminEvents() {
   const [events, setEvents] = React.useState<Event[]>([]);
@@ -121,13 +121,14 @@ export default function AdminEvents() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200 bg-neutral-50">
-                    <th className="px-4 py-3 text-left font-semibold">Title</th>
-                    <th className="px-4 py-3 text-left font-semibold">Date</th>
-                    <th className="px-4 py-3 text-left font-semibold">Status</th>
-                    <th className="px-4 py-3 text-left font-semibold">Published</th>
-                    <th className="px-4 py-3 text-right font-semibold">Actions</th>
-                  </tr>
+                   <tr className="border-b border-neutral-200 bg-neutral-50">
+                     <th className="px-4 py-3 text-left font-semibold">Title</th>
+                     <th className="px-4 py-3 text-left font-semibold">Date</th>
+                     <th className="px-4 py-3 text-left font-semibold">Status</th>
+                     <th className="px-4 py-3 text-left font-semibold">Published</th>
+                     <th className="px-4 py-3 text-center font-semibold">Reg</th>
+                     <th className="px-4 py-3 text-right font-semibold">Actions</th>
+                   </tr>
                 </thead>
                 <tbody>
                   {events.map((event) => (
@@ -158,10 +159,19 @@ export default function AdminEvents() {
                           {event.status}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3">
-                        {event.published ? "Yes" : "No"}
-                      </td>
-                      <td className="px-4 py-3 text-right">
+                       <td className="px-4 py-3">
+                         {event.published ? "Yes" : "No"}
+                       </td>
+                       <td className="px-4 py-3 text-center">
+                         <Link
+                           to={`/admin/events/${event.id}/registrations`}
+                           className="inline-flex items-center justify-center rounded-xl p-1 text-neutral-600 hover:bg-neutral-100 hover:text-foundation-700"
+                           title="View registrations"
+                         >
+                           <Users className="h-5 w-5" />
+                         </Link>
+                       </td>
+                       <td className="px-4 py-3 text-right">
                         <div className="flex justify-end gap-1">
                           <Link
                             to={`/admin/events/${event.id}/edit`}
