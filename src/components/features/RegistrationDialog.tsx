@@ -16,7 +16,7 @@ import {
   eventAgeGroupValues,
   kenyaCounties,
 } from "@/lib/eventRegistrationOptions";
-import { getCounties, getSubCounties, getWards, getLocations } from "@/lib/locations";
+import { getSubCounties, getWards, getLocations } from "@/lib/locations";
 import { User, Mail, Phone, Building, Users, MapPin } from "lucide-react";
 
 interface RegistrationDialogProps {
@@ -162,19 +162,21 @@ export function RegistrationDialog({
       onClose={onClose}
       title={`Register: ${eventTitle}`}
       size="lg"
+      className="max-h-[90vh] sm:max-h-[85vh] overflow-y-auto"
     >
-      <form onSubmit={form.handleSubmit} noValidate>
-        <p className="mb-5 rounded-xl bg-foundation-50 px-4 py-3 text-sm leading-relaxed text-neutral-700">
-          Help us plan a welcoming event for every generation. Tell us who is
-          joining, what interests them, and where you are travelling from.
-        </p>
-        <div className="mb-5 rounded-xl bg-blue-50 px-4 py-3 text-sm">
-          <p className="font-medium text-blue-900">Need help registering?</p>
-          <p className="mt-1 text-blue-700">
-            Call or WhatsApp us: <strong>+254 769 020 852</strong>
+      <form onSubmit={form.handleSubmit} noValidate className="pb-2">
+        <div className="mb-4 rounded-xl bg-foundation-50 px-4 py-3 text-sm leading-relaxed text-neutral-700">
+          <p className="font-medium text-neutral-800 mb-1">How to register</p>
+          <p className="mb-2">
+            Fill in your details below. Fields marked with an asterisk (*) are
+            required. The location fields help us coordinate local participation —
+            select your county first, then the cascading dropdowns will show
+            available sub-counties, wards, and locations.
           </p>
-          <p className="text-blue-700">
-            Email: <strong>events@shafiechemasuet.org</strong>
+          <p className="text-neutral-600">
+            Need help? Call/WhatsApp{" "}
+            <strong className="text-neutral-900">+254 769 020 852</strong> or email{" "}
+            <strong className="text-neutral-900">events@shafiechemasuet.org</strong>
           </p>
         </div>
         <FormField
@@ -333,7 +335,8 @@ export function RegistrationDialog({
           label="ID Number"
           name="id_number"
           error={form.errors.id_number}
-          helpText="National ID or voter ID (for verification)"
+          required
+          helpText="National ID or voter ID number (for verification)"
         >
           <Input
             type="text"
@@ -421,11 +424,12 @@ export function RegistrationDialog({
           label="Sub Location"
           name="sub_location"
           error={form.errors.sub_location}
-          helpText="Optional: more specific sub-location"
+          required
+          helpText="Enter a specific sub-location, village, or landmark (e.g. Market Centre, School)"
         >
           <Input
             type="text"
-            placeholder="e.g. Market Centre"
+            placeholder="e.g. Market Centre, Primary School"
             value={form.values.sub_location as string}
             onChange={(e) => form.handleChange("sub_location", e.target.value)}
             onBlur={() => form.handleBlur("sub_location")}
@@ -483,28 +487,32 @@ export function RegistrationDialog({
         </FormField>
 
         {form.errors.root && (
-          <p className="mb-4 text-sm text-red-600" role="alert">
+          <div className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
             {form.errors.root}
-          </p>
+          </div>
         )}
 
-        <div className="mt-6 flex justify-end gap-3 border-t border-neutral-200 pt-6">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onClose}
-            disabled={form.isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            disabled={form.isSubmitting}
-            loading={form.isSubmitting}
-            rounded="full"
-          >
-            Complete Registration
-          </Button>
+        <div className="mt-6 flex flex-col-reverse sm:flex-row justify-end gap-3 border-t border-neutral-200 pt-6">
+          <div className="flex flex-1 sm:flex-none gap-3">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onClose}
+              disabled={form.isSubmitting}
+              className="flex-1 sm:flex-none"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={form.isSubmitting}
+              loading={form.isSubmitting}
+              rounded="full"
+              className="flex-1 sm:flex-none"
+            >
+              Complete Registration
+            </Button>
+          </div>
         </div>
       </form>
     </Modal>

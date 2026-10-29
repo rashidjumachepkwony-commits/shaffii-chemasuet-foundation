@@ -194,6 +194,7 @@ app.post("/:id/register", async (c) => {
   const supabase = c.get("supabase");
   const user = c.get("user");
   const userId = user?.id;
+  const isDevUser = userId === "00000000-0000-0000-0000-000000000000";
 
   const body = await c.req.json();
   const valid = eventRegistrationSchema.safeParse(body);
@@ -204,10 +205,10 @@ app.post("/:id/register", async (c) => {
 
   const values = valid.data;
 
-  const { data: canRegisterData, error: canRegisterError } = await supabase.rpc(
+   const { data: canRegisterData, error: canRegisterError } = await supabase.rpc(
     "can_register_for_event",
     {
-      p_user_id: userId || null,
+      p_user_id: isDevUser ? null : userId || null,
       p_event_id: eventId,
       p_email: values.email,
     }
@@ -228,7 +229,7 @@ app.post("/:id/register", async (c) => {
     .from("event_registrations")
     .insert({
       event_id: eventId,
-      user_id: userId || null,
+       user_id: isDevUser ? null : userId || null,
       registration_reference: registrationReference,
       full_name: values.full_name,
       email: values.email,
