@@ -232,8 +232,9 @@ export default function AdminEventRegistrations() {
                   <th className="px-4 py-3 text-left font-semibold">Name</th>
                   <th className="px-4 py-3 text-left font-semibold">Email</th>
                   <th className="px-4 py-3 text-left font-semibold">Phone</th>
-                  <th className="px-4 py-3 text-left font-semibold">ID Number</th>
-                  <th className="px-4 py-3 text-left font-semibold">Attendees</th>
+                     <th className="px-4 py-3 text-left font-semibold">ID Number</th>
+                     <th className="px-4 py-3 text-left font-semibold">Organization</th>
+                     <th className="px-4 py-3 text-left font-semibold">Attendees</th>
                   <th className="px-4 py-3 text-left font-semibold">Participant Details</th>
                   <th className="px-4 py-3 text-left font-semibold">Status</th>
                   <th className="px-4 py-3 text-left font-semibold">Created</th>
@@ -250,23 +251,48 @@ export default function AdminEventRegistrations() {
                     <td className="px-4 py-3">{reg.email}</td>
                     <td className="px-4 py-3">{reg.phone || "-"}</td>
                     <td className="px-4 py-3">{reg.id_number || "-"}</td>
+                    <td className="px-4 py-3">{reg.organization || "-"}</td>
                     <td className="px-4 py-3">{reg.attendee_count}</td>
                     <td className="px-4 py-3">
-                      <div>
-                        {reg.age_group
-                          ? eventAgeGroupLabels[reg.age_group as keyof typeof eventAgeGroupLabels] || reg.age_group
-                          : "Age group not provided"}
-                      </div>
-                      <div className="text-neutral-500">
-                        {reg.activity_interest
-                          ? eventActivityLabels[reg.activity_interest as keyof typeof eventActivityLabels] || reg.activity_interest
-                          : "Activity not provided"}
-                        {reg.activity_other ? `: ${reg.activity_other}` : ""}
-                      </div>
-                      <div className="text-neutral-500">
-                        {[reg.county, reg.sub_county, reg.ward, reg.location, reg.sub_location, reg.locality]
-                          .filter(Boolean)
-                          .join(", ") || "Location not provided"}
+                      <div className="max-w-[300px] space-y-1">
+                        <div>
+                          <span className="font-medium text-neutral-700">Age Group:</span>{" "}
+                          {reg.age_group
+                            ? eventAgeGroupLabels[reg.age_group as keyof typeof eventAgeGroupLabels] || reg.age_group
+                            : "Not provided"}
+                        </div>
+                        <div>
+                          <span className="font-medium text-neutral-700">Activity:</span>{" "}
+                          {reg.activity_interest
+                            ? eventActivityLabels[reg.activity_interest as keyof typeof eventActivityLabels] || reg.activity_interest
+                            : "Not provided"}
+                          {reg.activity_other ? ` (${reg.activity_other})` : ""}
+                        </div>
+                        <div className="text-neutral-600">
+                          <span className="font-medium text-neutral-700">County:</span> {reg.county || "N/A"}
+                        </div>
+                        <div className="text-neutral-600">
+                          <span className="font-medium text-neutral-700">Sub County:</span> {reg.sub_county || "N/A"}
+                        </div>
+                        <div className="text-neutral-600">
+                          <span className="font-medium text-neutral-700">Ward:</span> {reg.ward || "N/A"}
+                        </div>
+                        <div className="text-neutral-600">
+                          <span className="font-medium text-neutral-700">Location:</span> {reg.location || "N/A"}
+                        </div>
+                        <div className="text-neutral-600">
+                          <span className="font-medium text-neutral-700">Sub Location:</span> {reg.sub_location || "N/A"}
+                        </div>
+                        {reg.locality && (
+                          <div className="text-neutral-600">
+                            <span className="font-medium text-neutral-700">Locality:</span> {reg.locality}
+                          </div>
+                        )}
+                        {reg.notes && (
+                          <div className="text-neutral-600">
+                            <span className="font-medium text-neutral-700">Notes:</span> {reg.notes}
+                          </div>
+                        )}
                       </div>
                     </td>
                     <td className="px-4 py-3">
