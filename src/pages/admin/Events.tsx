@@ -165,10 +165,13 @@ export default function AdminEvents() {
                        <td className="px-4 py-3 text-center">
                          <Link
                            to={`/admin/events/${event.id}/registrations`}
-                           className="inline-flex items-center justify-center rounded-xl p-1 text-neutral-600 hover:bg-neutral-100 hover:text-foundation-700"
+                           className="inline-flex items-center justify-center gap-1 rounded-xl bg-neutral-100 px-2 py-1 text-sm font-medium text-neutral-700 hover:bg-foundation-100 hover:text-foundation-700"
                            title="View registrations"
                          >
-                           <Users className="h-5 w-5" />
+                           <Users className="h-4 w-4" />
+                           {event.registration_count !== undefined && event.registration_count > 0 && (
+                             <span className="font-bold">{event.registration_count}</span>
+                           )}
                          </Link>
                        </td>
                        <td className="px-4 py-3 text-right">

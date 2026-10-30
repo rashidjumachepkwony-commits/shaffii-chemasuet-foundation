@@ -174,6 +174,7 @@ export interface Event {
   updated_by: UUID | null;
   created_at: string;
   updated_at: string;
+  registration_count?: number;
 }
 
 export type RegistrationStatus =

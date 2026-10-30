@@ -275,7 +275,28 @@ app.get("/events", async (c) => {
     if (search) query = query.or(`title.ilike.%${search}%,short_description.ilike.%${search}%`);
     const { data, error, count } = await query.order("created_at", { ascending: false }).range(offset, offset + limit - 1);
     if (error) return serverError(c, error.message);
-    return paginatedResponse(c, data || [], page, limit, count || 0);
+
+    const eventIds = (data || []).map((e: any) => e.id);
+    let regCountMap: Record<string, number> = {};
+    if (eventIds.length > 0) {
+      const { data: regCounts, error: regError } = await supabase
+        .from("event_registrations")
+        .select("event_id", { count: "exact" })
+        .in("event_id", eventIds)
+        .eq("status", "REGISTERED");
+      if (!regError && regCounts) {
+        regCounts.forEach((r: any) => {
+          regCountMap[r.event_id] = (regCountMap[r.event_id] || 0) + 1;
+        });
+      }
+    }
+
+    const enrichedData = (data || []).map((e: any) => ({
+      ...e,
+      registration_count: regCountMap[e.id] || 0,
+    }));
+
+    return paginatedResponse(c, enrichedData, page, limit, count || 0);
   });
 });
 
